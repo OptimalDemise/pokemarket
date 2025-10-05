@@ -12,6 +12,7 @@ interface ProductItemProps {
     setName: string;
     currentPrice: number;
     percentChange: number;
+    imageUrl?: string;
   };
   priceHistory: Array<{ timestamp: number; price: number }>;
 }
@@ -25,6 +26,20 @@ export function ProductItem({ product, priceHistory }: ProductItemProps) {
     >
       <Card className="p-6 hover:border-primary/50 transition-colors">
         <div className="space-y-4">
+          {/* Product Image */}
+          {product.imageUrl && (
+            <div className="w-full aspect-[3/2] relative overflow-hidden rounded-lg border bg-secondary/20">
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="w-full h-full object-contain p-4"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">

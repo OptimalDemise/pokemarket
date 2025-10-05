@@ -13,6 +13,7 @@ interface CardItemProps {
     rarity: string;
     currentPrice: number;
     percentChange: number;
+    imageUrl?: string;
   };
   priceHistory: Array<{ timestamp: number; price: number }>;
 }
@@ -26,6 +27,20 @@ export function CardItem({ card, priceHistory }: CardItemProps) {
     >
       <Card className="p-6 hover:border-primary/50 transition-colors">
         <div className="space-y-4">
+          {/* Card Image */}
+          {card.imageUrl && (
+            <div className="w-full aspect-[2/3] relative overflow-hidden rounded-lg border bg-secondary/20">
+              <img
+                src={card.imageUrl}
+                alt={card.name}
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">

@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 // Get all cards with their latest price changes
 export const getAllCards = query({
@@ -49,8 +49,8 @@ export const getCardPriceHistory = query({
   },
 });
 
-// Add or update a card
-export const upsertCard = mutation({
+// Add or update a card (internal for API actions to call)
+export const upsertCard = internalMutation({
   args: {
     name: v.string(),
     setName: v.string(),
