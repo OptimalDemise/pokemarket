@@ -113,7 +113,7 @@ export const fetchAllCardsAbovePrice = internalAction({
         headers["X-Api-Key"] = API_KEY;
       }
 
-      // Query for rare cards with market price filter, prioritizing newer sets (2023 onwards)
+      // Query for rare cards, ordering by newest sets first
       const query = `(rarity:"Holo Rare" OR rarity:"Ultra Rare" OR rarity:"Secret Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX")`;
       
       let successCount = 0;
@@ -122,6 +122,7 @@ export const fetchAllCardsAbovePrice = internalAction({
 
       // Fetch multiple pages to get more cards (increased to 10 pages)
       for (let page = 1; page <= 10; page++) {
+        // Order by release date descending to get newest sets first
         const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&page=${page}&pageSize=250&orderBy=-set.releaseDate`;
         
         console.log(`Fetching page ${page}...`);
@@ -136,7 +137,7 @@ export const fetchAllCardsAbovePrice = internalAction({
         
         if (!data.data || data.data.length === 0) {
           console.log(`No more cards on page ${page}, stopping.`);
-          break; // No more cards to fetch
+          break;
         }
 
         console.log(`Processing ${data.data.length} cards from page ${page}`);
@@ -168,7 +169,7 @@ export const fetchAllCardsAbovePrice = internalAction({
               successCount++;
             }
           } catch (error) {
-            if (errors.length < 20) { // Limit error collection
+            if (errors.length < 20) {
               errors.push(`Failed to process ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
           }
@@ -182,7 +183,7 @@ export const fetchAllCardsAbovePrice = internalAction({
         success: successCount > 0, 
         updated: successCount,
         total: totalProcessed,
-        errors: errors.length > 0 ? errors.slice(0, 10) : undefined // Limit error messages
+        errors: errors.length > 0 ? errors.slice(0, 10) : undefined
       };
     } catch (error) {
       console.error("Error fetching cards:", error);
