@@ -1,19 +1,25 @@
 import { CardItem } from "@/components/CardItem";
 import { ProductItem } from "@/components/ProductItem";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft, Loader2, RefreshCw, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
+
+type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<SortOption>("newest");
 
   // Auto-refresh every 2 minutes
   useEffect(() => {
@@ -23,6 +29,30 @@ export default function Dashboard() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Filter and sort cards
+  const filteredAndSortedCards = useMemo(() => {
+    if (!cards) return [];
+    
+    let filtered = cards.filter(card => 
+      card.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      card.setName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return sortItems(filtered, sortOption);
+  }, [cards, searchQuery, sortOption]);
+
+  // Filter and sort products
+  const filteredAndSortedProducts = useMemo(() => {
+    if (!products) return [];
+    
+    let filtered = products.filter(product => 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.setName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return sortItems(filtered, sortOption);
+  }, [products, searchQuery, sortOption]);
 
   const isLoading = cards === undefined || products === undefined;
 
@@ -71,13 +101,39 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Search and Sort Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search cards or products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
+            <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
+              <SelectValue placeholder="Sort by..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest" className="cursor-pointer">Newest First</SelectItem>
+              <SelectItem value="highest-change" className="cursor-pointer">Highest % Change</SelectItem>
+              <SelectItem value="lowest-change" className="cursor-pointer">Lowest % Change</SelectItem>
+              <SelectItem value="no-change" className="cursor-pointer">No Change</SelectItem>
+              <SelectItem value="highest-price" className="cursor-pointer">Highest Price</SelectItem>
+              <SelectItem value="lowest-price" className="cursor-pointer">Lowest Price</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <Tabs defaultValue="cards" className="space-y-8">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="cards" className="cursor-pointer">
-              Cards ({cards?.length || 0})
+              Cards ({filteredAndSortedCards.length})
             </TabsTrigger>
             <TabsTrigger value="products" className="cursor-pointer">
-              Products ({products?.length || 0})
+              Products ({filteredAndSortedProducts.length})
             </TabsTrigger>
           </TabsList>
 
@@ -88,13 +144,13 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cards?.map((card) => (
+                {filteredAndSortedCards.map((card) => (
                   <CardItemWrapper key={card._id} card={card} />
                 ))}
               </div>
-              {cards?.length === 0 && (
+              {filteredAndSortedCards.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
-                  No cards tracked yet
+                  {searchQuery ? "No cards match your search" : "No cards tracked yet"}
                 </div>
               )}
             </motion.div>
@@ -107,13 +163,13 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products?.map((product) => (
+                {filteredAndSortedProducts.map((product) => (
                   <ProductItemWrapper key={product._id} product={product} />
                 ))}
               </div>
-              {products?.length === 0 && (
+              {filteredAndSortedProducts.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
-                  No products tracked yet
+                  {searchQuery ? "No products match your search" : "No products tracked yet"}
                 </div>
               )}
             </motion.div>
@@ -122,6 +178,31 @@ export default function Dashboard() {
       </main>
     </div>
   );
+}
+
+// Helper function to sort items
+function sortItems<T extends { percentChange: number; currentPrice: number; _creationTime: number }>(
+  items: T[],
+  sortOption: SortOption
+): T[] {
+  const sorted = [...items];
+  
+  switch (sortOption) {
+    case "newest":
+      return sorted.sort((a, b) => b._creationTime - a._creationTime);
+    case "highest-change":
+      return sorted.sort((a, b) => b.percentChange - a.percentChange);
+    case "lowest-change":
+      return sorted.sort((a, b) => a.percentChange - b.percentChange);
+    case "no-change":
+      return sorted.sort((a, b) => Math.abs(a.percentChange) - Math.abs(b.percentChange));
+    case "highest-price":
+      return sorted.sort((a, b) => b.currentPrice - a.currentPrice);
+    case "lowest-price":
+      return sorted.sort((a, b) => a.currentPrice - b.currentPrice);
+    default:
+      return sorted;
+  }
 }
 
 // Wrapper component for CardItem that handles its own price history query
