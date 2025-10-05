@@ -15,22 +15,6 @@ export default function Dashboard() {
   const products = useQuery(api.products.getAllProducts);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
-  // Fetch all price histories for cards
-  const cardPriceHistories = cards?.map((card) => 
-    useQuery(api.cards.getCardPriceHistory, {
-      cardId: card._id,
-      limit: 20,
-    })
-  ) || [];
-
-  // Fetch all price histories for products
-  const productPriceHistories = products?.map((product) => 
-    useQuery(api.products.getProductPriceHistory, {
-      productId: product._id,
-      limit: 20,
-    })
-  ) || [];
-
   // Auto-refresh every 2 minutes
   useEffect(() => {
     const interval = setInterval(() => {
@@ -104,12 +88,8 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cards?.map((card, index) => (
-                  <CardItem
-                    key={card._id}
-                    card={card}
-                    priceHistory={cardPriceHistories[index] || []}
-                  />
+                {cards?.map((card) => (
+                  <CardItemWrapper key={card._id} card={card} />
                 ))}
               </div>
               {cards?.length === 0 && (
@@ -127,12 +107,8 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products?.map((product, index) => (
-                  <ProductItem
-                    key={product._id}
-                    product={product}
-                    priceHistory={productPriceHistories[index] || []}
-                  />
+                {products?.map((product) => (
+                  <ProductItemWrapper key={product._id} product={product} />
                 ))}
               </div>
               {products?.length === 0 && (
@@ -146,4 +122,24 @@ export default function Dashboard() {
       </main>
     </div>
   );
+}
+
+// Wrapper component for CardItem that handles its own price history query
+function CardItemWrapper({ card }: { card: any }) {
+  const priceHistory = useQuery(api.cards.getCardPriceHistory, {
+    cardId: card._id,
+    limit: 20,
+  });
+
+  return <CardItem card={card} priceHistory={priceHistory || []} />;
+}
+
+// Wrapper component for ProductItem that handles its own price history query
+function ProductItemWrapper({ product }: { product: any }) {
+  const priceHistory = useQuery(api.products.getProductPriceHistory, {
+    productId: product._id,
+    limit: 20,
+  });
+
+  return <ProductItem product={product} priceHistory={priceHistory || []} />;
 }
