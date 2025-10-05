@@ -120,10 +120,11 @@ export const fetchAllCardsAbovePrice = internalAction({
       const errors: string[] = [];
       let totalProcessed = 0;
 
-      // Fetch multiple pages to get more cards
-      for (let page = 1; page <= 3; page++) {
+      // Fetch multiple pages to get more cards (increased to 10 pages)
+      for (let page = 1; page <= 10; page++) {
         const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&page=${page}&pageSize=250`;
         
+        console.log(`Fetching page ${page}...`);
         const response = await fetch(url, { headers });
         
         if (!response.ok) {
@@ -134,9 +135,11 @@ export const fetchAllCardsAbovePrice = internalAction({
         const data = await response.json();
         
         if (!data.data || data.data.length === 0) {
+          console.log(`No more cards on page ${page}, stopping.`);
           break; // No more cards to fetch
         }
 
+        console.log(`Processing ${data.data.length} cards from page ${page}`);
         totalProcessed += data.data.length;
 
         // Filter and process cards above the minimum price
@@ -165,11 +168,16 @@ export const fetchAllCardsAbovePrice = internalAction({
               successCount++;
             }
           } catch (error) {
-            errors.push(`Failed to process ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            if (errors.length < 20) { // Limit error collection
+              errors.push(`Failed to process ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
           }
         }
+        
+        console.log(`Page ${page} complete. Total cards added so far: ${successCount}`);
       }
 
+      console.log(`Fetch complete. Total processed: ${totalProcessed}, Successfully added: ${successCount}`);
       return { 
         success: successCount > 0, 
         updated: successCount,
@@ -187,9 +195,9 @@ export const fetchAllCardsAbovePrice = internalAction({
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
-    // Fetch all cards above $10
+    // Fetch all cards above $5 to get more results
     const result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
-      minPrice: 10,
+      minPrice: 5,
     });
     return result;
   },
