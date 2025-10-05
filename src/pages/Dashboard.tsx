@@ -260,7 +260,7 @@ export default function Dashboard() {
                 <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
                   <SelectValue placeholder="All Rarities" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all" className="cursor-pointer">All Rarities</SelectItem>
                   <SelectItem value="Holo Rare" className="cursor-pointer">Holo Rare</SelectItem>
                   <SelectItem value="Ultra Rare" className="cursor-pointer">Ultra Rare</SelectItem>
@@ -270,6 +270,24 @@ export default function Dashboard() {
                   <SelectItem value="Rare Holo GX" className="cursor-pointer">Rare Holo GX</SelectItem>
                   <SelectItem value="Rare Holo V" className="cursor-pointer">Rare Holo V</SelectItem>
                   <SelectItem value="Rare Holo VMAX" className="cursor-pointer">Rare Holo VMAX</SelectItem>
+                  <SelectItem value="Rare Holo VSTAR" className="cursor-pointer">Rare Holo VSTAR</SelectItem>
+                  <SelectItem value="Rare Ultra" className="cursor-pointer">Rare Ultra</SelectItem>
+                  <SelectItem value="Rare Rainbow" className="cursor-pointer">Rare Rainbow</SelectItem>
+                  <SelectItem value="Rare Secret" className="cursor-pointer">Rare Secret</SelectItem>
+                  <SelectItem value="Rare Shining" className="cursor-pointer">Rare Shining</SelectItem>
+                  <SelectItem value="Rare ACE" className="cursor-pointer">Rare ACE</SelectItem>
+                  <SelectItem value="Rare BREAK" className="cursor-pointer">Rare BREAK</SelectItem>
+                  <SelectItem value="Rare Prime" className="cursor-pointer">Rare Prime</SelectItem>
+                  <SelectItem value="Rare Prism Star" className="cursor-pointer">Rare Prism Star</SelectItem>
+                  <SelectItem value="Amazing Rare" className="cursor-pointer">Amazing Rare</SelectItem>
+                  <SelectItem value="Radiant Rare" className="cursor-pointer">Radiant Rare</SelectItem>
+                  <SelectItem value="Hyper Rare" className="cursor-pointer">Hyper Rare</SelectItem>
+                  <SelectItem value="Illustration Rare" className="cursor-pointer">Illustration Rare</SelectItem>
+                  <SelectItem value="Special Illustration Rare" className="cursor-pointer">Special Illustration Rare</SelectItem>
+                  <SelectItem value="Double Rare" className="cursor-pointer">Double Rare</SelectItem>
+                  <SelectItem value="Shiny Rare" className="cursor-pointer">Shiny Rare</SelectItem>
+                  <SelectItem value="Shiny Ultra Rare" className="cursor-pointer">Shiny Ultra Rare</SelectItem>
+                  <SelectItem value="Trainer Gallery Rare Holo" className="cursor-pointer">Trainer Gallery Rare Holo</SelectItem>
                 </SelectContent>
               </Select>
               
