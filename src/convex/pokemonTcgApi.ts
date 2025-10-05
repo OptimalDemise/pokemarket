@@ -116,58 +116,65 @@ export const fetchAllCardsAbovePrice = internalAction({
       // Query for rare cards with market price filter
       const query = `(rarity:"Holo Rare" OR rarity:"Ultra Rare" OR rarity:"Secret Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX")`;
       
-      const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&pageSize=250`;
-      
-      const response = await fetch(url, { headers });
-      
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (!data.data || data.data.length === 0) {
-        return { success: false, updated: 0, total: 0 };
-      }
-
       let successCount = 0;
       const errors: string[] = [];
+      let totalProcessed = 0;
 
-      // Filter and process cards above the minimum price
-      for (const card of data.data) {
-        try {
-          let price = 0;
-          if (card.tcgplayer?.prices) {
-            const prices = card.tcgplayer.prices;
-            price = prices.holofoil?.market || 
-                    prices["1stEditionHolofoil"]?.market ||
-                    prices.reverseHolofoil?.market ||
-                    prices.normal?.market ||
-                    0;
-          }
+      // Fetch multiple pages to get more cards
+      for (let page = 1; page <= 3; page++) {
+        const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&page=${page}&pageSize=250`;
+        
+        const response = await fetch(url, { headers });
+        
+        if (!response.ok) {
+          console.error(`API request failed for page ${page} with status ${response.status}`);
+          continue;
+        }
 
-          // Only add cards above the minimum price
-          if (price >= args.minPrice) {
-            await ctx.runMutation(internal.cards.upsertCard, {
-              name: card.name,
-              setName: card.set.name,
-              cardNumber: card.number,
-              rarity: card.rarity,
-              imageUrl: card.images.large,
-              currentPrice: price,
-            });
-            successCount++;
+        const data = await response.json();
+        
+        if (!data.data || data.data.length === 0) {
+          break; // No more cards to fetch
+        }
+
+        totalProcessed += data.data.length;
+
+        // Filter and process cards above the minimum price
+        for (const card of data.data) {
+          try {
+            let price = 0;
+            if (card.tcgplayer?.prices) {
+              const prices = card.tcgplayer.prices;
+              price = prices.holofoil?.market || 
+                      prices["1stEditionHolofoil"]?.market ||
+                      prices.reverseHolofoil?.market ||
+                      prices.normal?.market ||
+                      0;
+            }
+
+            // Only add cards above the minimum price
+            if (price >= args.minPrice) {
+              await ctx.runMutation(internal.cards.upsertCard, {
+                name: card.name,
+                setName: card.set.name,
+                cardNumber: card.number,
+                rarity: card.rarity,
+                imageUrl: card.images.large,
+                currentPrice: price,
+              });
+              successCount++;
+            }
+          } catch (error) {
+            errors.push(`Failed to process ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
-        } catch (error) {
-          errors.push(`Failed to process ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
       }
 
       return { 
         success: successCount > 0, 
         updated: successCount,
-        total: data.data.length,
-        errors: errors.length > 0 ? errors : undefined
+        total: totalProcessed,
+        errors: errors.length > 0 ? errors.slice(0, 10) : undefined // Limit error messages
       };
     } catch (error) {
       console.error("Error fetching cards:", error);
@@ -179,10 +186,11 @@ export const fetchAllCardsAbovePrice = internalAction({
 // Update all cards with real data
 export const updateAllCardsWithRealData = internalAction({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
     // Fetch all cards above $10
-    return await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
+    const result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
       minPrice: 10,
     });
+    return result;
   },
 });
