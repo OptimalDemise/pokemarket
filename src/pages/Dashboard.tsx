@@ -25,6 +25,8 @@ export default function Dashboard() {
   const [hasError, setHasError] = useState(false);
   const [currentCardPage, setCurrentCardPage] = useState(1);
   const [currentProductPage, setCurrentProductPage] = useState(1);
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -51,25 +53,37 @@ export default function Dashboard() {
   const filteredAndSortedCards = useMemo(() => {
     if (!cards) return [];
     
-    let filtered = cards.filter(card => 
-      card.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      card.setName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let filtered = cards.filter(card => {
+      const matchesSearch = card.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        card.setName.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const min = minPrice ? parseFloat(minPrice) : 0;
+      const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+      const matchesPrice = card.currentPrice >= min && card.currentPrice <= max;
+      
+      return matchesSearch && matchesPrice;
+    });
 
     return sortItems(filtered, sortOption);
-  }, [cards, searchQuery, sortOption]);
+  }, [cards, searchQuery, sortOption, minPrice, maxPrice]);
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
     
-    let filtered = products.filter(product => 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.setName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let filtered = products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.setName.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const min = minPrice ? parseFloat(minPrice) : 0;
+      const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+      const matchesPrice = product.currentPrice >= min && product.currentPrice <= max;
+      
+      return matchesSearch && matchesPrice;
+    });
 
     return sortItems(filtered, sortOption);
-  }, [products, searchQuery, sortOption]);
+  }, [products, searchQuery, sortOption, minPrice, maxPrice]);
 
   // Paginate cards
   const totalCardPages = Math.ceil(filteredAndSortedCards.length / ITEMS_PER_PAGE);
@@ -91,7 +105,7 @@ export default function Dashboard() {
   useEffect(() => {
     setCurrentCardPage(1);
     setCurrentProductPage(1);
-  }, [searchQuery, sortOption]);
+  }, [searchQuery, sortOption, minPrice, maxPrice]);
 
   if (isLoading) {
     return (
@@ -161,29 +175,70 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Search and Sort Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search cards or products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search cards or products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
+              <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest" className="cursor-pointer">Newest First</SelectItem>
+                <SelectItem value="highest-change" className="cursor-pointer">Highest % Change</SelectItem>
+                <SelectItem value="lowest-change" className="cursor-pointer">Lowest % Change</SelectItem>
+                <SelectItem value="no-change" className="cursor-pointer">No Change</SelectItem>
+                <SelectItem value="highest-price" className="cursor-pointer">Highest Price</SelectItem>
+                <SelectItem value="lowest-price" className="cursor-pointer">Lowest Price</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
-            <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
-              <SelectValue placeholder="Sort by..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest" className="cursor-pointer">Newest First</SelectItem>
-              <SelectItem value="highest-change" className="cursor-pointer">Highest % Change</SelectItem>
-              <SelectItem value="lowest-change" className="cursor-pointer">Lowest % Change</SelectItem>
-              <SelectItem value="no-change" className="cursor-pointer">No Change</SelectItem>
-              <SelectItem value="highest-price" className="cursor-pointer">Highest Price</SelectItem>
-              <SelectItem value="lowest-price" className="cursor-pointer">Lowest Price</SelectItem>
-            </SelectContent>
-          </Select>
+          
+          {/* Price Filter */}
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Input
+                type="number"
+                placeholder="Min ($)"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="w-full sm:w-32"
+                min="0"
+                step="0.01"
+              />
+              <span className="text-muted-foreground">-</span>
+              <Input
+                type="number"
+                placeholder="Max ($)"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="w-full sm:w-32"
+                min="0"
+                step="0.01"
+              />
+              {(minPrice || maxPrice) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setMinPrice("");
+                    setMaxPrice("");
+                  }}
+                  className="cursor-pointer whitespace-nowrap"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="cards" className="space-y-8">
@@ -209,7 +264,7 @@ export default function Dashboard() {
               </div>
               {filteredAndSortedCards.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
-                  {searchQuery ? "No cards match your search" : "No cards tracked yet"}
+                  {searchQuery || minPrice || maxPrice ? "No cards match your filters" : "No cards tracked yet"}
                 </div>
               )}
               
@@ -259,7 +314,7 @@ export default function Dashboard() {
               </div>
               {filteredAndSortedProducts.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
-                  {searchQuery ? "No products match your search" : "No products tracked yet"}
+                  {searchQuery || minPrice || maxPrice ? "No products match your filters" : "No products tracked yet"}
                 </div>
               )}
               
