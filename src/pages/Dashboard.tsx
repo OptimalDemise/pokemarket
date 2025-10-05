@@ -272,10 +272,8 @@ export default function Dashboard() {
                   <SelectItem value="Rare Holo VMAX" className="cursor-pointer">Rare Holo VMAX</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-              <span className="text-sm font-medium whitespace-nowrap">Set:</span>
+              
+              <span className="text-sm font-medium whitespace-nowrap sm:ml-4">Set:</span>
               <Select value={selectedSet} onValueChange={setSelectedSet}>
                 <SelectTrigger className="w-full sm:w-[250px] cursor-pointer">
                   <SelectValue placeholder="All Sets" />
