@@ -59,6 +59,62 @@ export const seedInitialData = internalMutation({
         currentPrice: 109.99,
         imageUrl: "https://images.pokemontcg.io/sv01/logo.png",
       },
+      {
+        name: "Temporal Forces Booster Box",
+        productType: "Booster Box",
+        setName: "Temporal Forces",
+        currentPrice: 129.99,
+        imageUrl: "https://images.pokemontcg.io/sv05/logo.png",
+      },
+      {
+        name: "Twilight Masquerade Elite Trainer Box",
+        productType: "Elite Trainer Box",
+        setName: "Twilight Masquerade",
+        currentPrice: 54.99,
+        imageUrl: "https://images.pokemontcg.io/sv06/logo.png",
+      },
+      {
+        name: "Paradox Rift Booster Bundle",
+        productType: "Booster Bundle",
+        setName: "Paradox Rift",
+        currentPrice: 29.99,
+        imageUrl: "https://images.pokemontcg.io/sv04/logo.png",
+      },
+      {
+        name: "Crown Zenith Elite Trainer Box",
+        productType: "Elite Trainer Box",
+        setName: "Crown Zenith",
+        currentPrice: 69.99,
+        imageUrl: "https://images.pokemontcg.io/swsh12pt5/logo.png",
+      },
+      {
+        name: "Silver Tempest Booster Box",
+        productType: "Booster Box",
+        setName: "Silver Tempest",
+        currentPrice: 114.99,
+        imageUrl: "https://images.pokemontcg.io/swsh12/logo.png",
+      },
+      {
+        name: "Lost Origin Booster Bundle",
+        productType: "Booster Bundle",
+        setName: "Lost Origin",
+        currentPrice: 27.99,
+        imageUrl: "https://images.pokemontcg.io/swsh11/logo.png",
+      },
+      {
+        name: "Astral Radiance Elite Trainer Box",
+        productType: "Elite Trainer Box",
+        setName: "Astral Radiance",
+        currentPrice: 59.99,
+        imageUrl: "https://images.pokemontcg.io/swsh10/logo.png",
+      },
+      {
+        name: "Brilliant Stars Booster Box",
+        productType: "Booster Box",
+        setName: "Brilliant Stars",
+        currentPrice: 124.99,
+        imageUrl: "https://images.pokemontcg.io/swsh9/logo.png",
+      },
     ];
 
     const now = Date.now();

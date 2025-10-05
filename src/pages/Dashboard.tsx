@@ -27,6 +27,7 @@ export default function Dashboard() {
   const [currentProductPage, setCurrentProductPage] = useState(1);
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
+  const [selectedRarity, setSelectedRarity] = useState<string>("all");
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -61,11 +62,13 @@ export default function Dashboard() {
       const max = maxPrice ? parseFloat(maxPrice) : Infinity;
       const matchesPrice = card.currentPrice >= min && card.currentPrice <= max;
       
-      return matchesSearch && matchesPrice;
+      const matchesRarity = selectedRarity === "all" || card.rarity === selectedRarity;
+      
+      return matchesSearch && matchesPrice && matchesRarity;
     });
 
     return sortItems(filtered, sortOption);
-  }, [cards, searchQuery, sortOption, minPrice, maxPrice]);
+  }, [cards, searchQuery, sortOption, minPrice, maxPrice, selectedRarity]);
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
@@ -105,7 +108,7 @@ export default function Dashboard() {
   useEffect(() => {
     setCurrentCardPage(1);
     setCurrentProductPage(1);
-  }, [searchQuery, sortOption, minPrice, maxPrice]);
+  }, [searchQuery, sortOption, minPrice, maxPrice, selectedRarity]);
 
   if (isLoading) {
     return (
@@ -201,42 +204,64 @@ export default function Dashboard() {
             </Select>
           </div>
           
-          {/* Price Filter */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Input
-                type="number"
-                placeholder="Min ($)"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className="w-full sm:w-32"
-                min="0"
-                step="0.01"
-              />
-              <span className="text-muted-foreground">-</span>
-              <Input
-                type="number"
-                placeholder="Max ($)"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className="w-full sm:w-32"
-                min="0"
-                step="0.01"
-              />
-              {(minPrice || maxPrice) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setMinPrice("");
-                    setMaxPrice("");
-                  }}
-                  className="cursor-pointer whitespace-nowrap"
-                >
-                  Clear
-                </Button>
-              )}
+          {/* Price and Rarity Filters */}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Input
+                  type="number"
+                  placeholder="Min ($)"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="w-full sm:w-32"
+                  min="0"
+                  step="0.01"
+                />
+                <span className="text-muted-foreground">-</span>
+                <Input
+                  type="number"
+                  placeholder="Max ($)"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-full sm:w-32"
+                  min="0"
+                  step="0.01"
+                />
+                {(minPrice || maxPrice) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setMinPrice("");
+                      setMaxPrice("");
+                    }}
+                    className="cursor-pointer whitespace-nowrap"
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <span className="text-sm font-medium whitespace-nowrap">Rarity:</span>
+              <Select value={selectedRarity} onValueChange={setSelectedRarity}>
+                <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
+                  <SelectValue placeholder="All Rarities" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="cursor-pointer">All Rarities</SelectItem>
+                  <SelectItem value="Holo Rare" className="cursor-pointer">Holo Rare</SelectItem>
+                  <SelectItem value="Ultra Rare" className="cursor-pointer">Ultra Rare</SelectItem>
+                  <SelectItem value="Secret Rare" className="cursor-pointer">Secret Rare</SelectItem>
+                  <SelectItem value="Rare Holo" className="cursor-pointer">Rare Holo</SelectItem>
+                  <SelectItem value="Rare Holo EX" className="cursor-pointer">Rare Holo EX</SelectItem>
+                  <SelectItem value="Rare Holo GX" className="cursor-pointer">Rare Holo GX</SelectItem>
+                  <SelectItem value="Rare Holo V" className="cursor-pointer">Rare Holo V</SelectItem>
+                  <SelectItem value="Rare Holo VMAX" className="cursor-pointer">Rare Holo VMAX</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
