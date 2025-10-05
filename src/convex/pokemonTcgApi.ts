@@ -113,17 +113,17 @@ export const fetchAllCardsAbovePrice = internalAction({
         headers["X-Api-Key"] = API_KEY;
       }
 
-      // Query for rare cards, ordering by newest sets first
+      // Query for rare cards from all eras
       const query = `(rarity:"Holo Rare" OR rarity:"Ultra Rare" OR rarity:"Secret Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX")`;
       
       let successCount = 0;
       const errors: string[] = [];
       let totalProcessed = 0;
 
-      // Fetch multiple pages to get more cards (increased to 10 pages)
-      for (let page = 1; page <= 10; page++) {
-        // Order by release date descending to get newest sets first
-        const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&page=${page}&pageSize=250&orderBy=-set.releaseDate`;
+      // Fetch multiple pages to get more cards from all eras (increased to 15 pages for broader coverage)
+      for (let page = 1; page <= 15; page++) {
+        // Fetch cards without date filtering to include vintage to modern
+        const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&page=${page}&pageSize=250`;
         
         console.log(`Fetching page ${page}...`);
         const response = await fetch(url, { headers });
