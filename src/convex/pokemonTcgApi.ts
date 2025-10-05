@@ -114,7 +114,7 @@ export const fetchAllCardsAbovePrice = internalAction({
       }
 
       // Query for rare cards with market price filter, prioritizing newer sets (2023 onwards)
-      const query = `(rarity:"Holo Rare" OR rarity:"Ultra Rare" OR rarity:"Secret Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX") set.releaseDate:[2023-01-01 TO *]`;
+      const query = `(rarity:"Holo Rare" OR rarity:"Ultra Rare" OR rarity:"Secret Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX")`;
       
       let successCount = 0;
       const errors: string[] = [];
