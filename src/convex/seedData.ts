@@ -29,7 +29,7 @@ export const seedInitialData = internalMutation({
     // Schedule the action to fetch real data
     await ctx.scheduler.runAfter(0, internal.pokemonTcgApi.updateAllCardsWithRealData, {});
 
-    // Sample products data (keeping these as manual since product APIs are less common)
+    // Sample products data with actual product images
     const products = [
       {
         name: "Obsidian Flames Booster Box",
