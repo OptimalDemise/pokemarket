@@ -15,6 +15,22 @@ export default function Dashboard() {
   const products = useQuery(api.products.getAllProducts);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
+  // Fetch all price histories for cards
+  const cardPriceHistories = cards?.map((card) => 
+    useQuery(api.cards.getCardPriceHistory, {
+      cardId: card._id,
+      limit: 20,
+    })
+  ) || [];
+
+  // Fetch all price histories for products
+  const productPriceHistories = products?.map((product) => 
+    useQuery(api.products.getProductPriceHistory, {
+      productId: product._id,
+      limit: 20,
+    })
+  ) || [];
+
   // Auto-refresh every 2 minutes
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,20 +104,13 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cards?.map((card) => {
-                  const priceHistory = useQuery(api.cards.getCardPriceHistory, {
-                    cardId: card._id,
-                    limit: 20,
-                  });
-
-                  return (
-                    <CardItem
-                      key={card._id}
-                      card={card}
-                      priceHistory={priceHistory || []}
-                    />
-                  );
-                })}
+                {cards?.map((card, index) => (
+                  <CardItem
+                    key={card._id}
+                    card={card}
+                    priceHistory={cardPriceHistories[index] || []}
+                  />
+                ))}
               </div>
               {cards?.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
@@ -118,20 +127,13 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products?.map((product) => {
-                  const priceHistory = useQuery(api.products.getProductPriceHistory, {
-                    productId: product._id,
-                    limit: 20,
-                  });
-
-                  return (
-                    <ProductItem
-                      key={product._id}
-                      product={product}
-                      priceHistory={priceHistory || []}
-                    />
-                  );
-                })}
+                {products?.map((product, index) => (
+                  <ProductItem
+                    key={product._id}
+                    product={product}
+                    priceHistory={productPriceHistories[index] || []}
+                  />
+                ))}
               </div>
               {products?.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
