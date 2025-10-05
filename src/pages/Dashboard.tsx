@@ -22,6 +22,9 @@ export default function Dashboard() {
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [hasError, setHasError] = useState(false);
 
+  // Determine loading state first
+  const isLoading = cards === undefined || products === undefined;
+
   // Auto-refresh every 2 minutes
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,8 +66,6 @@ export default function Dashboard() {
 
     return sortItems(filtered, sortOption);
   }, [products, searchQuery, sortOption]);
-
-  const isLoading = cards === undefined || products === undefined;
 
   if (isLoading) {
     return (
