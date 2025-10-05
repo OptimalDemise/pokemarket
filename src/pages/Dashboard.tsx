@@ -176,7 +176,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {filteredAndSortedCards.map((card) => (
                   <CardItemWrapper key={card._id} card={card} />
                 ))}
@@ -195,7 +195,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {filteredAndSortedProducts.map((product) => (
                   <ProductItemWrapper key={product._id} product={product} />
                 ))}

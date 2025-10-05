@@ -21,8 +21,8 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
   const minPrice = Math.min(...data.map((d) => d.price));
   const priceRange = maxPrice - minPrice || 1;
 
-  const width = 200;
-  const height = 60;
+  const width = 400;
+  const height = 120;
   const padding = 4;
 
   const points = data.map((point, index) => {
