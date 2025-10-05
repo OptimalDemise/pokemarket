@@ -5,32 +5,47 @@ import { mutation, query } from "./_generated/server";
 export const getAllProducts = query({
   args: {},
   handler: async (ctx) => {
-    const products = await ctx.db.query("products").collect();
-    
-    // Calculate price changes for each product
-    const productsWithChanges = await Promise.all(
-      products.map(async (product) => {
-        const history = await ctx.db
-          .query("productPriceHistory")
-          .withIndex("by_product", (q) => q.eq("productId", product._id))
-          .order("desc")
-          .take(2);
+    try {
+      const products = await ctx.db.query("products").collect();
+      
+      // Calculate price changes for each product
+      const productsWithChanges = await Promise.all(
+        products.map(async (product) => {
+          try {
+            const history = await ctx.db
+              .query("productPriceHistory")
+              .withIndex("by_product", (q) => q.eq("productId", product._id))
+              .order("desc")
+              .take(2);
 
-        let percentChange = 0;
-        if (history.length >= 2) {
-          const current = history[0].price;
-          const previous = history[1].price;
-          percentChange = ((current - previous) / previous) * 100;
-        }
+            let percentChange = 0;
+            if (history.length >= 2) {
+              const current = history[0].price;
+              const previous = history[1].price;
+              if (previous !== 0) {
+                percentChange = ((current - previous) / previous) * 100;
+              }
+            }
 
-        return {
-          ...product,
-          percentChange,
-        };
-      })
-    );
+            return {
+              ...product,
+              percentChange,
+            };
+          } catch (error) {
+            console.error(`Error calculating price change for product ${product._id}:`, error);
+            return {
+              ...product,
+              percentChange: 0,
+            };
+          }
+        })
+      );
 
-    return productsWithChanges;
+      return productsWithChanges;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw new Error("Failed to retrieve product data");
+    }
   },
 });
 

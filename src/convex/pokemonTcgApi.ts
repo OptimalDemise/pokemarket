@@ -59,8 +59,9 @@ export const fetchCardData = internalAction({
       const response = await fetch(url, { headers });
       
       if (!response.ok) {
-        console.error(`Pokemon TCG API error: ${response.status}`);
-        return null;
+        const errorText = await response.text();
+        console.error(`Pokemon TCG API error: ${response.status} - ${errorText}`);
+        throw new Error(`API request failed with status ${response.status}`);
       }
 
       const data = await response.json();
@@ -94,7 +95,7 @@ export const fetchCardData = internalAction({
       };
     } catch (error) {
       console.error("Error fetching card data:", error);
-      return null;
+      throw new Error(`Failed to fetch card data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 });
@@ -111,17 +112,34 @@ export const updateAllCardsWithRealData = internalAction({
       { name: "Umbreon VMAX", set: "Evolving Skies" },
     ];
 
-    for (const query of cardQueries) {
-      const cardData = await ctx.runAction(internal.pokemonTcgApi.fetchCardData, {
-        cardName: query.name,
-        setName: query.set,
-      });
+    let successCount = 0;
+    const errors: string[] = [];
 
-      if (cardData) {
-        await ctx.runMutation(internal.cards.upsertCard, cardData);
+    for (const query of cardQueries) {
+      try {
+        const cardData = await ctx.runAction(internal.pokemonTcgApi.fetchCardData, {
+          cardName: query.name,
+          setName: query.set,
+        });
+
+        if (cardData) {
+          await ctx.runMutation(internal.cards.upsertCard, cardData);
+          successCount++;
+        } else {
+          errors.push(`No data found for ${query.name}`);
+        }
+      } catch (error) {
+        const errorMsg = `Failed to fetch ${query.name}: ${error instanceof Error ? error.message : 'Unknown error'}`;
+        console.error(errorMsg);
+        errors.push(errorMsg);
       }
     }
 
-    return { success: true, updated: cardQueries.length };
+    return { 
+      success: successCount > 0, 
+      updated: successCount,
+      total: cardQueries.length,
+      errors: errors.length > 0 ? errors : undefined
+    };
   },
 });

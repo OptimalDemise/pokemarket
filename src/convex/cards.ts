@@ -5,32 +5,47 @@ import { internalMutation, mutation, query } from "./_generated/server";
 export const getAllCards = query({
   args: {},
   handler: async (ctx) => {
-    const cards = await ctx.db.query("cards").collect();
-    
-    // Calculate price changes for each card
-    const cardsWithChanges = await Promise.all(
-      cards.map(async (card) => {
-        const history = await ctx.db
-          .query("cardPriceHistory")
-          .withIndex("by_card", (q) => q.eq("cardId", card._id))
-          .order("desc")
-          .take(2);
+    try {
+      const cards = await ctx.db.query("cards").collect();
+      
+      // Calculate price changes for each card
+      const cardsWithChanges = await Promise.all(
+        cards.map(async (card) => {
+          try {
+            const history = await ctx.db
+              .query("cardPriceHistory")
+              .withIndex("by_card", (q) => q.eq("cardId", card._id))
+              .order("desc")
+              .take(2);
 
-        let percentChange = 0;
-        if (history.length >= 2) {
-          const current = history[0].price;
-          const previous = history[1].price;
-          percentChange = ((current - previous) / previous) * 100;
-        }
+            let percentChange = 0;
+            if (history.length >= 2) {
+              const current = history[0].price;
+              const previous = history[1].price;
+              if (previous !== 0) {
+                percentChange = ((current - previous) / previous) * 100;
+              }
+            }
 
-        return {
-          ...card,
-          percentChange,
-        };
-      })
-    );
+            return {
+              ...card,
+              percentChange,
+            };
+          } catch (error) {
+            console.error(`Error calculating price change for card ${card._id}:`, error);
+            return {
+              ...card,
+              percentChange: 0,
+            };
+          }
+        })
+      );
 
-    return cardsWithChanges;
+      return cardsWithChanges;
+    } catch (error) {
+      console.error("Error fetching cards:", error);
+      throw new Error("Failed to retrieve card data");
+    }
   },
 });
 

@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [hasError, setHasError] = useState(false);
 
   // Auto-refresh every 2 minutes
   useEffect(() => {
@@ -29,6 +30,15 @@ export default function Dashboard() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Check for data fetch errors
+  useEffect(() => {
+    if (cards === undefined || products === undefined) {
+      setHasError(false);
+    } else if ((cards === null || products === null) && !isLoading) {
+      setHasError(true);
+    }
+  }, [cards, products, isLoading]);
 
   // Filter and sort cards
   const filteredAndSortedCards = useMemo(() => {
@@ -60,6 +70,28 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4 max-w-md px-6">
+          <div className="text-destructive text-5xl">⚠️</div>
+          <h2 className="text-2xl font-bold tracking-tight">Failed to Load Data</h2>
+          <p className="text-muted-foreground">
+            Unable to retrieve market data. Please check your connection and try again.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => window.location.reload()} className="cursor-pointer">
+              Retry
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/")} className="cursor-pointer">
+              Go Home
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
