@@ -7,11 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, RefreshCw, Search } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
 type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
+
+const ITEMS_PER_PAGE = 50;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -21,6 +23,8 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [hasError, setHasError] = useState(false);
+  const [currentCardPage, setCurrentCardPage] = useState(1);
+  const [currentProductPage, setCurrentProductPage] = useState(1);
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -66,6 +70,28 @@ export default function Dashboard() {
 
     return sortItems(filtered, sortOption);
   }, [products, searchQuery, sortOption]);
+
+  // Paginate cards
+  const totalCardPages = Math.ceil(filteredAndSortedCards.length / ITEMS_PER_PAGE);
+  const paginatedCards = useMemo(() => {
+    const startIndex = (currentCardPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredAndSortedCards.slice(startIndex, endIndex);
+  }, [filteredAndSortedCards, currentCardPage]);
+
+  // Paginate products
+  const totalProductPages = Math.ceil(filteredAndSortedProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentProductPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredAndSortedProducts.slice(startIndex, endIndex);
+  }, [filteredAndSortedProducts, currentProductPage]);
+
+  // Reset to page 1 when search or sort changes
+  useEffect(() => {
+    setCurrentCardPage(1);
+    setCurrentProductPage(1);
+  }, [searchQuery, sortOption]);
 
   if (isLoading) {
     return (
@@ -177,13 +203,44 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {filteredAndSortedCards.map((card) => (
+                {paginatedCards.map((card) => (
                   <CardItemWrapper key={card._id} card={card} />
                 ))}
               </div>
               {filteredAndSortedCards.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
                   {searchQuery ? "No cards match your search" : "No cards tracked yet"}
+                </div>
+              )}
+              
+              {/* Pagination Controls for Cards */}
+              {totalCardPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentCardPage(p => Math.max(1, p - 1))}
+                    disabled={currentCardPage === 1}
+                    className="cursor-pointer"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      Page {currentCardPage} of {totalCardPages}
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentCardPage(p => Math.min(totalCardPages, p + 1))}
+                    disabled={currentCardPage === totalCardPages}
+                    className="cursor-pointer"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
             </motion.div>
@@ -196,13 +253,44 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {filteredAndSortedProducts.map((product) => (
+                {paginatedProducts.map((product) => (
                   <ProductItemWrapper key={product._id} product={product} />
                 ))}
               </div>
               {filteredAndSortedProducts.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
                   {searchQuery ? "No products match your search" : "No products tracked yet"}
+                </div>
+              )}
+              
+              {/* Pagination Controls for Products */}
+              {totalProductPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentProductPage(p => Math.max(1, p - 1))}
+                    disabled={currentProductPage === 1}
+                    className="cursor-pointer"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      Page {currentProductPage} of {totalProductPages}
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentProductPage(p => Math.min(totalProductPages, p + 1))}
+                    disabled={currentProductPage === totalProductPages}
+                    className="cursor-pointer"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
             </motion.div>
