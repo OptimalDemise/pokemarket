@@ -28,6 +28,7 @@ export default function Dashboard() {
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
+  const [selectedSet, setSelectedSet] = useState<string>("all");
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -50,6 +51,13 @@ export default function Dashboard() {
     }
   }, [cards, products, isLoading]);
 
+  // Get unique sets from cards
+  const availableSets = useMemo(() => {
+    if (!cards) return [];
+    const sets = new Set(cards.map(card => card.setName));
+    return Array.from(sets).sort();
+  }, [cards]);
+
   // Filter and sort cards
   const filteredAndSortedCards = useMemo(() => {
     if (!cards) return [];
@@ -64,11 +72,13 @@ export default function Dashboard() {
       
       const matchesRarity = selectedRarity === "all" || card.rarity === selectedRarity;
       
-      return matchesSearch && matchesPrice && matchesRarity;
+      const matchesSet = selectedSet === "all" || card.setName === selectedSet;
+      
+      return matchesSearch && matchesPrice && matchesRarity && matchesSet;
     });
 
     return sortItems(filtered, sortOption);
-  }, [cards, searchQuery, sortOption, minPrice, maxPrice, selectedRarity]);
+  }, [cards, searchQuery, sortOption, minPrice, maxPrice, selectedRarity, selectedSet]);
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
@@ -108,7 +118,7 @@ export default function Dashboard() {
   useEffect(() => {
     setCurrentCardPage(1);
     setCurrentProductPage(1);
-  }, [searchQuery, sortOption, minPrice, maxPrice, selectedRarity]);
+  }, [searchQuery, sortOption, minPrice, maxPrice, selectedRarity, selectedSet]);
 
   if (isLoading) {
     return (
@@ -263,6 +273,23 @@ export default function Dashboard() {
                 </SelectContent>
               </Select>
             </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <span className="text-sm font-medium whitespace-nowrap">Set:</span>
+              <Select value={selectedSet} onValueChange={setSelectedSet}>
+                <SelectTrigger className="w-full sm:w-[250px] cursor-pointer">
+                  <SelectValue placeholder="All Sets" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  <SelectItem value="all" className="cursor-pointer">All Sets</SelectItem>
+                  {availableSets.map((set) => (
+                    <SelectItem key={set} value={set} className="cursor-pointer">
+                      {set}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -289,7 +316,7 @@ export default function Dashboard() {
               </div>
               {filteredAndSortedCards.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
-                  {searchQuery || minPrice || maxPrice ? "No cards match your filters" : "No cards tracked yet"}
+                  {searchQuery || minPrice || maxPrice || selectedRarity !== "all" || selectedSet !== "all" ? "No cards match your filters" : "No cards tracked yet"}
                 </div>
               )}
               
