@@ -431,22 +431,12 @@ function sortItems<T extends { percentChange: number; currentPrice: number; _cre
   }
 }
 
-// Wrapper component for CardItem that handles its own price history query
+// Wrapper component for CardItem - no longer pre-fetches price history
 function CardItemWrapper({ card }: { card: any }) {
-  const priceHistory = useQuery(api.cards.getCardPriceHistory, {
-    cardId: card._id,
-    limit: 20,
-  });
-
-  return <CardItem card={card} priceHistory={priceHistory || []} />;
+  return <CardItem card={card} />;
 }
 
-// Wrapper component for ProductItem that handles its own price history query
+// Wrapper component for ProductItem - no longer pre-fetches price history
 function ProductItemWrapper({ product }: { product: any }) {
-  const priceHistory = useQuery(api.products.getProductPriceHistory, {
-    productId: product._id,
-    limit: 20,
-  });
-
-  return <ProductItem product={product} priceHistory={priceHistory || []} />;
+  return <ProductItem product={product} />;
 }

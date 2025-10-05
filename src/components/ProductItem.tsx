@@ -1,9 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Id } from "@/convex/_generated/dataModel";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { Package } from "lucide-react";
+import { Package, Loader2 } from "lucide-react";
 import { PriceChart } from "./PriceChart";
+import { useState } from "react";
 
 interface ProductItemProps {
   product: {
@@ -15,12 +18,18 @@ interface ProductItemProps {
     percentChange: number;
     imageUrl?: string;
   };
-  priceHistory: Array<{ timestamp: number; price: number }>;
 }
 
-export function ProductItem({ product, priceHistory }: ProductItemProps) {
+export function ProductItem({ product }: ProductItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // Only fetch price history when dialog is opened
+  const priceHistory = useQuery(
+    api.products.getProductPriceHistory,
+    isOpen ? { productId: product._id, limit: 100 } : "skip"
+  );
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -102,11 +111,17 @@ export function ProductItem({ product, priceHistory }: ProductItemProps) {
           {/* Price Chart */}
           <div className="space-y-3">
             <h4 className="text-lg font-bold tracking-tight">Price History</h4>
-            <PriceChart
-              data={priceHistory}
-              currentPrice={product.currentPrice}
-              percentChange={product.percentChange}
-            />
+            {!priceHistory ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : (
+              <PriceChart
+                data={priceHistory}
+                currentPrice={product.currentPrice}
+                percentChange={product.percentChange}
+              />
+            )}
           </div>
         </div>
       </DialogContent>
