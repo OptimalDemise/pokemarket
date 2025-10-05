@@ -32,12 +32,45 @@ const schema = defineSchema(
       role: v.optional(roleValidator), // role of the user. do not remove
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
-    // add other tables here
+    // Pokemon cards table - tracks individual cards
+    cards: defineTable({
+      name: v.string(),
+      setName: v.string(),
+      cardNumber: v.string(),
+      rarity: v.string(), // "Holo Rare", "Ultra Rare", "Secret Rare", etc.
+      imageUrl: v.optional(v.string()),
+      currentPrice: v.number(),
+      lastUpdated: v.number(),
+    })
+      .index("by_name", ["name"])
+      .index("by_set", ["setName"])
+      .index("by_rarity", ["rarity"]),
 
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    // Price history for cards
+    cardPriceHistory: defineTable({
+      cardId: v.id("cards"),
+      price: v.number(),
+      timestamp: v.number(),
+    }).index("by_card", ["cardId"]),
+
+    // Products table - booster boxes, bundles, etc.
+    products: defineTable({
+      name: v.string(),
+      productType: v.string(), // "Booster Box", "Booster Bundle", "Elite Trainer Box", etc.
+      setName: v.string(),
+      imageUrl: v.optional(v.string()),
+      currentPrice: v.number(),
+      lastUpdated: v.number(),
+    })
+      .index("by_type", ["productType"])
+      .index("by_set", ["setName"]),
+
+    // Price history for products
+    productPriceHistory: defineTable({
+      productId: v.id("products"),
+      price: v.number(),
+      timestamp: v.number(),
+    }).index("by_product", ["productId"]),
   },
   {
     schemaValidation: false,
