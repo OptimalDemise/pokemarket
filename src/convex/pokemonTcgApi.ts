@@ -100,46 +100,89 @@ export const fetchCardData = internalAction({
   },
 });
 
+// Fetch all cards above a certain price threshold
+export const fetchAllCardsAbovePrice = internalAction({
+  args: { minPrice: v.number() },
+  handler: async (ctx, args) => {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      
+      if (API_KEY) {
+        headers["X-Api-Key"] = API_KEY;
+      }
+
+      // Query for rare cards with market price filter
+      const query = `(rarity:"Holo Rare" OR rarity:"Ultra Rare" OR rarity:"Secret Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX")`;
+      
+      const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&pageSize=250`;
+      
+      const response = await fetch(url, { headers });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.data || data.data.length === 0) {
+        return { success: false, updated: 0, total: 0 };
+      }
+
+      let successCount = 0;
+      const errors: string[] = [];
+
+      // Filter and process cards above the minimum price
+      for (const card of data.data) {
+        try {
+          let price = 0;
+          if (card.tcgplayer?.prices) {
+            const prices = card.tcgplayer.prices;
+            price = prices.holofoil?.market || 
+                    prices["1stEditionHolofoil"]?.market ||
+                    prices.reverseHolofoil?.market ||
+                    prices.normal?.market ||
+                    0;
+          }
+
+          // Only add cards above the minimum price
+          if (price >= args.minPrice) {
+            await ctx.runMutation(internal.cards.upsertCard, {
+              name: card.name,
+              setName: card.set.name,
+              cardNumber: card.number,
+              rarity: card.rarity,
+              imageUrl: card.images.large,
+              currentPrice: price,
+            });
+            successCount++;
+          }
+        } catch (error) {
+          errors.push(`Failed to process ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+
+      return { 
+        success: successCount > 0, 
+        updated: successCount,
+        total: data.data.length,
+        errors: errors.length > 0 ? errors : undefined
+      };
+    } catch (error) {
+      console.error("Error fetching cards:", error);
+      throw new Error(`Failed to fetch cards: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
 // Update all cards with real data
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx) => {
-    const cardQueries = [
-      { name: "Charizard", set: "Obsidian Flames" },
-      { name: "Pikachu VMAX", set: "Vivid Voltage" },
-      { name: "Mewtwo V", set: "Pokemon GO" },
-      { name: "Lugia V", set: "Silver Tempest" },
-      { name: "Umbreon VMAX", set: "Evolving Skies" },
-    ];
-
-    let successCount = 0;
-    const errors: string[] = [];
-
-    for (const query of cardQueries) {
-      try {
-        const cardData = await ctx.runAction(internal.pokemonTcgApi.fetchCardData, {
-          cardName: query.name,
-          setName: query.set,
-        });
-
-        if (cardData) {
-          await ctx.runMutation(internal.cards.upsertCard, cardData);
-          successCount++;
-        } else {
-          errors.push(`No data found for ${query.name}`);
-        }
-      } catch (error) {
-        const errorMsg = `Failed to fetch ${query.name}: ${error instanceof Error ? error.message : 'Unknown error'}`;
-        console.error(errorMsg);
-        errors.push(errorMsg);
-      }
-    }
-
-    return { 
-      success: successCount > 0, 
-      updated: successCount,
-      total: cardQueries.length,
-      errors: errors.length > 0 ? errors : undefined
-    };
+    // Fetch all cards above $10
+    return await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
+      minPrice: 10,
+    });
   },
 });
