@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 
 // Helper function to construct TCGPlayer search URL
 function constructTCGPlayerUrl(cardName: string, setName: string, cardNumber: string): string {
@@ -10,6 +10,14 @@ function constructTCGPlayerUrl(cardName: string, setName: string, cardNumber: st
   // Construct the TCGPlayer search URL
   return `https://www.tcgplayer.com/search/pokemon/product?productLineName=pokemon&q=${encodedQuery}&view=grid`;
 }
+
+// Internal query to get all cards (for use by internal actions)
+export const _getAllCards = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("cards").collect();
+  },
+});
 
 // Get all cards with their latest price changes
 export const getAllCards = query({
@@ -122,7 +130,7 @@ export const upsertCard = internalMutation({
     if (existingCard) {
       // Check if price has actually changed (more than 0.01% difference)
       const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
-      const hasPriceChanged = priceChangePercent > 0.01;
+      const hasPriceChanged = priceChangePercent > 0.1;
 
       if (hasPriceChanged) {
         // Update existing card only if price changed

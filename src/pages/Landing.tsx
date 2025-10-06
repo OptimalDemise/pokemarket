@@ -21,7 +21,7 @@ export default function Landing() {
 
   // Get 3 most recently updated cards with actual price changes
   const recentlyUpdated = cards
-    ?.filter(card => Math.abs(card.percentChange) > 0.01) // Filter cards with meaningful changes
+    ?.filter(card => Math.abs(card.percentChange) > 0.1) // Filter cards with meaningful changes
     .sort((a, b) => b.lastUpdated - a.lastUpdated)
     .slice(0, 3) || [];
 
