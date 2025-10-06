@@ -456,7 +456,7 @@ export default function Dashboard() {
               card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 5
             )
             .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
-            .slice(0, 10);
+            .slice(0, 20);
 
           return recentBigMovers.length > 0 ? (
             <motion.div
