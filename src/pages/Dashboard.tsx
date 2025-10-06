@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -188,7 +188,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Search and Sort Controls */}
-        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col gap-4 mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -196,8 +196,18 @@ export default function Dashboard() {
                 placeholder="Search cards or products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 pr-10"
               />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
               <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
