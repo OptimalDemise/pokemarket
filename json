@@ -1,0 +1,3 @@
+[
+  {"type": "tool_call", "tool_number": 1, "tool_name": "readFilesToContextTool", "input_args": "{\"file_paths\": [\"src/convex/pokemonTcgApi.ts\", \"src/convex/cards.ts\", \"src/convex/crons.ts\", \"src/pages/Dashboard.tsx\"], \"replace_files_in_context\": true}", "results": "File src/convex/pokemonTcgApi.ts read in.\nFile src/convex/cards.ts read in.\nFile src/convex/crons.ts read in.\n⚠️ WARNING: File src/pages/Dashboard.tsx read in is too long (29825 characters) and must be broken down into sub components.\nFiles in context have been replaced with the new files read in."}
+]
