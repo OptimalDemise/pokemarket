@@ -465,7 +465,7 @@ export default function Dashboard() {
             .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
             .slice(0, 20);
 
-          return recentBigMovers.length > 0 ? (
+          return (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -477,15 +477,22 @@ export default function Dashboard() {
                 <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
                 <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
               </div>
-              <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
-                {recentBigMovers.map((card) => (
-                  <div key={card._id} className="flex-shrink-0 w-32">
-                    <CardItem card={card} size="compact" />
-                  </div>
-                ))}
-              </div>
+              {recentBigMovers.length > 0 ? (
+                <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
+                  {recentBigMovers.map((card) => (
+                    <div key={card._id} className="flex-shrink-0 w-32">
+                      <CardItem card={card} size="compact" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  <p>No significant movers in the past hour</p>
+                  <p className="text-xs mt-1">Waiting for changes over 3%...</p>
+                </div>
+              )}
             </motion.div>
-          ) : null;
+          );
         })()}
 
         <Tabs defaultValue="cards" className="space-y-8">
