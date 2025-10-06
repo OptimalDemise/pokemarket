@@ -123,9 +123,9 @@ export const fetchAllCardsAbovePrice = internalAction({
       let totalProcessed = 0;
 
       // Fetch multiple pages to get more cards from all eras (increased to 15 pages for broader coverage)
+      // Order by release date descending to prioritize newer sets
       for (let page = 1; page <= 15; page++) {
-        // Fetch cards without date filtering to include vintage to modern
-        const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&page=${page}&pageSize=250`;
+        const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&orderBy=-set.releaseDate&page=${page}&pageSize=250`;
         
         console.log(`Fetching page ${page}...`);
         const response = await fetch(url, { headers });
