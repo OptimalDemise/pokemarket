@@ -31,8 +31,8 @@ export default function Landing() {
       <nav className="border-b">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <img src="https://harmless-tapir-303.convex.cloud/api/storage/c700910b-f565-4be6-8e57-cfe8aef67ead" alt="Logo" className="h-8 w-8" />
-            <span className="text-xl font-bold tracking-tight">PokéMarket</span>
+            <img src="https://harmless-tapir-303.convex.cloud/api/storage/c700910b-f565-4be6-8e57-cfe8aef67ead" alt="Logo" className="h-10 w-10" />
+            <span className="text-2xl font-bold tracking-tight">PokéMarket</span>
           </div>
           {!isLoading && (
             <Button

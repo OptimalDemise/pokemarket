@@ -453,7 +453,7 @@ export default function Dashboard() {
           const oneHourAgo = Date.now() - 60 * 60 * 1000;
           const recentBigMovers = (cards || [])
             .filter(card => 
-              card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 2
+              card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 3
             )
             .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
             .slice(0, 20);
@@ -468,7 +468,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="h-4 w-4 text-primary" />
                 <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                <span className="text-xs text-muted-foreground ml-auto">Changes over 2%</span>
+                <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
               </div>
               <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
                 {recentBigMovers.map((card) => (
