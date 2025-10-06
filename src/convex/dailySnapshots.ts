@@ -124,3 +124,22 @@ export const getTopDailyChanges = query({
     }
   },
 });
+
+// Cleanup old daily snapshots (keep last 365 days)
+export const cleanupOldSnapshots = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const oneYearAgo = new Date(Date.now() - (365 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+    
+    const oldSnapshots = await ctx.db
+      .query("dailySnapshots")
+      .filter((q) => q.lt(q.field("snapshotDate"), oneYearAgo))
+      .collect();
+    
+    for (const snapshot of oldSnapshots) {
+      await ctx.db.delete(snapshot._id);
+    }
+    
+    return { deleted: oldSnapshots.length };
+  },
+});

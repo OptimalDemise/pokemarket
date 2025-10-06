@@ -128,7 +128,7 @@ export const upsertCard = internalMutation({
     const now = Date.now();
 
     if (existingCard) {
-      // Check if price has actually changed (more than 0.01% difference)
+      // Check if price has actually changed (more than 0.1% difference)
       const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
       const hasPriceChanged = priceChangePercent > 0.1;
 
@@ -139,11 +139,10 @@ export const upsertCard = internalMutation({
           lastUpdated: now,
         });
 
-        // Add price history entry with slight variation to show change
-        const priceVariation = args.currentPrice * (0.98 + Math.random() * 0.04);
+        // Add price history entry - no artificial variation
         await ctx.db.insert("cardPriceHistory", {
           cardId: existingCard._id,
-          price: priceVariation,
+          price: args.currentPrice,
           timestamp: now,
         });
       }
@@ -162,15 +161,7 @@ export const upsertCard = internalMutation({
         lastUpdated: now,
       });
 
-      // Add initial price history entries to show change
-      // Add a historical entry (1 hour ago with slight variation)
-      await ctx.db.insert("cardPriceHistory", {
-        cardId,
-        price: args.currentPrice * (0.92 + Math.random() * 0.16),
-        timestamp: now - 3600000,
-      });
-      
-      // Add current price entry
+      // Add initial price history entry
       await ctx.db.insert("cardPriceHistory", {
         cardId,
         price: args.currentPrice,
@@ -179,5 +170,24 @@ export const upsertCard = internalMutation({
 
       return cardId;
     }
+  },
+});
+
+// Cleanup old price history (keep last 90 days)
+export const cleanupOldPriceHistory = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const ninetyDaysAgo = Date.now() - (90 * 24 * 60 * 60 * 1000);
+    
+    const oldEntries = await ctx.db
+      .query("cardPriceHistory")
+      .filter((q) => q.lt(q.field("timestamp"), ninetyDaysAgo))
+      .collect();
+    
+    for (const entry of oldEntries) {
+      await ctx.db.delete(entry._id);
+    }
+    
+    return { deleted: oldEntries.length };
   },
 });

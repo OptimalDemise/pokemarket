@@ -236,19 +236,24 @@ export const _upsertProduct = internalMutation({
     const now = Date.now();
 
     if (existingProduct) {
-      // Update existing product
-      await ctx.db.patch(existingProduct._id, {
-        currentPrice: args.currentPrice,
-        lastUpdated: now,
-      });
+      // Check if price has actually changed (more than 0.1% difference)
+      const priceChangePercent = Math.abs((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
+      const hasPriceChanged = priceChangePercent > 0.1;
 
-      // Add price history entry with slight variation to show change
-      const priceVariation = args.currentPrice * (0.98 + Math.random() * 0.04);
-      await ctx.db.insert("productPriceHistory", {
-        productId: existingProduct._id,
-        price: priceVariation,
-        timestamp: now,
-      });
+      if (hasPriceChanged) {
+        // Update existing product only if price changed
+        await ctx.db.patch(existingProduct._id, {
+          currentPrice: args.currentPrice,
+          lastUpdated: now,
+        });
+
+        // Add price history entry - no artificial variation
+        await ctx.db.insert("productPriceHistory", {
+          productId: existingProduct._id,
+          price: args.currentPrice,
+          timestamp: now,
+        });
+      }
 
       return existingProduct._id;
     } else {
@@ -262,15 +267,7 @@ export const _upsertProduct = internalMutation({
         lastUpdated: now,
       });
 
-      // Add initial price history entries to show change
-      // Add a historical entry (1 hour ago with slight variation)
-      await ctx.db.insert("productPriceHistory", {
-        productId,
-        price: args.currentPrice * (0.92 + Math.random() * 0.16),
-        timestamp: now - 3600000,
-      });
-      
-      // Add current price entry
+      // Add initial price history entry
       await ctx.db.insert("productPriceHistory", {
         productId,
         price: args.currentPrice,
@@ -279,5 +276,24 @@ export const _upsertProduct = internalMutation({
 
       return productId;
     }
+  },
+});
+
+// Cleanup old price history (keep last 90 days)
+export const cleanupOldProductPriceHistory = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const ninetyDaysAgo = Date.now() - (90 * 24 * 60 * 60 * 1000);
+    
+    const oldEntries = await ctx.db
+      .query("productPriceHistory")
+      .filter((q) => q.lt(q.field("timestamp"), ninetyDaysAgo))
+      .collect();
+    
+    for (const entry of oldEntries) {
+      await ctx.db.delete(entry._id);
+    }
+    
+    return { deleted: oldEntries.length };
   },
 });
