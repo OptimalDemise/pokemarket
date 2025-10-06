@@ -1,64 +1,20 @@
 import { v } from "convex/values";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 
-// Get all products with their latest price changes
+// Get all products with their latest price changes (optimized - uses stored values)
 export const getAllProducts = query({
   args: {},
   handler: async (ctx) => {
     try {
       const products = await ctx.db.query("products").collect();
       
-      // Calculate price changes for each product
-      const productsWithChanges = await Promise.all(
-        products.map(async (product) => {
-          try {
-            const history = await ctx.db
-              .query("productPriceHistory")
-              .withIndex("by_product", (q) => q.eq("productId", product._id))
-              .order("desc")
-              .take(10); // Get more history for average calculation
-
-            let percentChange = 0;
-            let averagePrice = product.currentPrice;
-            let isRecentSale = false;
-            
-            if (history.length >= 2) {
-              const current = history[0].price;
-              const previous = history[1].price;
-              if (previous !== 0) {
-                percentChange = ((current - previous) / previous) * 100;
-              }
-              
-              // Calculate average price from last 5-10 entries (excluding most recent)
-              if (history.length >= 5) {
-                const historicalPrices = history.slice(1, Math.min(10, history.length));
-                averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
-                
-                // Check if current price deviates significantly from average (>15%)
-                const deviation = Math.abs((current - averagePrice) / averagePrice) * 100;
-                isRecentSale = deviation > 15;
-              }
-            }
-
-            return {
-              ...product,
-              percentChange,
-              averagePrice,
-              isRecentSale,
-            };
-          } catch (error) {
-            console.error(`Error calculating price change for product ${product._id}:`, error);
-            return {
-              ...product,
-              percentChange: 0,
-              averagePrice: product.currentPrice,
-              isRecentSale: false,
-            };
-          }
-        })
-      );
-
-      return productsWithChanges;
+      // Return products with stored calculated values
+      return products.map(product => ({
+        ...product,
+        percentChange: product.percentChange || 0,
+        averagePrice: product.averagePrice || product.currentPrice,
+        isRecentSale: product.isRecentSale || false,
+      }));
     } catch (error) {
       console.error("Error fetching products:", error);
       throw new Error("Failed to retrieve product data");
@@ -150,62 +106,20 @@ export const upsertProduct = mutation({
   },
 });
 
-// Internal version for actions to call
+// Internal version for actions to call (optimized - uses stored values)
 export const _getAllProducts = internalQuery({
   args: {},
   handler: async (ctx) => {
     try {
       const products = await ctx.db.query("products").collect();
       
-      // Calculate price changes for each product
-      const productsWithChanges = await Promise.all(
-        products.map(async (product) => {
-          try {
-            const history = await ctx.db
-              .query("productPriceHistory")
-              .withIndex("by_product", (q) => q.eq("productId", product._id))
-              .order("desc")
-              .take(10);
-
-            let percentChange = 0;
-            let averagePrice = product.currentPrice;
-            let isRecentSale = false;
-            
-            if (history.length >= 2) {
-              const current = history[0].price;
-              const previous = history[1].price;
-              if (previous !== 0) {
-                percentChange = ((current - previous) / previous) * 100;
-              }
-              
-              if (history.length >= 5) {
-                const historicalPrices = history.slice(1, Math.min(10, history.length));
-                averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
-                
-                const deviation = Math.abs((current - averagePrice) / averagePrice) * 100;
-                isRecentSale = deviation > 15;
-              }
-            }
-
-            return {
-              ...product,
-              percentChange,
-              averagePrice,
-              isRecentSale,
-            };
-          } catch (error) {
-            console.error(`Error calculating price change for product ${product._id}:`, error);
-            return {
-              ...product,
-              percentChange: 0,
-              averagePrice: product.currentPrice,
-              isRecentSale: false,
-            };
-          }
-        })
-      );
-
-      return productsWithChanges;
+      // Return products with stored calculated values
+      return products.map(product => ({
+        ...product,
+        percentChange: product.percentChange || 0,
+        averagePrice: product.averagePrice || product.currentPrice,
+        isRecentSale: product.isRecentSale || false,
+      }));
     } catch (error) {
       console.error("Error fetching products:", error);
       throw new Error("Failed to retrieve product data");
@@ -213,7 +127,7 @@ export const _getAllProducts = internalQuery({
   },
 });
 
-// Internal mutation for actions to call
+// Internal mutation for actions to call (now calculates and stores metrics)
 export const _upsertProduct = internalMutation({
   args: {
     name: v.string(),
@@ -241,13 +155,39 @@ export const _upsertProduct = internalMutation({
       const hasPriceChanged = priceChangePercent > 0.1;
 
       if (hasPriceChanged) {
-        // Update existing product only if price changed
+        // Calculate new percentage change
+        const percentChange = ((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
+        
+        // Fetch limited history for calculations
+        const recentHistory = await ctx.db
+          .query("productPriceHistory")
+          .withIndex("by_product", (q) => q.eq("productId", existingProduct._id))
+          .order("desc")
+          .take(6);
+        
+        let averagePrice = existingProduct.currentPrice;
+        let isRecentSale = false;
+        
+        // Calculate average from last 5 entries (excluding current)
+        if (recentHistory.length >= 2) {
+          const historicalPrices = recentHistory.slice(0, Math.min(5, recentHistory.length));
+          averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
+          
+          // Check if current price deviates significantly from average (>15%)
+          const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
+          isRecentSale = deviation > 15;
+        }
+        
+        // Update existing product with calculated values
         await ctx.db.patch(existingProduct._id, {
           currentPrice: args.currentPrice,
           lastUpdated: now,
+          percentChange,
+          averagePrice,
+          isRecentSale,
         });
 
-        // Add price history entry - no artificial variation
+        // Add price history entry
         await ctx.db.insert("productPriceHistory", {
           productId: existingProduct._id,
           price: args.currentPrice,
@@ -265,6 +205,9 @@ export const _upsertProduct = internalMutation({
         imageUrl: args.imageUrl,
         currentPrice: args.currentPrice,
         lastUpdated: now,
+        percentChange: 0,
+        averagePrice: args.currentPrice,
+        isRecentSale: false,
       });
 
       // Add initial price history entry

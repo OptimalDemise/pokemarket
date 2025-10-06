@@ -67,6 +67,10 @@ const schema = defineSchema(
       imageUrl: v.optional(v.string()),
       currentPrice: v.number(),
       lastUpdated: v.number(),
+      // Cached calculated values
+      percentChange: v.optional(v.number()),
+      averagePrice: v.optional(v.number()),
+      isRecentSale: v.optional(v.boolean()),
     })
       .index("by_type", ["productType"])
       .index("by_set", ["setName"]),
