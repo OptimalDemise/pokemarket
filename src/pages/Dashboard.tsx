@@ -258,10 +258,10 @@ export default function Dashboard() {
         )}
 
         {/* Ad Zone 1: Top Banner (Below Top Daily Movers) */}
-        <div className="mb-6 p-4 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[120px]">
+        <div className="mb-6 p-4 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px] sm:min-h-[120px]">
           <div className="text-center text-muted-foreground">
-            <p className="text-sm font-medium">Advertisement</p>
-            <p className="text-xs mt-1">728x90 or 970x90 Banner Ad Space</p>
+            <p className="text-xs sm:text-sm font-medium">Advertisement</p>
+            <p className="text-[10px] sm:text-xs mt-1">Banner Ad Space</p>
           </div>
         </div>
 
@@ -521,9 +521,9 @@ export default function Dashboard() {
                     <CardItemWrapper card={card} />
                     {/* Native Ad Card - Every 10th position */}
                     {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
-                      <div className="p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[200px] hover:border-primary/50 transition-colors">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">Sponsored</p>
-                        <p className="text-xs text-center text-muted-foreground">300x250 Ad Space</p>
+                      <div className="p-3 sm:p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] hover:border-primary/50 transition-colors">
+                        <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1 sm:mb-2">Sponsored</p>
+                        <p className="text-[10px] sm:text-xs text-center text-muted-foreground">Ad Space</p>
                       </div>
                     )}
                   </div>
@@ -537,10 +537,10 @@ export default function Dashboard() {
               
               {/* Ad Zone 3: Above Pagination */}
               {filteredAndSortedCards.length > 0 && (
-                <div className="mt-6 mb-4 p-3 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px]">
+                <div className="mt-6 mb-4 p-2 sm:p-3 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[60px] sm:min-h-[90px]">
                   <div className="text-center text-muted-foreground">
-                    <p className="text-xs font-medium">Advertisement</p>
-                    <p className="text-[10px] mt-1">728x90 Leaderboard Ad Space</p>
+                    <p className="text-[10px] sm:text-xs font-medium">Advertisement</p>
+                    <p className="text-[8px] sm:text-[10px] mt-1">Leaderboard Ad Space</p>
                   </div>
                 </div>
               )}
@@ -608,9 +608,9 @@ export default function Dashboard() {
                     <ProductItemWrapper product={product} />
                     {/* Native Ad Card - Every 10th position */}
                     {(index + 1) % 10 === 0 && index < paginatedProducts.length - 1 && (
-                      <div className="p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[200px] hover:border-primary/50 transition-colors">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">Sponsored</p>
-                        <p className="text-xs text-center text-muted-foreground">300x250 Ad Space</p>
+                      <div className="p-3 sm:p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] hover:border-primary/50 transition-colors">
+                        <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1 sm:mb-2">Sponsored</p>
+                        <p className="text-[10px] sm:text-xs text-center text-muted-foreground">Ad Space</p>
                       </div>
                     )}
                   </div>
@@ -624,10 +624,10 @@ export default function Dashboard() {
               
               {/* Ad Zone 3: Above Pagination */}
               {filteredAndSortedProducts.length > 0 && (
-                <div className="mt-6 mb-4 p-3 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px]">
+                <div className="mt-6 mb-4 p-2 sm:p-3 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[60px] sm:min-h-[90px]">
                   <div className="text-center text-muted-foreground">
-                    <p className="text-xs font-medium">Advertisement</p>
-                    <p className="text-[10px] mt-1">728x90 Leaderboard Ad Space</p>
+                    <p className="text-[10px] sm:text-xs font-medium">Advertisement</p>
+                    <p className="text-[8px] sm:text-[10px] mt-1">Leaderboard Ad Space</p>
                   </div>
                 </div>
               )}

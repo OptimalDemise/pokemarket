@@ -335,6 +335,13 @@ export default function Landing() {
             >
               Terms of Service
             </button>
+            <span className="text-muted-foreground">•</span>
+            <button
+              onClick={() => navigate("/privacy")}
+              className="hover:text-foreground transition-colors cursor-pointer"
+            >
+              Privacy Policy
+            </button>
           </div>
         </div>
       </footer>
