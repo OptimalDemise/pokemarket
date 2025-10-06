@@ -158,11 +158,16 @@ export default function Dashboard() {
     );
   }
 
-  const oneMinuteAgo = Date.now() - 60 * 1000;
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
   const liveUpdates = (cards || [])
-    .filter(card => card.lastUpdated > oneMinuteAgo)
-    .sort((a, b) => a.lastUpdated - b.lastUpdated)
+    .filter(card => card.lastUpdated > fiveMinutesAgo)
+    .sort((a, b) => b.lastUpdated - a.lastUpdated)
     .slice(0, 50);
+
+  // Get the most recent update timestamp
+  const mostRecentUpdate = liveUpdates.length > 0 
+    ? Math.max(...liveUpdates.map(card => card.lastUpdated))
+    : null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
@@ -640,10 +645,14 @@ export default function Dashboard() {
         <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 flex items-center h-[73px]">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              <div className={`h-2 w-2 rounded-full ${liveUpdates.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
               <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
             </div>
-            <span className="text-xs text-muted-foreground">Last minute</span>
+            <span className="text-xs text-muted-foreground">
+              {mostRecentUpdate 
+                ? `Updated ${Math.floor((Date.now() - mostRecentUpdate) / 1000)}s ago`
+                : 'Last 5 minutes'}
+            </span>
           </div>
         </div>
         <div className="p-3">
@@ -659,6 +668,9 @@ export default function Dashboard() {
             <div className="text-center py-8 text-muted-foreground text-xs">
               <p>No recent updates</p>
               <p className="mt-1">Waiting for market changes...</p>
+              <p className="mt-2 text-[10px]">
+                Last refresh: {lastUpdate.toLocaleTimeString()}
+              </p>
             </div>
           )}
         </div>
