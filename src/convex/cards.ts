@@ -1,6 +1,26 @@
 import { v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
 
+// Helper function to construct TCGPlayer URL
+function constructTCGPlayerUrl(cardName: string, setName: string, cardNumber: string): string {
+  // Clean and format the card name for URL
+  const cleanName = cardName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-'); // Remove duplicate hyphens
+  
+  // Clean and format the set name for URL
+  const cleanSet = setName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+  
+  // Construct the TCGPlayer product URL
+  return `https://www.tcgplayer.com/product/${cleanSet}/${cleanName}-${cardNumber}`;
+}
+
 // Get all cards with their latest price changes
 export const getAllCards = query({
   args: {},
@@ -72,12 +92,16 @@ export const getAllCards = query({
               displayRarity = "Special Illustration Rare";
             }
 
+            // Construct proper TCGPlayer URL
+            const tcgplayerUrl = constructTCGPlayerUrl(card.name, card.setName, card.cardNumber);
+            
             return {
               ...card,
               rarity: displayRarity,
               percentChange,
               averagePrice,
               isRecentSale,
+              tcgplayerUrl,
             };
           } catch (error) {
             console.error(`Error calculating price change for card ${card._id}:`, error);
