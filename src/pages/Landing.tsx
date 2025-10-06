@@ -5,6 +5,7 @@ import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown } fr
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { CardItem } from "@/components/CardItem";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -117,29 +118,8 @@ export default function Landing() {
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       viewport={{ once: true }}
-                      className="p-4 border rounded-lg flex items-center justify-between hover:border-primary transition-all cursor-pointer"
-                      onClick={() => navigate("/dashboard")}
                     >
-                      <div className="flex items-center gap-3">
-                        {card.imageUrl && (
-                          <img
-                            src={card.imageUrl}
-                            alt={card.name}
-                            className="h-16 w-12 object-contain rounded"
-                          />
-                        )}
-                        <div>
-                          <p className="font-bold text-sm">{card.name}</p>
-                          <p className="text-xs text-muted-foreground">{card.setName}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">${card.currentPrice.toFixed(2)}</p>
-                        <div className={`flex items-center gap-1 text-sm font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                          {card.percentChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                          {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(2)}%
-                        </div>
-                      </div>
+                      <CardItem card={card} />
                     </motion.div>
                   ))
                 ) : (
@@ -171,29 +151,8 @@ export default function Landing() {
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       viewport={{ once: true }}
-                      className="p-4 border rounded-lg flex items-center justify-between hover:border-primary transition-all cursor-pointer"
-                      onClick={() => navigate("/dashboard")}
                     >
-                      <div className="flex items-center gap-3">
-                        {card.imageUrl && (
-                          <img
-                            src={card.imageUrl}
-                            alt={card.name}
-                            className="h-16 w-12 object-contain rounded"
-                          />
-                        )}
-                        <div>
-                          <p className="font-bold text-sm">{card.name}</p>
-                          <p className="text-xs text-muted-foreground">{card.setName}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">${card.currentPrice.toFixed(2)}</p>
-                        <div className={`flex items-center gap-1 text-sm font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                          {card.percentChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                          {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(2)}%
-                        </div>
-                      </div>
+                      <CardItem card={card} />
                     </motion.div>
                   ))
                 ) : (
