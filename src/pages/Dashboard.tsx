@@ -282,6 +282,7 @@ export default function Dashboard() {
                   <SelectItem value="Rare Holo VMAX" className="cursor-pointer">Rare Holo VMAX</SelectItem>
                   <SelectItem value="Rare Holo VSTAR" className="cursor-pointer">Rare Holo VSTAR</SelectItem>
                   <SelectItem value="Rare Ultra" className="cursor-pointer">Rare Ultra</SelectItem>
+                  <SelectItem value="Rare Rainbow" className="cursor-pointer">Rare Rainbow</SelectItem>
                   <SelectItem value="Special Illustration Rare" className="cursor-pointer">Special Illustration Rare</SelectItem>
                   <SelectItem value="Rare Secret" className="cursor-pointer">Rare Secret</SelectItem>
                   <SelectItem value="Rare Shining" className="cursor-pointer">Rare Shining</SelectItem>
@@ -293,7 +294,6 @@ export default function Dashboard() {
                   <SelectItem value="Radiant Rare" className="cursor-pointer">Radiant Rare</SelectItem>
                   <SelectItem value="Hyper Rare" className="cursor-pointer">Hyper Rare</SelectItem>
                   <SelectItem value="Illustration Rare" className="cursor-pointer">Illustration Rare</SelectItem>
-                  <SelectItem value="Special Illustration Rare" className="cursor-pointer">Special Illustration Rare</SelectItem>
                   <SelectItem value="Double Rare" className="cursor-pointer">Double Rare</SelectItem>
                   <SelectItem value="Shiny Rare" className="cursor-pointer">Shiny Rare</SelectItem>
                   <SelectItem value="Shiny Ultra Rare" className="cursor-pointer">Shiny Ultra Rare</SelectItem>
