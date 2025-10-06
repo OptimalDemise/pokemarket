@@ -63,7 +63,7 @@ export default function Landing() {
         >
           <div className="inline-flex items-center gap-2 bg-secondary px-4 py-2 rounded-full text-sm">
             <Sparkles className="h-4 w-4" />
-            <span>Track Premium Pokemon Cards</span>
+            <span>Track Valuable Pokemon Cards</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
@@ -201,7 +201,7 @@ export default function Landing() {
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <Sparkles className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-bold tracking-tight">Premium Cards Only</h3>
+              <h3 className="text-xl font-bold tracking-tight">Valuable Cards Only</h3>
               <p className="text-muted-foreground">
                 Track hollow rare, ultra rare, and secret rare cards. No commons, only the valuable ones.
               </p>
@@ -263,7 +263,7 @@ export default function Landing() {
               <Sparkles className="h-8 w-8 text-primary" />
               <div className="text-5xl font-bold tracking-tight">100%</div>
             </div>
-            <p className="text-muted-foreground">Premium Cards</p>
+            <p className="text-muted-foreground">Valuable Cards</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
