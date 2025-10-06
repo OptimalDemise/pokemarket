@@ -130,7 +130,14 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold tracking-tight">Loading Market Data</h2>
+            <p className="text-muted-foreground">Please wait while we fetch the latest prices...</p>
+            <p className="text-sm text-muted-foreground">This shouldn't take more than a minute</p>
+          </div>
+        </div>
       </div>
     );
   }
