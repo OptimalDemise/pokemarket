@@ -91,7 +91,7 @@ export default function Landing() {
         >
           <div className="text-center space-y-4">
             <h2 className="text-4xl font-bold tracking-tight">Live Market Activity</h2>
-            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-xs max-w-2xl mx-auto">
               See what's moving in the market right now
             </p>
           </div>
