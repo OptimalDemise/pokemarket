@@ -596,12 +596,14 @@ export default function Dashboard() {
 
       {/* Live Market Updates - Vertical Sidebar (Right Side) */}
       <aside className="w-64 border-l bg-card/50 sticky top-0 h-screen overflow-y-auto scroll-smooth flex-shrink-0">
-        <div className="p-4 border-b bg-background/95 backdrop-blur sticky top-0 z-10">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
+        <div className="p-4 border-b bg-background/95 backdrop-blur sticky top-0 z-10 flex items-center h-[73px]">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
+            </div>
+            <span className="text-xs text-muted-foreground">Last minute</span>
           </div>
-          <span className="text-xs text-muted-foreground">Last minute</span>
         </div>
         <div className="p-3 space-y-3">
           {liveUpdates.length > 0 ? (
