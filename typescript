@@ -1,1 +1,2 @@
-const cards = useQuery(api.cards.getAllCards);
+<SelectItem value="highest-price" className="cursor-pointer">Highest Price</SelectItem>
+<SelectItem value="lowest-price" className="cursor-pointer">Lowest Price</SelectItem>
