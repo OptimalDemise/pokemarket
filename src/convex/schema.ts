@@ -39,6 +39,7 @@ const schema = defineSchema(
       cardNumber: v.string(),
       rarity: v.string(), // "Holo Rare", "Ultra Rare", "Secret Rare", etc.
       imageUrl: v.optional(v.string()),
+      tcgplayerUrl: v.optional(v.string()),
       currentPrice: v.number(),
       lastUpdated: v.number(),
     })

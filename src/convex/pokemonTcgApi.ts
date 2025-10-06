@@ -20,6 +20,7 @@ interface PokemonCard {
     large: string;
   };
   tcgplayer?: {
+    url?: string;
     prices?: {
       holofoil?: { market?: number };
       reverseHolofoil?: { market?: number };
@@ -91,6 +92,7 @@ export const fetchCardData = internalAction({
         cardNumber: card.number,
         rarity: card.rarity,
         imageUrl: card.images.large,
+        tcgplayerUrl: card.tcgplayer?.url,
         currentPrice: price > 0 ? price : 10.0, // Default to $10 if no price
       };
     } catch (error) {
@@ -164,6 +166,7 @@ export const fetchAllCardsAbovePrice = internalAction({
                 cardNumber: card.number,
                 rarity: card.rarity,
                 imageUrl: card.images.large,
+                tcgplayerUrl: card.tcgplayer?.url,
                 currentPrice: price,
               });
               successCount++;

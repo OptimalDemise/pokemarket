@@ -89,6 +89,7 @@ export const upsertCard = internalMutation({
     cardNumber: v.string(),
     rarity: v.string(),
     imageUrl: v.optional(v.string()),
+    tcgplayerUrl: v.optional(v.string()),
     currentPrice: v.number(),
   },
   handler: async (ctx, args) => {
@@ -128,6 +129,7 @@ export const upsertCard = internalMutation({
         cardNumber: args.cardNumber,
         rarity: args.rarity,
         imageUrl: args.imageUrl,
+        tcgplayerUrl: args.tcgplayerUrl,
         currentPrice: args.currentPrice,
         lastUpdated: now,
       });

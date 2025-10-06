@@ -18,6 +18,7 @@ interface CardItemProps {
     currentPrice: number;
     percentChange: number;
     imageUrl?: string;
+    tcgplayerUrl?: string;
     averagePrice?: number;
     isRecentSale?: boolean;
   };
@@ -139,6 +140,19 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                   <h4 className="text-sm font-medium text-muted-foreground mb-1">Card Number</h4>
                   <p className="text-lg">#{card.cardNumber}</p>
                 </div>
+                {card.tcgplayerUrl && (
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Buy on TCGPlayer</h4>
+                    <a 
+                      href={card.tcgplayerUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      View on TCGPlayer →
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
             
