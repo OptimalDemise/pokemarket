@@ -34,13 +34,13 @@ export const getAllCards = query({
               .query("cardPriceHistory")
               .withIndex("by_card", (q) => q.eq("cardId", card._id))
               .order("desc")
-              .take(10); // Get more history for average calculation
+              .take(10);
 
             let percentChange = 0;
             let averagePrice = card.currentPrice;
             let isRecentSale = false;
             
-            // Only calculate percent change if we have at least 2 history entries
+            // Calculate percent change if we have at least 2 history entries
             if (history.length >= 2) {
               const current = history[0].price;
               const previous = history[1].price;
@@ -116,7 +116,6 @@ export const upsertCard = internalMutation({
     currentPrice: v.number(),
   },
   handler: async (ctx, args) => {
-    // Check if card exists
     const existingCards = await ctx.db
       .query("cards")
       .withIndex("by_name", (q) => q.eq("name", args.name))
@@ -140,7 +139,7 @@ export const upsertCard = internalMutation({
           lastUpdated: now,
         });
 
-        // Add price history entry - no artificial variation
+        // Add price history entry
         await ctx.db.insert("cardPriceHistory", {
           cardId: existingCard._id,
           price: args.currentPrice,
@@ -162,7 +161,7 @@ export const upsertCard = internalMutation({
         lastUpdated: now,
       });
 
-      // Add initial price history entry
+      // Add initial price history entry at current price
       await ctx.db.insert("cardPriceHistory", {
         cardId,
         price: args.currentPrice,
