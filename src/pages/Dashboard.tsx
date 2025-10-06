@@ -161,7 +161,7 @@ export default function Dashboard() {
   const liveUpdates = (cards || [])
     .filter(card => card.lastUpdated > oneMinuteAgo)
     .sort((a, b) => a.lastUpdated - b.lastUpdated) // Oldest first (bottom to top)
-    .slice(0, 10);
+    .slice(0, 30);
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -453,7 +453,7 @@ export default function Dashboard() {
           const oneHourAgo = Date.now() - 60 * 60 * 1000;
           const recentBigMovers = (cards || [])
             .filter(card => 
-              card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 1
+              card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 5
             )
             .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
             .slice(0, 10);
