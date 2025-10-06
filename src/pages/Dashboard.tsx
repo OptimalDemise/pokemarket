@@ -3,6 +3,10 @@ import { ProductItem } from "@/components/ProductItem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
@@ -29,6 +33,8 @@ export default function Dashboard() {
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
   const [selectedSet, setSelectedSet] = useState<string>("all");
+  const [rarityOpen, setRarityOpen] = useState(false);
+  const [setOpen, setSetOpen] = useState(false);
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -266,56 +272,120 @@ export default function Dashboard() {
             
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <span className="text-sm font-medium whitespace-nowrap">Rarity:</span>
-              <Select value={selectedRarity} onValueChange={setSelectedRarity}>
-                <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
-                  <SelectValue placeholder="All Rarities" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  <SelectItem value="all" className="cursor-pointer hover:bg-primary/10">All Rarities</SelectItem>
-                  <SelectItem value="Rare Holo" className="cursor-pointer hover:bg-primary/10">Rare Holo</SelectItem>
-                  <SelectItem value="Rare Holo EX" className="cursor-pointer hover:bg-primary/10">Rare Holo EX</SelectItem>
-                  <SelectItem value="Rare Holo GX" className="cursor-pointer hover:bg-primary/10">Rare Holo GX</SelectItem>
-                  <SelectItem value="Rare Holo V" className="cursor-pointer hover:bg-primary/10">Rare Holo V</SelectItem>
-                  <SelectItem value="Rare Holo VMAX" className="cursor-pointer hover:bg-primary/10">Rare Holo VMAX</SelectItem>
-                  <SelectItem value="Rare Holo VSTAR" className="cursor-pointer hover:bg-primary/10">Rare Holo VSTAR</SelectItem>
-                  <SelectItem value="Holo Rare" className="cursor-pointer hover:bg-primary/10">Holo Rare</SelectItem>
-                  <SelectItem value="Ultra Rare" className="cursor-pointer hover:bg-primary/10">Ultra Rare</SelectItem>
-                  <SelectItem value="Secret Rare" className="cursor-pointer hover:bg-primary/10">Secret Rare</SelectItem>
-                  <SelectItem value="Rare Ultra" className="cursor-pointer hover:bg-primary/10">Rare Ultra</SelectItem>
-                  <SelectItem value="Rare Rainbow" className="cursor-pointer hover:bg-primary/10">Rare Rainbow</SelectItem>
-                  <SelectItem value="Rare Secret" className="cursor-pointer hover:bg-primary/10">Rare Secret</SelectItem>
-                  <SelectItem value="Rare Shining" className="cursor-pointer hover:bg-primary/10">Rare Shining</SelectItem>
-                  <SelectItem value="Rare ACE" className="cursor-pointer hover:bg-primary/10">Rare ACE</SelectItem>
-                  <SelectItem value="Rare BREAK" className="cursor-pointer hover:bg-primary/10">Rare BREAK</SelectItem>
-                  <SelectItem value="Rare Prime" className="cursor-pointer hover:bg-primary/10">Rare Prime</SelectItem>
-                  <SelectItem value="Rare Prism Star" className="cursor-pointer hover:bg-primary/10">Rare Prism Star</SelectItem>
-                  <SelectItem value="Amazing Rare" className="cursor-pointer hover:bg-primary/10">Amazing Rare</SelectItem>
-                  <SelectItem value="Radiant Rare" className="cursor-pointer hover:bg-primary/10">Radiant Rare</SelectItem>
-                  <SelectItem value="Hyper Rare" className="cursor-pointer hover:bg-primary/10">Hyper Rare</SelectItem>
-                  <SelectItem value="Illustration Rare" className="cursor-pointer hover:bg-primary/10">Illustration Rare</SelectItem>
-                  <SelectItem value="Special Illustration Rare" className="cursor-pointer hover:bg-primary/10">Special Illustration Rare</SelectItem>
-                  <SelectItem value="Double Rare" className="cursor-pointer hover:bg-primary/10">Double Rare</SelectItem>
-                  <SelectItem value="Shiny Rare" className="cursor-pointer hover:bg-primary/10">Shiny Rare</SelectItem>
-                  <SelectItem value="Shiny Ultra Rare" className="cursor-pointer hover:bg-primary/10">Shiny Ultra Rare</SelectItem>
-                  <SelectItem value="Trainer Gallery Rare Holo" className="cursor-pointer hover:bg-primary/10">Trainer Gallery Rare Holo</SelectItem>
-                  <SelectItem value="Promo" className="cursor-pointer hover:bg-primary/10">Promo</SelectItem>
-                </SelectContent>
-              </Select>
+              <Popover open={rarityOpen} onOpenChange={setRarityOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={rarityOpen}
+                    className="w-full sm:w-[200px] justify-between"
+                  >
+                    {selectedRarity === "all" ? "All Rarities" : selectedRarity}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search rarity..." />
+                    <CommandList>
+                      <CommandEmpty>No rarity found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="all"
+                          onSelect={() => {
+                            setSelectedRarity("all");
+                            setRarityOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedRarity === "all" ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          All Rarities
+                        </CommandItem>
+                        {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Holo Rare", "Ultra Rare", "Secret Rare", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
+                          <CommandItem
+                            key={rarity}
+                            value={rarity}
+                            onSelect={() => {
+                              setSelectedRarity(rarity);
+                              setRarityOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedRarity === rarity ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {rarity}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               
               <span className="text-sm font-medium whitespace-nowrap sm:ml-4">Set:</span>
-              <Select value={selectedSet} onValueChange={setSelectedSet}>
-                <SelectTrigger className="w-full sm:w-[250px] cursor-pointer">
-                  <SelectValue placeholder="All Sets" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  <SelectItem value="all" className="cursor-pointer hover:bg-primary/10">All Sets</SelectItem>
-                  {availableSets.map((set) => (
-                    <SelectItem key={set} value={set} className="cursor-pointer hover:bg-primary/10">
-                      {set}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={setOpen} onOpenChange={setSetOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={setOpen}
+                    className="w-full sm:w-[250px] justify-between"
+                  >
+                    {selectedSet === "all" ? "All Sets" : selectedSet}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[250px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search set..." />
+                    <CommandList>
+                      <CommandEmpty>No set found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="all"
+                          onSelect={() => {
+                            setSelectedSet("all");
+                            setSetOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedSet === "all" ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          All Sets
+                        </CommandItem>
+                        {availableSets.map((set) => (
+                          <CommandItem
+                            key={set}
+                            value={set}
+                            onSelect={() => {
+                              setSelectedSet(set);
+                              setSetOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedSet === set ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {set}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
