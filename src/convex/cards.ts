@@ -50,37 +50,11 @@ export const getAllCards = query({
               }
             }
 
-            // Map specific alternate art secret rare VMAX cards to "Special Illustration Rare"
-            let displayRarity = card.rarity;
-            
-            // Manual mapping for specific cards only
-            const specialIllustrationCards = [
-              { name: "Espeon VMAX", number: "270" },
-              { name: "Rayquaza VMAX", number: "218" },
-              { name: "Mew VMAX", number: "269" },
-              { name: "Inteleon VMAX", number: "266" },
-              { name: "Gengar VMAX", number: "271" },
-              { name: "Duraludon VMAX", number: "220" },
-              { name: "Umbreon VMAX", number: "215" },
-              { name: "Sylveon VMAX", number: "212" },
-              { name: "Glaceon VMAX", number: "209" },
-              { name: "Leafeon VMAX", number: "205" },
-            ];
-            
-            const isSpecialIllustration = specialIllustrationCards.some(
-              (c) => card.name === c.name && card.cardNumber === c.number
-            );
-            
-            if (isSpecialIllustration) {
-              displayRarity = "Special Illustration Rare";
-            }
-
             // Construct proper TCGPlayer URL
             const tcgplayerUrl = constructTCGPlayerUrl(card.name, card.setName, card.cardNumber);
             
             return {
               ...card,
-              rarity: displayRarity,
               percentChange,
               averagePrice,
               isRecentSale,
