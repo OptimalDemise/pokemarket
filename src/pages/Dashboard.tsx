@@ -157,59 +157,14 @@ export default function Dashboard() {
     );
   }
 
+  const oneMinuteAgo = Date.now() - 60 * 1000;
+  const liveUpdates = (cards || [])
+    .filter(card => card.lastUpdated > oneMinuteAgo)
+    .sort((a, b) => a.lastUpdated - b.lastUpdated) // Oldest first (bottom to top)
+    .slice(0, 10);
+
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Live Market Updates - Vertical Sidebar */}
-      {(() => {
-        const oneMinuteAgo = Date.now() - 60 * 1000;
-        const liveUpdates = (cards || [])
-          .filter(card => card.lastUpdated > oneMinuteAgo)
-          .sort((a, b) => a.lastUpdated - b.lastUpdated) // Oldest first (bottom to top)
-          .slice(0, 10);
-
-        return liveUpdates.length > 0 ? (
-          <aside className="w-64 border-r bg-card/50 sticky top-0 h-screen overflow-y-auto scroll-smooth flex-shrink-0">
-            <div className="p-4 border-b bg-background/95 backdrop-blur sticky top-0 z-10">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
-              </div>
-              <span className="text-xs text-muted-foreground">Last minute</span>
-            </div>
-            <div className="p-3 space-y-3">
-              {liveUpdates.map((card) => (
-                <motion.div
-                  key={card._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-2 border rounded-lg bg-background hover:bg-secondary/30 transition-colors cursor-pointer shadow-sm"
-                >
-                  {card.imageUrl && (
-                    <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
-                      <img
-                        src={card.imageUrl}
-                        alt={card.name}
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                  <h3 className="font-semibold text-xs line-clamp-2 mb-1">{card.name}</h3>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold">${card.currentPrice.toFixed(2)}</span>
-                    <span className={`font-bold ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                      {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(1)}%
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </aside>
-        ) : null;
-      })()}
-
       {/* Main Content Wrapper */}
       <div className="flex-1 min-w-0">
         {/* Header */}
@@ -659,6 +614,54 @@ export default function Dashboard() {
         </Tabs>
       </main>
       </div>
+
+      {/* Live Market Updates - Vertical Sidebar (Right Side) */}
+      <aside className="w-64 border-l bg-card/50 sticky top-0 h-screen overflow-y-auto scroll-smooth flex-shrink-0">
+        <div className="p-4 border-b bg-background/95 backdrop-blur sticky top-0 z-10">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
+          </div>
+          <span className="text-xs text-muted-foreground">Last minute</span>
+        </div>
+        <div className="p-3 space-y-3">
+          {liveUpdates.length > 0 ? (
+            liveUpdates.map((card) => (
+              <motion.div
+                key={card._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-2 border rounded-lg bg-background hover:bg-secondary/30 transition-colors cursor-pointer shadow-sm"
+              >
+                {card.imageUrl && (
+                  <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
+                    <img
+                      src={card.imageUrl}
+                      alt={card.name}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+                <h3 className="font-semibold text-xs line-clamp-2 mb-1">{card.name}</h3>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold">${card.currentPrice.toFixed(2)}</span>
+                  <span className={`font-bold ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                    {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(1)}%
+                  </span>
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-muted-foreground text-xs">
+              <p>No recent updates</p>
+              <p className="mt-1">Waiting for market changes...</p>
+            </div>
+          )}
+        </div>
+      </aside>
     </div>
   );
 }
