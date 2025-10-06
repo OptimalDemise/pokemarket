@@ -609,7 +609,7 @@ export default function Dashboard() {
           {liveUpdates.length > 0 ? (
             <div className="grid grid-cols-2 gap-2">
               {liveUpdates.map((card) => (
-                <div key={card._id} className="scale-90 origin-top">
+                <div key={card._id}>
                   <CardItem card={card} size="compact" />
                 </div>
               ))}

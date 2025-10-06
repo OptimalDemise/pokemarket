@@ -73,7 +73,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
               <div className={isCompact ? 'space-y-1.5' : 'space-y-3'}>
                 {/* Card Image */}
                 {card.imageUrl && (
-                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-w-[120px] mx-auto' : 'aspect-[2/3]'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
+                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-h-32 mx-auto' : 'aspect-[2/3]'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
                     <img
                       src={card.imageUrl}
                       alt={card.name}
@@ -85,12 +85,12 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                   </div>
                 )}
                 
-                <div className={isCompact ? 'space-y-1' : 'space-y-2'}>
-                  <div className="flex items-center gap-1.5">
-                    <Sparkles className={`${isCompact ? 'h-3 w-3' : 'h-3.5 w-3.5'} text-primary flex-shrink-0`} />
-                    <h3 className={`font-bold tracking-tight ${isCompact ? 'text-xs' : 'text-sm'} truncate`}>{card.name}</h3>
+                <div className={isCompact ? 'space-y-0.5' : 'space-y-2'}>
+                  <div className="flex items-center gap-1">
+                    <Sparkles className={`${isCompact ? 'h-2.5 w-2.5' : 'h-3.5 w-3.5'} text-primary flex-shrink-0`} />
+                    <h3 className={`font-bold tracking-tight ${isCompact ? 'text-[10px]' : 'text-sm'} truncate`}>{card.name}</h3>
                   </div>
-                  <p className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground truncate`}>{card.setName}</p>
+                  <p className={`${isCompact ? 'text-[8px]' : 'text-xs'} text-muted-foreground truncate`}>{card.setName}</p>
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       {card.isRecentSale && card.averagePrice ? (
