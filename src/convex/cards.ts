@@ -53,7 +53,7 @@ export const getAllCards = query({
             // Map specific alternate art secret rare VMAX cards to "Special Illustration Rare"
             let displayRarity = card.rarity;
             
-            // Manual mapping for specific cards
+            // Manual mapping for specific cards only
             const specialIllustrationCards = [
               { name: "Espeon VMAX", number: "270" },
               { name: "Rayquaza VMAX", number: "218" },
@@ -71,14 +71,7 @@ export const getAllCards = query({
               (c) => card.name === c.name && card.cardNumber === c.number
             );
             
-            // Also auto-detect: VMAX cards with card numbers >= 200 that are "Rare Secret"
-            const cardNum = parseInt(card.cardNumber);
-            const isVMAXSecretRare = card.name.includes("VMAX") && 
-                                      !isNaN(cardNum) && 
-                                      cardNum >= 200 && 
-                                      card.rarity === "Rare Secret";
-            
-            if (isSpecialIllustration || isVMAXSecretRare) {
+            if (isSpecialIllustration) {
               displayRarity = "Special Illustration Rare";
             }
 
