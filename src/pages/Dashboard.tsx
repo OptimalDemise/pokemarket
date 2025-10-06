@@ -527,8 +527,26 @@ export default function Dashboard() {
                     Previous
                   </Button>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
-                      Page {currentCardPage} of {totalCardPages}
+                    <span className="text-sm text-muted-foreground whitespace-nowrap">
+                      Page
+                    </span>
+                    <Select 
+                      value={currentCardPage.toString()} 
+                      onValueChange={(value) => setCurrentCardPage(parseInt(value))}
+                    >
+                      <SelectTrigger className="w-[80px] cursor-pointer">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: totalCardPages }, (_, i) => i + 1).map((page) => (
+                          <SelectItem key={page} value={page.toString()} className="cursor-pointer">
+                            {page}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground whitespace-nowrap">
+                      of {totalCardPages}
                     </span>
                   </div>
                   <Button
@@ -577,8 +595,26 @@ export default function Dashboard() {
                     Previous
                   </Button>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
-                      Page {currentProductPage} of {totalProductPages}
+                    <span className="text-sm text-muted-foreground whitespace-nowrap">
+                      Page
+                    </span>
+                    <Select 
+                      value={currentProductPage.toString()} 
+                      onValueChange={(value) => setCurrentProductPage(parseInt(value))}
+                    >
+                      <SelectTrigger className="w-[80px] cursor-pointer">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: totalProductPages }, (_, i) => i + 1).map((page) => (
+                          <SelectItem key={page} value={page.toString()} className="cursor-pointer">
+                            {page}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground whitespace-nowrap">
+                      of {totalProductPages}
                     </span>
                   </div>
                   <Button
