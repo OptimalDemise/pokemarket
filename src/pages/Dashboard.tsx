@@ -12,7 +12,7 @@ import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown } from "lucide-react";
-import { useEffect, useMemo, useState, Fragment } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
 type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
@@ -517,7 +517,7 @@ export default function Dashboard() {
             >
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {paginatedCards.map((card, index) => (
-                  <Fragment key={card._id}>
+                  <div key={card._id} className="contents">
                     <CardItemWrapper card={card} />
                     {/* Native Ad Card - Every 10th position */}
                     {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
@@ -526,7 +526,7 @@ export default function Dashboard() {
                         <p className="text-xs text-center text-muted-foreground">300x250 Ad Space</p>
                       </div>
                     )}
-                  </Fragment>
+                  </div>
                 ))}
               </div>
               {filteredAndSortedCards.length === 0 && (
@@ -604,7 +604,7 @@ export default function Dashboard() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {paginatedProducts.map((product, index) => (
-                  <Fragment key={product._id}>
+                  <div key={product._id} className="contents">
                     <ProductItemWrapper product={product} />
                     {/* Native Ad Card - Every 10th position */}
                     {(index + 1) % 10 === 0 && index < paginatedProducts.length - 1 && (
@@ -613,7 +613,7 @@ export default function Dashboard() {
                         <p className="text-xs text-center text-muted-foreground">300x250 Ad Space</p>
                       </div>
                     )}
-                  </Fragment>
+                  </div>
                 ))}
               </div>
               {filteredAndSortedProducts.length === 0 && (
