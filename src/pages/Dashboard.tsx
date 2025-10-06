@@ -456,44 +456,42 @@ export default function Dashboard() {
         </div>
 
         {/* Big Movers - Past Hour (Cards Only) */}
-        {(() => {
-          const oneHourAgo = Date.now() - 60 * 60 * 1000;
-          const recentBigMovers = (cards || [])
-            .filter(card => 
-              card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 3
-            )
-            .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
-            .slice(0, 20);
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-6 p-4 border rounded-lg bg-card"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
+            <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
+          </div>
+          {(() => {
+            const oneHourAgo = Date.now() - 60 * 60 * 1000;
+            const recentBigMovers = (cards || [])
+              .filter(card => 
+                card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 3
+              )
+              .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+              .slice(0, 20);
 
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-6 p-4 border rounded-lg bg-card"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
+            return recentBigMovers.length > 0 ? (
+              <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
+                {recentBigMovers.map((card) => (
+                  <div key={card._id} className="flex-shrink-0 w-32">
+                    <CardItem card={card} size="compact" />
+                  </div>
+                ))}
               </div>
-              {recentBigMovers.length > 0 ? (
-                <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
-                  {recentBigMovers.map((card) => (
-                    <div key={card._id} className="flex-shrink-0 w-32">
-                      <CardItem card={card} size="compact" />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground text-sm">
-                  <p>No significant movers in the past hour</p>
-                  <p className="text-xs mt-1">Waiting for changes over 3%...</p>
-                </div>
-              )}
-            </motion.div>
-          );
-        })()}
+            ) : (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                <p>No significant movers in the past hour</p>
+                <p className="text-xs mt-1">Waiting for changes over 3%...</p>
+              </div>
+            );
+          })()}
+        </motion.div>
 
         <Tabs defaultValue="cards" className="space-y-8">
           <TabsList className="grid w-full max-w-md grid-cols-2">
