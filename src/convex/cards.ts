@@ -26,53 +26,62 @@ export const getAllCards = query({
     try {
       const cards = await ctx.db.query("cards").collect();
       
-      // Calculate price changes for each card
+      // Calculate price changes for each card with minimal data fetching
       const cardsWithChanges = await Promise.all(
         cards.map(async (card) => {
           try {
-            const history = await ctx.db
+            // Fetch only the last 2 entries for percentage change
+            const recentHistory = await ctx.db
               .query("cardPriceHistory")
               .withIndex("by_card", (q) => q.eq("cardId", card._id))
               .order("desc")
               .take(2);
 
             let percentChange = 0;
-            let overallPercentChange = 0;
-            let averagePrice = card.currentPrice;
-            let isRecentSale = false;
             
             // Calculate percent change if we have at least 2 history entries
-            if (history.length >= 2) {
-              const current = history[0].price;
-              const previous = history[1].price;
+            if (recentHistory.length >= 2) {
+              const current = recentHistory[0].price;
+              const previous = recentHistory[1].price;
               if (previous !== 0) {
                 percentChange = ((current - previous) / previous) * 100;
               }
             }
             
-            // For overall trend and average price, fetch additional history separately
-            const fullHistory = await ctx.db
+            // For overall trend, fetch first and last entries separately
+            const firstEntry = await ctx.db
               .query("cardPriceHistory")
               .withIndex("by_card", (q) => q.eq("cardId", card._id))
-              .order("desc")
-              .take(10);
+              .order("asc")
+              .first();
             
-            if (fullHistory.length >= 2) {
-              const current = fullHistory[0].price;
-              const firstPrice = fullHistory[fullHistory.length - 1].price;
+            let overallPercentChange = 0;
+            if (firstEntry && recentHistory.length > 0) {
+              const current = recentHistory[0].price;
+              const firstPrice = firstEntry.price;
               if (firstPrice !== 0) {
                 overallPercentChange = ((current - firstPrice) / firstPrice) * 100;
               }
+            }
+            
+            // For average price, fetch last 6 entries (excluding most recent)
+            const avgHistory = await ctx.db
+              .query("cardPriceHistory")
+              .withIndex("by_card", (q) => q.eq("cardId", card._id))
+              .order("desc")
+              .take(6);
+            
+            let averagePrice = card.currentPrice;
+            let isRecentSale = false;
+            
+            if (avgHistory.length >= 5) {
+              const historicalPrices = avgHistory.slice(1);
+              averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
               
-              // Calculate average price from last 5-10 entries (excluding most recent)
-              if (fullHistory.length >= 5) {
-                const historicalPrices = fullHistory.slice(1, Math.min(10, fullHistory.length));
-                averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
-                
-                // Check if current price deviates significantly from average (>15%)
-                const deviation = Math.abs((current - averagePrice) / averagePrice) * 100;
-                isRecentSale = deviation > 15;
-              }
+              // Check if current price deviates significantly from average (>15%)
+              const current = avgHistory[0].price;
+              const deviation = Math.abs((current - averagePrice) / averagePrice) * 100;
+              isRecentSale = deviation > 15;
             }
 
             // Construct proper TCGPlayer URL
