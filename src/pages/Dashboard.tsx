@@ -472,29 +472,8 @@ export default function Dashboard() {
               </div>
               <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
                 {recentBigMovers.map((card) => (
-                  <div
-                    key={card._id}
-                    className="flex-shrink-0 w-32 p-2 border rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors cursor-pointer"
-                  >
-                    {card.imageUrl && (
-                      <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
-                        <img
-                          src={card.imageUrl}
-                          alt={card.name}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
-                    <h3 className="font-semibold text-xs line-clamp-2 mb-1">{card.name}</h3>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold">${card.currentPrice.toFixed(2)}</span>
-                      <span className={`font-bold ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                        {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(1)}%
-                      </span>
-                    </div>
+                  <div key={card._id} className="flex-shrink-0 w-32">
+                    <CardItem card={card} size="compact" />
                   </div>
                 ))}
               </div>
