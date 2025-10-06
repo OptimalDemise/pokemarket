@@ -37,16 +37,59 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
 
   const isPositive = percentChange >= 0;
 
-  // Format date for axis labels
+  // Calculate time range to determine appropriate date format
+  const timeRangeMs = data[data.length - 1].timestamp - data[0].timestamp;
+  const daysRange = timeRangeMs / (1000 * 60 * 60 * 24);
+
+  // Format date based on time range
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-    return `${date.getMonth() + 1}/${date.getDate()}`;
+    
+    if (daysRange > 365) {
+      // For over a year: show "MMM YYYY" (e.g., "Jan 2024")
+      return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    } else if (daysRange > 60) {
+      // For 2+ months: show "MMM DD" (e.g., "Jan 15")
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } else {
+      // For under 2 months: show "M/D" (e.g., "1/15")
+      return `${date.getMonth() + 1}/${date.getDate()}`;
+    }
   };
 
-  // Get first, middle, and last dates for x-axis
-  const firstDate = formatDate(data[0].timestamp);
-  const lastDate = formatDate(data[data.length - 1].timestamp);
-  const middleDate = data.length > 2 ? formatDate(data[Math.floor(data.length / 2)].timestamp) : null;
+  // Determine number of X-axis labels based on data density
+  const getXAxisLabels = () => {
+    const labels: { value: string; x: number }[] = [];
+    
+    // Always show first and last
+    labels.push({
+      value: formatDate(data[0].timestamp),
+      x: leftPadding + padding
+    });
+    
+    // Add intermediate labels based on data length
+    let numIntermediateLabels = 1;
+    if (data.length > 50) numIntermediateLabels = 3;
+    else if (data.length > 20) numIntermediateLabels = 2;
+    
+    for (let i = 1; i <= numIntermediateLabels; i++) {
+      const index = Math.floor((data.length - 1) * (i / (numIntermediateLabels + 1)));
+      const xPos = leftPadding + padding + ((index / (data.length - 1)) * (chartWidth - padding * 2));
+      labels.push({
+        value: formatDate(data[index].timestamp),
+        x: xPos
+      });
+    }
+    
+    labels.push({
+      value: formatDate(data[data.length - 1].timestamp),
+      x: width - padding
+    });
+    
+    return labels;
+  };
+
+  const xAxisLabels = getXAxisLabels();
 
   // Y-axis labels
   const yAxisLabels = [
@@ -112,33 +155,18 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
           transition={{ duration: 1, ease: "easeInOut" }}
         />
         
-        {/* X-axis labels */}
-        <text
-          x={leftPadding + padding}
-          y={chartHeight + 20}
-          textAnchor="start"
-          className="text-[10px] fill-muted-foreground"
-        >
-          {firstDate}
-        </text>
-        {middleDate && (
+        {/* X-axis labels - dynamically positioned */}
+        {xAxisLabels.map((label, i) => (
           <text
-            x={leftPadding + chartWidth / 2}
+            key={i}
+            x={label.x}
             y={chartHeight + 20}
-            textAnchor="middle"
+            textAnchor={i === 0 ? "start" : i === xAxisLabels.length - 1 ? "end" : "middle"}
             className="text-[10px] fill-muted-foreground"
           >
-            {middleDate}
+            {label.value}
           </text>
-        )}
-        <text
-          x={width - padding}
-          y={chartHeight + 20}
-          textAnchor="end"
-          className="text-[10px] fill-muted-foreground"
-        >
-          {lastDate}
-        </text>
+        ))}
       </svg>
     </div>
   );
