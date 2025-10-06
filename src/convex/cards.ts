@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 // Helper function to construct TCGPlayer search URL
 function constructTCGPlayerUrl(cardName: string, setName: string, cardNumber: string): string {
@@ -26,7 +27,7 @@ export const getBigMovers = query({
     minPercentChange: v.optional(v.number()),
     limit: v.optional(v.number())
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<any[]> => {
     const hoursAgo = args.hoursAgo || 1;
     const minPercentChange = args.minPercentChange || 3;
     const limit = args.limit || 20;
@@ -34,48 +35,16 @@ export const getBigMovers = query({
     const timeThreshold = Date.now() - (hoursAgo * 60 * 60 * 1000);
     
     try {
-      const cards = await ctx.db.query("cards").collect();
+      // Get all cards with their pre-calculated percentChange
+      const allCardsWithChanges = await ctx.runQuery(internal.cards._getAllCardsWithChanges);
       
-      // Calculate price changes for cards updated within the time window
-      const cardsWithChanges = await Promise.all(
-        cards
-          .filter(card => card.lastUpdated > timeThreshold)
-          .map(async (card) => {
-            try {
-              const recentHistory = await ctx.db
-                .query("cardPriceHistory")
-                .withIndex("by_card", (q) => q.eq("cardId", card._id))
-                .order("desc")
-                .take(2);
-
-              let percentChange = 0;
-              
-              if (recentHistory.length >= 2) {
-                const current = recentHistory[0].price;
-                const previous = recentHistory[1].price;
-                if (previous !== 0) {
-                  percentChange = ((current - previous) / previous) * 100;
-                }
-              }
-
-              return {
-                ...card,
-                percentChange,
-              };
-            } catch (error) {
-              console.error(`Error calculating price change for card ${card._id}:`, error);
-              return {
-                ...card,
-                percentChange: 0,
-              };
-            }
-          })
-      );
-
-      // Filter for significant movers and sort by absolute percentage change
-      const bigMovers = cardsWithChanges
-        .filter(card => Math.abs(card.percentChange) > minPercentChange)
-        .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+      // Filter for cards updated within time window and significant changes
+      const bigMovers = allCardsWithChanges
+        .filter((card: any) => 
+          card.lastUpdated > timeThreshold && 
+          Math.abs(card.percentChange) > minPercentChange
+        )
+        .sort((a: any, b: any) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
         .slice(0, limit);
 
       return bigMovers;
@@ -86,8 +55,8 @@ export const getBigMovers = query({
   },
 });
 
-// Get all cards with their latest price changes
-export const getAllCards = query({
+// Internal query to get all cards with calculated changes (for reuse)
+export const _getAllCardsWithChanges = internalQuery({
   args: {},
   handler: async (ctx) => {
     try {
@@ -179,9 +148,18 @@ export const getAllCards = query({
 
       return cardsWithChanges;
     } catch (error) {
-      console.error("Error fetching cards:", error);
+      console.error("Error fetching cards with changes:", error);
       throw new Error("Failed to retrieve card data");
     }
+  },
+});
+
+// Get all cards with their latest price changes
+export const getAllCards = query({
+  args: {},
+  handler: async (ctx): Promise<any[]> => {
+    // Reuse the internal query for consistency
+    return await ctx.runQuery(internal.cards._getAllCardsWithChanges);
   },
 });
 
