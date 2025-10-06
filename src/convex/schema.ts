@@ -72,6 +72,18 @@ const schema = defineSchema(
       price: v.number(),
       timestamp: v.number(),
     }).index("by_product", ["productId"]),
+
+    // Daily snapshots for tracking day-over-day changes
+    dailySnapshots: defineTable({
+      itemId: v.string(), // card or product ID
+      itemType: v.string(), // "card" or "product"
+      itemName: v.string(),
+      price: v.number(),
+      snapshotDate: v.string(), // YYYY-MM-DD format
+      timestamp: v.number(),
+    })
+      .index("by_item_and_date", ["itemId", "snapshotDate"])
+      .index("by_date", ["snapshotDate"]),
   },
   {
     schemaValidation: false,

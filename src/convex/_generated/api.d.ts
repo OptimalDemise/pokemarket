@@ -16,6 +16,8 @@ import type {
 import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth from "../auth.js";
 import type * as cards from "../cards.js";
+import type * as crons from "../crons.js";
+import type * as dailySnapshots from "../dailySnapshots.js";
 import type * as http from "../http.js";
 import type * as pokemonTcgApi from "../pokemonTcgApi.js";
 import type * as products from "../products.js";
@@ -34,6 +36,8 @@ declare const fullApi: ApiFromModules<{
   "auth/emailOtp": typeof auth_emailOtp;
   auth: typeof auth;
   cards: typeof cards;
+  crons: typeof crons;
+  dailySnapshots: typeof dailySnapshots;
   http: typeof http;
   pokemonTcgApi: typeof pokemonTcgApi;
   products: typeof products;

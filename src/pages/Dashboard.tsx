@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -23,6 +23,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
+  const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
@@ -193,6 +194,55 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Top Daily Changes Section */}
+        {topDailyChanges && topDailyChanges.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 p-6 border rounded-lg bg-card"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-bold tracking-tight">Top Daily Movers</h2>
+              <span className="text-sm text-muted-foreground ml-auto">Updates daily at midnight UTC</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+              {topDailyChanges.slice(0, 5).map((item: any) => (
+                <div
+                  key={item._id}
+                  className="p-3 border rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="font-semibold text-sm line-clamp-2">{item.name}</h3>
+                    {item.dailyPercentChange >= 0 ? (
+                      <TrendingUp className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <TrendingDown className="h-4 w-4 text-red-600 flex-shrink-0" />
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Yesterday:</span>
+                      <span>${item.yesterdayPrice?.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Today:</span>
+                      <span className="font-semibold">${item.todayPrice?.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm font-bold pt-1 border-t">
+                      <span>Change:</span>
+                      <span className={item.dailyPercentChange >= 0 ? "text-green-600" : "text-red-600"}>
+                        {item.dailyPercentChange >= 0 ? "+" : ""}{item.dailyPercentChange?.toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Search and Sort Controls */}
           <div className="flex flex-col gap-4 mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
