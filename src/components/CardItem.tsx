@@ -62,7 +62,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
             }}
             className="cursor-pointer relative"
           >
-            <Card className={`${isCompact ? 'p-2' : 'p-4'} hover:border-primary transition-all hover:shadow-lg`}>
+            <Card className={`${isCompact ? 'p-2' : 'p-2 sm:p-4'} hover:border-primary transition-all hover:shadow-lg`}>
               {isJustUpdated && (
                 <div className="absolute -top-2 -right-2 z-10">
                   <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
@@ -73,7 +73,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
               <div className={isCompact ? 'space-y-1.5' : 'space-y-3'}>
                 {/* Card Image */}
                 {card.imageUrl && (
-                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-h-24' : 'aspect-[2/3]'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
+                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-h-24' : 'aspect-[2/3] max-h-48 sm:max-h-none'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
                     <img
                       src={card.imageUrl}
                       alt={card.name}
