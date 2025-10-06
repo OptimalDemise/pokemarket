@@ -24,6 +24,7 @@ export default function Dashboard() {
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
   const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
+  const bigMovers = useQuery(api.cards.getBigMovers, { hoursAgo: 1, minPercentChange: 3, limit: 20 });
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("highest-price");
@@ -160,7 +161,7 @@ export default function Dashboard() {
   const oneMinuteAgo = Date.now() - 60 * 1000;
   const liveUpdates = (cards || [])
     .filter(card => card.lastUpdated > oneMinuteAgo)
-    .sort((a, b) => a.lastUpdated - b.lastUpdated) // Oldest first (bottom to top)
+    .sort((a, b) => a.lastUpdated - b.lastUpdated)
     .slice(0, 50);
 
   return (
@@ -448,51 +449,41 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Big Movers - Past Hour (Cards Only) */}
+        {/* Big Movers - Past Hour (Cards Only) - Now using cached query */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="mb-6 p-4 border rounded-lg bg-card"
         >
-          {(() => {
-            const oneHourAgo = Date.now() - 60 * 60 * 1000;
-            const recentBigMovers = (cards || [])
-              .filter(card => 
-                card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 3
-              )
-              .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
-              .slice(0, 20);
-
-            return recentBigMovers.length > 0 ? (
-              <>
-                <div className="flex items-center gap-2 mb-3">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                  <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
-                </div>
-                <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
-                  {recentBigMovers.map((card) => (
-                    <div key={card._id} className="flex-shrink-0 w-32">
-                      <CardItem card={card} size="compact" />
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2 mb-3">
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                  <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                  <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
-                </div>
-                <div className="text-center py-8 text-muted-foreground text-sm">
-                  <p>No significant movers in the past hour</p>
-                  <p className="mt-1 text-xs">Waiting for changes over 3%...</p>
-                </div>
-              </>
-            );
-          })()}
+          {bigMovers && bigMovers.length > 0 ? (
+            <>
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
+                <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
+              </div>
+              <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
+                {bigMovers.map((card) => (
+                  <div key={card._id} className="flex-shrink-0 w-32">
+                    <CardItem card={card} size="compact" />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
+                <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
+              </div>
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                <p>No significant movers in the past hour</p>
+                <p className="mt-1 text-xs">Waiting for changes over 3%...</p>
+              </div>
+            </>
+          )}
         </motion.div>
 
         <Tabs defaultValue="cards" className="space-y-8">

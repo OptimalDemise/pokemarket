@@ -19,6 +19,73 @@ export const _getAllCards = internalQuery({
   },
 });
 
+// Get big movers from the past hour (cards with >3% change)
+export const getBigMovers = query({
+  args: { 
+    hoursAgo: v.optional(v.number()),
+    minPercentChange: v.optional(v.number()),
+    limit: v.optional(v.number())
+  },
+  handler: async (ctx, args) => {
+    const hoursAgo = args.hoursAgo || 1;
+    const minPercentChange = args.minPercentChange || 3;
+    const limit = args.limit || 20;
+    
+    const timeThreshold = Date.now() - (hoursAgo * 60 * 60 * 1000);
+    
+    try {
+      const cards = await ctx.db.query("cards").collect();
+      
+      // Calculate price changes for cards updated within the time window
+      const cardsWithChanges = await Promise.all(
+        cards
+          .filter(card => card.lastUpdated > timeThreshold)
+          .map(async (card) => {
+            try {
+              const recentHistory = await ctx.db
+                .query("cardPriceHistory")
+                .withIndex("by_card", (q) => q.eq("cardId", card._id))
+                .order("desc")
+                .take(2);
+
+              let percentChange = 0;
+              
+              if (recentHistory.length >= 2) {
+                const current = recentHistory[0].price;
+                const previous = recentHistory[1].price;
+                if (previous !== 0) {
+                  percentChange = ((current - previous) / previous) * 100;
+                }
+              }
+
+              return {
+                ...card,
+                percentChange,
+              };
+            } catch (error) {
+              console.error(`Error calculating price change for card ${card._id}:`, error);
+              return {
+                ...card,
+                percentChange: 0,
+              };
+            }
+          })
+      );
+
+      // Filter for significant movers and sort by absolute percentage change
+      const bigMovers = cardsWithChanges
+        .filter(card => Math.abs(card.percentChange) > minPercentChange)
+        .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+        .slice(0, limit);
+
+      return bigMovers;
+    } catch (error) {
+      console.error("Error fetching big movers:", error);
+      return [];
+    }
+  },
+});
+
 // Get all cards with their latest price changes
 export const getAllCards = query({
   args: {},
