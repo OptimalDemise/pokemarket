@@ -46,12 +46,18 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
+      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        </div>
+        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center space-y-8"
+          className="text-center space-y-8 relative z-10"
         >
           <div className="inline-flex items-center gap-2 bg-secondary px-4 py-2 rounded-full text-sm">
             <Sparkles className="h-4 w-4" />
