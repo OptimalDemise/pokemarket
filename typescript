@@ -1,2 +1,8 @@
-case "newest":
-  return sorted.sort((a, b) => b.lastUpdated - a.lastUpdated);
+const recentBigMovers = [
+  ...(cards || []).filter(card => 
+    card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 1
+  ).map(card => ({ ...card, type: 'card' as const })),
+  ...(products || []).filter(product => 
+    product.lastUpdated > oneHourAgo && Math.abs(product.percentChange) > 1
+  ).map(product => ({ ...product, type: 'product' as const }))
+]

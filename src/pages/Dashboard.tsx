@@ -496,16 +496,12 @@ export default function Dashboard() {
         {/* Big Movers - Past Hour (Cards Only) */}
         {(() => {
           const oneHourAgo = Date.now() - 60 * 60 * 1000;
-          const recentBigMovers = [
-            ...(cards || []).filter(card => 
+          const recentBigMovers = (cards || [])
+            .filter(card => 
               card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 1
-            ).map(card => ({ ...card, type: 'card' as const })),
-            ...(products || []).filter(product => 
-              product.lastUpdated > oneHourAgo && Math.abs(product.percentChange) > 1
-            ).map(product => ({ ...product, type: 'product' as const }))
-          ]
-          .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
-          .slice(0, 10);
+            )
+            .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+            .slice(0, 10);
 
           return recentBigMovers.length > 0 ? (
             <motion.div
