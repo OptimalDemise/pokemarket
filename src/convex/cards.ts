@@ -120,9 +120,9 @@ export const upsertCard = internalMutation({
     const now = Date.now();
 
     if (existingCard) {
-      // Check if price has actually changed (more than 0.1% difference)
+      // Check if price has actually changed (more than 0.01% difference)
       const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
-      const hasPriceChanged = priceChangePercent > 0.1;
+      const hasPriceChanged = priceChangePercent > 0.01;
 
       if (hasPriceChanged) {
         // Update existing card only if price changed
