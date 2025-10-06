@@ -178,7 +178,7 @@ export const _upsertProduct = internalMutation({
           isRecentSale = deviation > 15;
         }
         
-        // Update existing product with calculated values
+        // Update existing product with calculated values (only when price changed >0.1%)
         await ctx.db.patch(existingProduct._id, {
           currentPrice: args.currentPrice,
           lastUpdated: now,
@@ -187,13 +187,14 @@ export const _upsertProduct = internalMutation({
           isRecentSale,
         });
 
-        // Add price history entry
+        // Add price history entry (only for significant changes >0.1%)
         await ctx.db.insert("productPriceHistory", {
           productId: existingProduct._id,
           price: args.currentPrice,
           timestamp: now,
         });
       }
+      // If price hasn't changed significantly, don't update lastUpdated or add history
 
       return existingProduct._id;
     } else {

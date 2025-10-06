@@ -218,7 +218,7 @@ export const upsertCard = internalMutation({
           }
         }
         
-        // Update existing card with calculated values
+        // Update existing card with calculated values (only when price changed >0.1%)
         await ctx.db.patch(existingCard._id, {
           currentPrice: args.currentPrice,
           lastUpdated: now,
@@ -228,13 +228,14 @@ export const upsertCard = internalMutation({
           isRecentSale,
         });
 
-        // Add price history entry
+        // Add price history entry (only for significant changes >0.1%)
         await ctx.db.insert("cardPriceHistory", {
           cardId: existingCard._id,
           price: args.currentPrice,
           timestamp: now,
         });
       }
+      // If price hasn't changed significantly, don't update lastUpdated or add history
 
       return existingCard._id;
     } else {
