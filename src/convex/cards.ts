@@ -53,6 +53,8 @@ export const getAllCards = query({
               { name: "Duraludon VMAX", number: "220" },
               { name: "Umbreon VMAX", number: "215" },
               { name: "Sylveon VMAX", number: "212" },
+              { name: "Glaceon VMAX", number: "209" },
+              { name: "Leafeon VMAX", number: "205" },
             ];
             
             const isSpecialIllustration = specialIllustrationCards.some(
