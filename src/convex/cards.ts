@@ -40,9 +40,39 @@ export const getAllCards = query({
               }
             }
 
-            // Return card with original rarity - no mapping
+            // Map specific alternate art secret rare VMAX cards to "Special Illustration Rare"
+            let displayRarity = card.rarity;
+            
+            // Manual mapping for specific cards
+            const specialIllustrationCards = [
+              { name: "Espeon VMAX", number: "270" },
+              { name: "Rayquaza VMAX", number: "218" },
+              { name: "Mew VMAX", number: "269" },
+              { name: "Inteleon VMAX", number: "266" },
+              { name: "Gengar VMAX", number: "271" },
+              { name: "Duraludon VMAX", number: "220" },
+              { name: "Umbreon VMAX", number: "215" },
+              { name: "Sylveon VMAX", number: "212" },
+            ];
+            
+            const isSpecialIllustration = specialIllustrationCards.some(
+              (c) => card.name === c.name && card.cardNumber === c.number
+            );
+            
+            // Also auto-detect: VMAX cards with card numbers >= 200 that are "Rare Secret"
+            const cardNum = parseInt(card.cardNumber);
+            const isVMAXSecretRare = card.name.includes("VMAX") && 
+                                      !isNaN(cardNum) && 
+                                      cardNum >= 200 && 
+                                      card.rarity === "Rare Secret";
+            
+            if (isSpecialIllustration || isVMAXSecretRare) {
+              displayRarity = "Special Illustration Rare";
+            }
+
             return {
               ...card,
+              rarity: displayRarity,
               percentChange,
               averagePrice,
               isRecentSale,
