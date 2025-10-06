@@ -1,24 +1,14 @@
 import { v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
 
-// Helper function to construct TCGPlayer URL
+// Helper function to construct TCGPlayer search URL
 function constructTCGPlayerUrl(cardName: string, setName: string, cardNumber: string): string {
-  // Clean and format the card name for URL
-  const cleanName = cardName
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-'); // Remove duplicate hyphens
+  // Create a search query for TCGPlayer
+  const searchQuery = `${cardName} ${cardNumber} ${setName}`;
+  const encodedQuery = encodeURIComponent(searchQuery);
   
-  // Clean and format the set name for URL
-  const cleanSet = setName
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-  
-  // Construct the TCGPlayer product URL
-  return `https://www.tcgplayer.com/product/${cleanSet}/${cleanName}-${cardNumber}`;
+  // Construct the TCGPlayer search URL
+  return `https://www.tcgplayer.com/search/pokemon/product?productLineName=pokemon&q=${encodedQuery}&view=grid`;
 }
 
 // Get all cards with their latest price changes
