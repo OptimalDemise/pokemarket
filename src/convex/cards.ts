@@ -40,8 +40,12 @@ export const getAllCards = query({
               }
             }
 
+            // Map "Rare Rainbow" to "Special Illustration Rare" for player-friendly terminology
+            const displayRarity = card.rarity === "Rare Rainbow" ? "Special Illustration Rare" : card.rarity;
+            
             return {
               ...card,
+              rarity: displayRarity,
               percentChange,
               averagePrice,
               isRecentSale,
