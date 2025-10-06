@@ -38,7 +38,7 @@ export function ProductItem({ product }: ProductItemProps) {
   const fiveMinutesAgo = now - 5 * 60 * 1000;
   const isRecentlyUpdated = product.lastUpdated > fiveMinutesAgo;
   
-  // Check if product was updated in the last minute (for "New" badge)
+  // Check if product was updated in the last minute (for "JUST UPDATED" badge)
   const oneMinuteAgo = now - 60 * 1000;
   const isJustUpdated = product.lastUpdated > oneMinuteAgo;
   
@@ -65,7 +65,6 @@ export function ProductItem({ product }: ProductItemProps) {
                   </span>
                 </div>
               )}
-=======
               <div className="space-y-3">
                 {/* Product Image */}
                 {product.imageUrl && (

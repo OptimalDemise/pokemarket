@@ -43,7 +43,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
   const fiveMinutesAgo = now - 5 * 60 * 1000;
   const isRecentlyUpdated = card.lastUpdated > fiveMinutesAgo;
   
-  // Check if card was updated in the last minute (for "New" badge)
+  // Check if card was updated in the last minute (for "JUST UPDATED" badge)
   const oneMinuteAgo = now - 60 * 1000;
   const isJustUpdated = card.lastUpdated > oneMinuteAgo;
 
@@ -70,7 +70,6 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                   </span>
                 </div>
               )}
-=======
               <div className={isCompact ? 'space-y-1.5' : 'space-y-3'}>
                 {/* Card Image */}
                 {card.imageUrl && (
