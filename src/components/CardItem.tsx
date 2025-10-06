@@ -17,7 +17,6 @@ interface CardItemProps {
     rarity: string;
     currentPrice: number;
     percentChange: number;
-    overallPercentChange?: number;
     imageUrl?: string;
     tcgplayerUrl?: string;
     averagePrice?: number;
@@ -181,17 +180,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
             
             {/* Price Chart */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-bold tracking-tight">Price History</h4>
-                {card.overallPercentChange !== undefined && card.overallPercentChange !== 0 && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">Overall Trend:</span>
-                    <span className={`text-sm font-bold ${card.overallPercentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                      {card.overallPercentChange >= 0 ? "+" : ""}{card.overallPercentChange.toFixed(2)}%
-                    </span>
-                  </div>
-                )}
-              </div>
+              <h4 className="text-lg font-bold tracking-tight">Price History</h4>
               {!priceHistory ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />

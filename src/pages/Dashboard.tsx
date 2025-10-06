@@ -130,14 +130,7 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold tracking-tight">Loading Market Data</h2>
-            <p className="text-muted-foreground">Please wait while we fetch the latest prices...</p>
-            <p className="text-sm text-muted-foreground">This shouldn't take more than a minute</p>
-          </div>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -456,27 +449,27 @@ export default function Dashboard() {
         </div>
 
         {/* Big Movers - Past Hour (Cards Only) */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-6 p-4 border rounded-lg bg-card"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-primary" />
-            <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-            <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
-          </div>
-          {(() => {
-            const oneHourAgo = Date.now() - 60 * 60 * 1000;
-            const recentBigMovers = (cards || [])
-              .filter(card => 
-                card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 3
-              )
-              .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
-              .slice(0, 20);
+        {(() => {
+          const oneHourAgo = Date.now() - 60 * 60 * 1000;
+          const recentBigMovers = (cards || [])
+            .filter(card => 
+              card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 5
+            )
+            .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+            .slice(0, 20);
 
-            return recentBigMovers.length > 0 ? (
+          return recentBigMovers.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6 p-4 border rounded-lg bg-card"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
+                <span className="text-xs text-muted-foreground ml-auto">Changes over 5%</span>
+              </div>
               <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
                 {recentBigMovers.map((card) => (
                   <div key={card._id} className="flex-shrink-0 w-32">
@@ -484,14 +477,9 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground text-sm">
-                <p>No significant movers in the past hour</p>
-                <p className="text-xs mt-1">Waiting for changes over 3%...</p>
-              </div>
-            );
-          })()}
-        </motion.div>
+            </motion.div>
+          ) : null;
+        })()}
 
         <Tabs defaultValue="cards" className="space-y-8">
           <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -618,11 +606,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="p-3">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            </div>
-          ) : liveUpdates.length > 0 ? (
+          {liveUpdates.length > 0 ? (
             <div className="grid grid-cols-2 gap-2">
               {liveUpdates.map((card) => (
                 <div key={card._id}>
