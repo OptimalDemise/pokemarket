@@ -1,12 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function Landing() {
   const navigate = useNavigate();
   const { isLoading, isAuthenticated } = useAuth();
+  const cards = useQuery(api.cards.getAllCards);
+  const products = useQuery(api.products.getAllProducts);
+
+  // Get top 3 cards by percentage change
+  const topPercentageChanges = cards
+    ?.filter(card => card.percentChange !== 0)
+    .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+    .slice(0, 3) || [];
+
+  // Get 3 most recently updated cards
+  const recentlyUpdated = cards
+    ?.sort((a, b) => b.lastUpdated - a.lastUpdated)
+    .slice(0, 3) || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,6 +75,134 @@ export default function Landing() {
               View Market
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Market Activity Section */}
+      <section className="max-w-7xl mx-auto px-6 py-24 border-t">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="space-y-12"
+        >
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl font-bold tracking-tight">Live Market Activity</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              See what's moving in the market right now
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Top Percentage Changes */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="space-y-4"
+            >
+              <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Top % Changes Today
+              </h3>
+              <div className="space-y-3">
+                {topPercentageChanges.length > 0 ? (
+                  topPercentageChanges.map((card, index) => (
+                    <motion.div
+                      key={card._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="p-4 border rounded-lg flex items-center justify-between hover:border-primary transition-all cursor-pointer"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      <div className="flex items-center gap-3">
+                        {card.imageUrl && (
+                          <img
+                            src={card.imageUrl}
+                            alt={card.name}
+                            className="h-16 w-12 object-contain rounded"
+                          />
+                        )}
+                        <div>
+                          <p className="font-bold text-sm">{card.name}</p>
+                          <p className="text-xs text-muted-foreground">{card.setName}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">${card.currentPrice.toFixed(2)}</p>
+                        <div className={`flex items-center gap-1 text-sm font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                          {card.percentChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                          {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(2)}%
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="p-8 border rounded-lg text-center text-muted-foreground">
+                    Loading market data...
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Recently Updated */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="space-y-4"
+            >
+              <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Recently Updated
+              </h3>
+              <div className="space-y-3">
+                {recentlyUpdated.length > 0 ? (
+                  recentlyUpdated.map((card, index) => (
+                    <motion.div
+                      key={card._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="p-4 border rounded-lg flex items-center justify-between hover:border-primary transition-all cursor-pointer"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      <div className="flex items-center gap-3">
+                        {card.imageUrl && (
+                          <img
+                            src={card.imageUrl}
+                            alt={card.name}
+                            className="h-16 w-12 object-contain rounded"
+                          />
+                        )}
+                        <div>
+                          <p className="font-bold text-sm">{card.name}</p>
+                          <p className="text-xs text-muted-foreground">{card.setName}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">${card.currentPrice.toFixed(2)}</p>
+                        <div className={`flex items-center gap-1 text-sm font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                          {card.percentChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                          {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(2)}%
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="p-8 border rounded-lg text-center text-muted-foreground">
+                    Loading market data...
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </section>
