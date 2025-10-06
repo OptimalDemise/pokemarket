@@ -435,7 +435,7 @@ export default function Dashboard() {
 }
 
 // Helper function to sort items
-function sortItems<T extends { percentChange: number; currentPrice: number; _creationTime: number }>(
+function sortItems<T extends { percentChange: number; currentPrice: number; _creationTime: number; lastUpdated: number }>(
   items: T[],
   sortOption: SortOption
 ): T[] {
@@ -443,7 +443,7 @@ function sortItems<T extends { percentChange: number; currentPrice: number; _cre
   
   switch (sortOption) {
     case "newest":
-      return sorted.sort((a, b) => b._creationTime - a._creationTime);
+      return sorted.sort((a, b) => b.lastUpdated - a.lastUpdated);
     case "highest-change":
       return sorted.sort((a, b) => b.percentChange - a.percentChange);
     case "lowest-change":
