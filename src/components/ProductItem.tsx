@@ -50,33 +50,19 @@ export function ProductItem({ product }: ProductItemProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ 
               opacity: 1, 
-              y: 0,
-              scale: isRecentlyUpdated ? [1, 1.02, 1] : 1
+              y: 0
             }}
             transition={{ 
-              duration: 0.3,
-              scale: {
-                repeat: isRecentlyUpdated ? Infinity : 0,
-                duration: 2,
-                ease: "easeInOut"
-              }
+              duration: 0.3
             }}
             className="cursor-pointer relative"
           >
-            <Card className={`p-4 hover:border-primary transition-all hover:shadow-lg ${
-              isRecentlyUpdated ? 'border-primary/50 shadow-md shadow-primary/20' : ''
-            }`}>
+            <Card className={`p-4 hover:border-primary transition-all hover:shadow-lg`}>
               {isJustUpdated && (
                 <div className="absolute -top-2 -right-2 z-10">
-                  <motion.div
-                    initial={{ scale: 0, rotate: -12 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                  >
-                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
-                      NEW
-                    </span>
-                  </motion.div>
+                  <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                    JUST UPDATED
+                  </span>
                 </div>
               )}
 =======
