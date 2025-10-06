@@ -123,4 +123,7 @@
   [role="button"]:not([disabled]) {
     cursor: pointer;
   }
+  html {
+    scroll-behavior: smooth;
+  }
 }

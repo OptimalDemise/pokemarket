@@ -168,7 +168,7 @@ export default function Dashboard() {
           .slice(0, 10);
 
         return liveUpdates.length > 0 ? (
-          <aside className="w-64 border-r bg-card/50 sticky top-0 h-screen overflow-y-auto flex-shrink-0">
+          <aside className="w-64 border-r bg-card/50 sticky top-0 h-screen overflow-y-auto scroll-smooth flex-shrink-0">
             <div className="p-4 border-b bg-background/95 backdrop-blur sticky top-0 z-10">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
@@ -519,7 +519,7 @@ export default function Dashboard() {
                 <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
                 <span className="text-xs text-muted-foreground ml-auto">Changes over 1%</span>
               </div>
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
                 {recentBigMovers.map((card) => (
                   <div
                     key={card._id}
