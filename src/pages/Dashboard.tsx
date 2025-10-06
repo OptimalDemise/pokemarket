@@ -26,7 +26,7 @@ export default function Dashboard() {
   const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [sortOption, setSortOption] = useState<SortOption>("highest-price");
   const [hasError, setHasError] = useState(false);
   const [currentCardPage, setCurrentCardPage] = useState(1);
   const [currentProductPage, setCurrentProductPage] = useState(1);
@@ -440,7 +440,63 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Recent Big Movers Section - Past Hour */}
+        {/* Live Market Updates - Last Minute */}
+        {(() => {
+          const oneMinuteAgo = Date.now() - 60 * 1000;
+          const liveUpdates = [
+            ...(cards || []).filter(card => card.lastUpdated > oneMinuteAgo)
+              .map(card => ({ ...card, type: 'card' as const })),
+            ...(products || []).filter(product => product.lastUpdated > oneMinuteAgo)
+              .map(product => ({ ...product, type: 'product' as const }))
+          ]
+          .sort((a, b) => b.lastUpdated - a.lastUpdated)
+          .slice(0, 15);
+
+          return liveUpdates.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6 p-4 border rounded-lg bg-gradient-to-r from-primary/5 to-primary/10"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <h2 className="text-lg font-bold tracking-tight">Live Market Updates</h2>
+                <span className="text-xs text-muted-foreground ml-auto">Updated in the last minute</span>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2">
+                {liveUpdates.map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex-shrink-0 w-32 p-2 border rounded-lg bg-background hover:bg-secondary/30 transition-colors cursor-pointer shadow-sm"
+                  >
+                    {item.imageUrl && (
+                      <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-xs line-clamp-2 mb-1">{item.name}</h3>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold">${item.currentPrice.toFixed(2)}</span>
+                      <span className={`font-bold ${item.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                        {item.percentChange >= 0 ? "+" : ""}{item.percentChange.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          ) : null;
+        })()}
+
+        {/* Big Movers - Past Hour */}
         {(() => {
           const oneHourAgo = Date.now() - 60 * 60 * 1000;
           const recentBigMovers = [
