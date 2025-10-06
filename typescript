@@ -1,3 +1,2 @@
-const recentlyUpdated = cards
-  ?.sort((a, b) => b.lastUpdated - a.lastUpdated)
-  .slice(0, 3) || [];
+case "newest":
+  return sorted.sort((a, b) => b.lastUpdated - a.lastUpdated);
