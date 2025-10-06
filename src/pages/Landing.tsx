@@ -71,7 +71,7 @@ export default function Landing() {
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Monitor prices and trends for hollow rare cards and booster products. 
-            Stay ahead of the market with live updates every 2 minutes.
+            Stay ahead of the market with live updates every minute.
           </p>
 
           <div className="flex items-center justify-center gap-4 pt-4">
@@ -253,7 +253,7 @@ export default function Landing() {
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="h-8 w-8 text-primary" />
-              <div className="text-5xl font-bold tracking-tight">2min</div>
+              <div className="text-5xl font-bold tracking-tight">1min</div>
             </div>
             <p className="text-muted-foreground">Update Frequency</p>
           </div>
