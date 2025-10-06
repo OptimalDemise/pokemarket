@@ -605,35 +605,12 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground">Last minute</span>
           </div>
         </div>
-        <div className="p-3 space-y-3">
+        <div className="p-3 space-y-2">
           {liveUpdates.length > 0 ? (
             liveUpdates.map((card) => (
-              <motion.div
-                key={card._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-2 border rounded-lg bg-background hover:bg-secondary/30 transition-colors cursor-pointer shadow-sm"
-              >
-                {card.imageUrl && (
-                  <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
-                    <img
-                      src={card.imageUrl}
-                      alt={card.name}
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-                <h3 className="font-semibold text-xs line-clamp-2 mb-1">{card.name}</h3>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold">${card.currentPrice.toFixed(2)}</span>
-                  <span className={`font-bold ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                    {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(1)}%
-                  </span>
-                </div>
-              </motion.div>
+              <div key={card._id} className="scale-90 origin-top">
+                <CardItem card={card} size="compact" />
+              </div>
             ))
           ) : (
             <div className="text-center py-8 text-muted-foreground text-xs">
