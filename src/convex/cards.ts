@@ -40,6 +40,7 @@ export const getAllCards = query({
             let averagePrice = card.currentPrice;
             let isRecentSale = false;
             
+            // Only calculate percent change if we have at least 2 history entries
             if (history.length >= 2) {
               const current = history[0].price;
               const previous = history[1].price;
