@@ -147,7 +147,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                       href={card.tcgplayerUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                      className="text-sm text-primary hover:underline hover:text-primary/80 transition-colors inline-flex items-center gap-1"
                     >
                       View on TCGPlayer →
                     </a>
