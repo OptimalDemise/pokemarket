@@ -152,7 +152,7 @@ export default function Landing() {
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       viewport={{ once: true }}
                     >
-                      <CardItem card={card} />
+                      <CardItem card={card} size="compact" />
                     </motion.div>
                   ))
                 ) : (
