@@ -26,36 +26,63 @@ export const getAllCards = query({
     try {
       const cards = await ctx.db.query("cards").collect();
       
-      // Calculate price changes for each card
+      // Calculate price changes for each card using optimized queries
       const cardsWithChanges = await Promise.all(
         cards.map(async (card) => {
           try {
-            const history = await ctx.db
+            // Fetch only the most recent entries needed for calculations
+            const recentHistory = await ctx.db
               .query("cardPriceHistory")
               .withIndex("by_card", (q) => q.eq("cardId", card._id))
               .order("desc")
-              .take(10); // Get more history for average calculation
+              .take(2);
+
+            // Fetch first entry for overall trend
+            const firstHistory = await ctx.db
+              .query("cardPriceHistory")
+              .withIndex("by_card", (q) => q.eq("cardId", card._id))
+              .order("asc")
+              .take(1);
+
+            // Fetch last 6 entries for average calculation
+            const avgHistory = await ctx.db
+              .query("cardPriceHistory")
+              .withIndex("by_card", (q) => q.eq("cardId", card._id))
+              .order("desc")
+              .take(6);
 
             let percentChange = 0;
+            let overallPercentChange = 0;
             let averagePrice = card.currentPrice;
             let isRecentSale = false;
             
-            if (history.length >= 2) {
-              const current = history[0].price;
-              const previous = history[1].price;
+            // Calculate recent percentage change (last 2 entries)
+            if (recentHistory.length >= 2) {
+              const current = recentHistory[0].price;
+              const previous = recentHistory[1].price;
               if (previous !== 0) {
                 percentChange = ((current - previous) / previous) * 100;
               }
-              
-              // Calculate average price from last 5-10 entries (excluding most recent)
-              if (history.length >= 5) {
-                const historicalPrices = history.slice(1, Math.min(10, history.length));
-                averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
-                
-                // Check if current price deviates significantly from average (>15%)
-                const deviation = Math.abs((current - averagePrice) / averagePrice) * 100;
-                isRecentSale = deviation > 15;
+            }
+
+            // Calculate overall trend (first to current)
+            if (firstHistory.length > 0 && recentHistory.length > 0) {
+              const firstPrice = firstHistory[0].price;
+              const currentPrice = recentHistory[0].price;
+              if (firstPrice !== 0) {
+                overallPercentChange = ((currentPrice - firstPrice) / firstPrice) * 100;
               }
+            }
+            
+            // Calculate average price from last 6 entries (excluding most recent)
+            if (avgHistory.length >= 2) {
+              const historicalPrices = avgHistory.slice(1);
+              averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
+              
+              // Check if current price deviates significantly from average (>15%)
+              const current = avgHistory[0].price;
+              const deviation = Math.abs((current - averagePrice) / averagePrice) * 100;
+              isRecentSale = deviation > 15;
             }
 
             // Construct proper TCGPlayer URL
@@ -64,6 +91,7 @@ export const getAllCards = query({
             return {
               ...card,
               percentChange,
+              overallPercentChange,
               averagePrice,
               isRecentSale,
               tcgplayerUrl,
@@ -73,8 +101,10 @@ export const getAllCards = query({
             return {
               ...card,
               percentChange: 0,
+              overallPercentChange: 0,
               averagePrice: card.currentPrice,
               isRecentSale: false,
+              tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
             };
           }
         })

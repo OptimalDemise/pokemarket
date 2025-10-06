@@ -17,6 +17,7 @@ interface CardItemProps {
     rarity: string;
     currentPrice: number;
     percentChange: number;
+    overallPercentChange?: number;
     imageUrl?: string;
     tcgplayerUrl?: string;
     averagePrice?: number;
@@ -186,11 +187,24 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
               ) : (
-                <PriceChart
-                  data={priceHistory}
-                  currentPrice={card.currentPrice}
-                  percentChange={card.percentChange}
-                />
+                <>
+                  <PriceChart
+                    data={priceHistory}
+                    currentPrice={card.currentPrice}
+                    percentChange={card.percentChange}
+                  />
+                  {card.overallPercentChange !== undefined && priceHistory.length > 1 && (
+                    <div className="mt-4 p-3 bg-secondary/30 rounded-lg">
+                      <h5 className="text-sm font-medium text-muted-foreground mb-1">Overall Trend</h5>
+                      <div className={`text-lg font-bold ${card.overallPercentChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {card.overallPercentChange >= 0 ? '+' : ''}{card.overallPercentChange.toFixed(2)}%
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Since first recorded price
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
