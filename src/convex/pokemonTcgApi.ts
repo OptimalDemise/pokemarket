@@ -142,7 +142,7 @@ export const fetchAllCardsAbovePrice = internalAction({
           break;
         }
 
-        console.log(`Processing ${data.data.length} cards from page ${page}`);
+        console.log(`Processing ${data.data.length} cards from page ${page}...`);
         totalProcessed += data.data.length;
 
         // Filter and process cards above the minimum price
@@ -166,7 +166,7 @@ export const fetchAllCardsAbovePrice = internalAction({
                 cardNumber: card.number,
                 rarity: card.rarity,
                 imageUrl: card.images.large,
-                tcgplayerUrl: card.tcgplayer?.url,
+                tcgplayerUrl: card.tcgplayer?.url || undefined,
                 currentPrice: price,
               });
               successCount++;
