@@ -303,8 +303,16 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="border-t py-8">
-        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground">
+        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground space-y-2">
           <p>© 2024 PokéMarket. Built for collectors and investors.</p>
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={() => navigate("/terms")}
+              className="hover:text-foreground transition-colors cursor-pointer"
+            >
+              Terms of Service
+            </button>
+          </div>
         </div>
       </footer>
     </div>
