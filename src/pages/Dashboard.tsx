@@ -468,7 +468,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="h-4 w-4 text-primary" />
                 <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                <span className="text-xs text-muted-foreground ml-auto">Changes over 1%</span>
+                <span className="text-xs text-muted-foreground ml-auto">Changes over 5%</span>
               </div>
               <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
                 {recentBigMovers.map((card) => (
