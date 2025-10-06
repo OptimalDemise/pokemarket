@@ -272,18 +272,17 @@ export default function Dashboard() {
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
                   <SelectItem value="all" className="cursor-pointer hover:bg-primary/10">All Rarities</SelectItem>
-                  <SelectItem value="Holo Rare" className="cursor-pointer hover:bg-primary/10">Holo Rare</SelectItem>
-                  <SelectItem value="Ultra Rare" className="cursor-pointer hover:bg-primary/10">Ultra Rare</SelectItem>
-                  <SelectItem value="Secret Rare" className="cursor-pointer hover:bg-primary/10">Secret Rare</SelectItem>
                   <SelectItem value="Rare Holo" className="cursor-pointer hover:bg-primary/10">Rare Holo</SelectItem>
                   <SelectItem value="Rare Holo EX" className="cursor-pointer hover:bg-primary/10">Rare Holo EX</SelectItem>
                   <SelectItem value="Rare Holo GX" className="cursor-pointer hover:bg-primary/10">Rare Holo GX</SelectItem>
                   <SelectItem value="Rare Holo V" className="cursor-pointer hover:bg-primary/10">Rare Holo V</SelectItem>
                   <SelectItem value="Rare Holo VMAX" className="cursor-pointer hover:bg-primary/10">Rare Holo VMAX</SelectItem>
                   <SelectItem value="Rare Holo VSTAR" className="cursor-pointer hover:bg-primary/10">Rare Holo VSTAR</SelectItem>
+                  <SelectItem value="Holo Rare" className="cursor-pointer hover:bg-primary/10">Holo Rare</SelectItem>
+                  <SelectItem value="Ultra Rare" className="cursor-pointer hover:bg-primary/10">Ultra Rare</SelectItem>
+                  <SelectItem value="Secret Rare" className="cursor-pointer hover:bg-primary/10">Secret Rare</SelectItem>
                   <SelectItem value="Rare Ultra" className="cursor-pointer hover:bg-primary/10">Rare Ultra</SelectItem>
                   <SelectItem value="Rare Rainbow" className="cursor-pointer hover:bg-primary/10">Rare Rainbow</SelectItem>
-                  <SelectItem value="Special Illustration Rare" className="cursor-pointer hover:bg-primary/10">Special Illustration Rare</SelectItem>
                   <SelectItem value="Rare Secret" className="cursor-pointer hover:bg-primary/10">Rare Secret</SelectItem>
                   <SelectItem value="Rare Shining" className="cursor-pointer hover:bg-primary/10">Rare Shining</SelectItem>
                   <SelectItem value="Rare ACE" className="cursor-pointer hover:bg-primary/10">Rare ACE</SelectItem>
@@ -294,10 +293,12 @@ export default function Dashboard() {
                   <SelectItem value="Radiant Rare" className="cursor-pointer hover:bg-primary/10">Radiant Rare</SelectItem>
                   <SelectItem value="Hyper Rare" className="cursor-pointer hover:bg-primary/10">Hyper Rare</SelectItem>
                   <SelectItem value="Illustration Rare" className="cursor-pointer hover:bg-primary/10">Illustration Rare</SelectItem>
+                  <SelectItem value="Special Illustration Rare" className="cursor-pointer hover:bg-primary/10">Special Illustration Rare</SelectItem>
                   <SelectItem value="Double Rare" className="cursor-pointer hover:bg-primary/10">Double Rare</SelectItem>
                   <SelectItem value="Shiny Rare" className="cursor-pointer hover:bg-primary/10">Shiny Rare</SelectItem>
                   <SelectItem value="Shiny Ultra Rare" className="cursor-pointer hover:bg-primary/10">Shiny Ultra Rare</SelectItem>
                   <SelectItem value="Trainer Gallery Rare Holo" className="cursor-pointer hover:bg-primary/10">Trainer Gallery Rare Holo</SelectItem>
+                  <SelectItem value="Promo" className="cursor-pointer hover:bg-primary/10">Promo</SelectItem>
                 </SelectContent>
               </Select>
               
