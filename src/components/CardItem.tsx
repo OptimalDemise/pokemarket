@@ -18,6 +18,8 @@ interface CardItemProps {
     currentPrice: number;
     percentChange: number;
     imageUrl?: string;
+    averagePrice?: number;
+    isRecentSale?: boolean;
   };
 }
 
@@ -63,7 +65,20 @@ export function CardItem({ card }: CardItemProps) {
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{card.setName}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold">${card.currentPrice.toFixed(2)}</span>
+                    <div className="flex flex-col">
+                      {card.isRecentSale && card.averagePrice ? (
+                        <>
+                          <span className="text-xs text-muted-foreground line-through">
+                            Avg: ${card.averagePrice.toFixed(2)}
+                          </span>
+                          <span className="text-lg font-bold text-primary">
+                            Recent: ${card.currentPrice.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-lg font-bold">${card.currentPrice.toFixed(2)}</span>
+                      )}
+                    </div>
                     <span className={`text-xs font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
                       {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(2)}%
                     </span>

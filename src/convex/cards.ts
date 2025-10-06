@@ -16,26 +16,43 @@ export const getAllCards = query({
               .query("cardPriceHistory")
               .withIndex("by_card", (q) => q.eq("cardId", card._id))
               .order("desc")
-              .take(2);
+              .take(10); // Get more history for average calculation
 
             let percentChange = 0;
+            let averagePrice = card.currentPrice;
+            let isRecentSale = false;
+            
             if (history.length >= 2) {
               const current = history[0].price;
               const previous = history[1].price;
               if (previous !== 0) {
                 percentChange = ((current - previous) / previous) * 100;
               }
+              
+              // Calculate average price from last 5-10 entries (excluding most recent)
+              if (history.length >= 5) {
+                const historicalPrices = history.slice(1, Math.min(10, history.length));
+                averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
+                
+                // Check if current price deviates significantly from average (>15%)
+                const deviation = Math.abs((current - averagePrice) / averagePrice) * 100;
+                isRecentSale = deviation > 15;
+              }
             }
 
             return {
               ...card,
               percentChange,
+              averagePrice,
+              isRecentSale,
             };
           } catch (error) {
             console.error(`Error calculating price change for card ${card._id}:`, error);
             return {
               ...card,
               percentChange: 0,
+              averagePrice: card.currentPrice,
+              isRecentSale: false,
             };
           }
         })

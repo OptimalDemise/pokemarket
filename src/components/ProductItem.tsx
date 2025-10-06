@@ -17,6 +17,8 @@ interface ProductItemProps {
     currentPrice: number;
     percentChange: number;
     imageUrl?: string;
+    averagePrice?: number;
+    isRecentSale?: boolean;
   };
 }
 
@@ -62,7 +64,20 @@ export function ProductItem({ product }: ProductItemProps) {
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{product.setName}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold">${product.currentPrice.toFixed(2)}</span>
+                    <div className="flex flex-col">
+                      {product.isRecentSale && product.averagePrice ? (
+                        <>
+                          <span className="text-xs text-muted-foreground line-through">
+                            Avg: ${product.averagePrice.toFixed(2)}
+                          </span>
+                          <span className="text-lg font-bold text-primary">
+                            Recent: ${product.currentPrice.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-lg font-bold">${product.currentPrice.toFixed(2)}</span>
+                      )}
+                    </div>
                     <span className={`text-xs font-medium ${product.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
                       {product.percentChange >= 0 ? "+" : ""}{product.percentChange.toFixed(2)}%
                     </span>
