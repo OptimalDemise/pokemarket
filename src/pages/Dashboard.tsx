@@ -158,9 +158,62 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
+    <div className="min-h-screen bg-background flex">
+      {/* Live Market Updates - Vertical Sidebar */}
+      {(() => {
+        const oneMinuteAgo = Date.now() - 60 * 1000;
+        const liveUpdates = (cards || [])
+          .filter(card => card.lastUpdated > oneMinuteAgo)
+          .sort((a, b) => a.lastUpdated - b.lastUpdated) // Oldest first (bottom to top)
+          .slice(0, 10);
+
+        return liveUpdates.length > 0 ? (
+          <aside className="w-64 border-r bg-card/50 sticky top-0 h-screen overflow-y-auto flex-shrink-0">
+            <div className="p-4 border-b bg-background/95 backdrop-blur sticky top-0 z-10">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
+              </div>
+              <span className="text-xs text-muted-foreground">Last minute</span>
+            </div>
+            <div className="p-3 space-y-3">
+              {liveUpdates.map((card) => (
+                <motion.div
+                  key={card._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-2 border rounded-lg bg-background hover:bg-secondary/30 transition-colors cursor-pointer shadow-sm"
+                >
+                  {card.imageUrl && (
+                    <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
+                      <img
+                        src={card.imageUrl}
+                        alt={card.name}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                  <h3 className="font-semibold text-xs line-clamp-2 mb-1">{card.name}</h3>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold">${card.currentPrice.toFixed(2)}</span>
+                    <span className={`font-bold ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                      {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(1)}%
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </aside>
+        ) : null;
+      })()}
+
+      {/* Main Content Wrapper */}
+      <div className="flex-1 min-w-0">
+        {/* Header */}
+        <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -440,63 +493,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Live Market Updates - Last Minute */}
-        {(() => {
-          const oneMinuteAgo = Date.now() - 60 * 1000;
-          const liveUpdates = [
-            ...(cards || []).filter(card => card.lastUpdated > oneMinuteAgo)
-              .map(card => ({ ...card, type: 'card' as const })),
-            ...(products || []).filter(product => product.lastUpdated > oneMinuteAgo)
-              .map(product => ({ ...product, type: 'product' as const }))
-          ]
-          .sort((a, b) => b.lastUpdated - a.lastUpdated)
-          .slice(0, 15);
-
-          return liveUpdates.length > 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-6 p-4 border rounded-lg bg-gradient-to-r from-primary/5 to-primary/10"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                <h2 className="text-lg font-bold tracking-tight">Live Market Updates</h2>
-                <span className="text-xs text-muted-foreground ml-auto">Updated in the last minute</span>
-              </div>
-              <div className="flex gap-3 overflow-x-auto pb-2">
-                {liveUpdates.map((item) => (
-                  <div
-                    key={item._id}
-                    className="flex-shrink-0 w-32 p-2 border rounded-lg bg-background hover:bg-secondary/30 transition-colors cursor-pointer shadow-sm"
-                  >
-                    {item.imageUrl && (
-                      <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
-                    <h3 className="font-semibold text-xs line-clamp-2 mb-1">{item.name}</h3>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold">${item.currentPrice.toFixed(2)}</span>
-                      <span className={`font-bold ${item.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                        {item.percentChange >= 0 ? "+" : ""}{item.percentChange.toFixed(1)}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ) : null;
-        })()}
-
-        {/* Big Movers - Past Hour */}
+        {/* Big Movers - Past Hour (Cards Only) */}
         {(() => {
           const oneHourAgo = Date.now() - 60 * 60 * 1000;
           const recentBigMovers = [
@@ -523,16 +520,16 @@ export default function Dashboard() {
                 <span className="text-xs text-muted-foreground ml-auto">Changes over 1%</span>
               </div>
               <div className="flex gap-3 overflow-x-auto pb-2">
-                {recentBigMovers.map((item) => (
+                {recentBigMovers.map((card) => (
                   <div
-                    key={item._id}
+                    key={card._id}
                     className="flex-shrink-0 w-32 p-2 border rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors cursor-pointer"
                   >
-                    {item.imageUrl && (
+                    {card.imageUrl && (
                       <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
                         <img
-                          src={item.imageUrl}
-                          alt={item.name}
+                          src={card.imageUrl}
+                          alt={card.name}
                           className="w-full h-full object-contain"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
@@ -540,11 +537,11 @@ export default function Dashboard() {
                         />
                       </div>
                     )}
-                    <h3 className="font-semibold text-xs line-clamp-2 mb-1">{item.name}</h3>
+                    <h3 className="font-semibold text-xs line-clamp-2 mb-1">{card.name}</h3>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold">${item.currentPrice.toFixed(2)}</span>
-                      <span className={`font-bold ${item.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                        {item.percentChange >= 0 ? "+" : ""}{item.percentChange.toFixed(1)}%
+                      <span className="font-bold">${card.currentPrice.toFixed(2)}</span>
+                      <span className={`font-bold ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                        {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(1)}%
                       </span>
                     </div>
                   </div>
@@ -665,6 +662,7 @@ export default function Dashboard() {
           </TabsContent>
         </Tabs>
       </main>
+      </div>
     </div>
   );
 }
