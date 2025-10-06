@@ -107,7 +107,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
           {Math.abs(percentChange).toFixed(2)}%
         </div>
       </div>
-      <svg width={width} height={height + bottomPadding} className="w-full">
+      <svg width={width} height={height + bottomPadding} className="w-full" viewBox={`0 0 ${width} ${height + bottomPadding}`} preserveAspectRatio="xMidYMid meet">
         {/* Y-axis labels */}
         {yAxisLabels.map((label, i) => (
           <text

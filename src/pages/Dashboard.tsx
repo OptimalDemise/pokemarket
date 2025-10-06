@@ -164,9 +164,9 @@ export default function Dashboard() {
     .slice(0, 30);
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Main Content Wrapper */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 order-2 lg:order-1">
         {/* Header */}
         <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -595,8 +595,8 @@ export default function Dashboard() {
       </div>
 
       {/* Live Market Updates - Vertical Sidebar (Right Side) */}
-      <aside className="w-64 border-l bg-card/50 sticky top-0 h-screen overflow-y-auto scroll-smooth flex-shrink-0">
-        <div className="p-4 border-b bg-background/95 backdrop-blur sticky top-0 z-10 flex items-center h-[73px]">
+      <aside className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none">
+        <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 flex items-center h-[73px]">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
@@ -607,11 +607,13 @@ export default function Dashboard() {
         </div>
         <div className="p-3 space-y-2">
           {liveUpdates.length > 0 ? (
-            liveUpdates.map((card) => (
-              <div key={card._id} className="scale-90 origin-top">
-                <CardItem card={card} size="compact" />
-              </div>
-            ))
+            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
+              {liveUpdates.map((card) => (
+                <div key={card._id} className="scale-90 origin-top flex-shrink-0 w-32 lg:w-auto">
+                  <CardItem card={card} size="compact" />
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground text-xs">
               <p>No recent updates</p>

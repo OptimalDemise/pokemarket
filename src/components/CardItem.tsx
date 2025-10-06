@@ -116,7 +116,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
           </motion.div>
         </DialogTrigger>
         
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
@@ -125,7 +125,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
           </DialogHeader>
           
           <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Card Image */}
               {card.imageUrl && (
                 <div className="relative group">
