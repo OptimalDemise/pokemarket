@@ -192,8 +192,66 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Main Content */}
+        {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Recent Big Movers Section - Past Hour */}
+        {(() => {
+          const oneHourAgo = Date.now() - 60 * 60 * 1000;
+          const recentBigMovers = [
+            ...(cards || []).filter(card => 
+              card.lastUpdated > oneHourAgo && Math.abs(card.percentChange) > 1
+            ).map(card => ({ ...card, type: 'card' as const })),
+            ...(products || []).filter(product => 
+              product.lastUpdated > oneHourAgo && Math.abs(product.percentChange) > 1
+            ).map(product => ({ ...product, type: 'product' as const }))
+          ]
+          .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+          .slice(0, 10);
+
+          return recentBigMovers.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6 p-4 border rounded-lg bg-card"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
+                <span className="text-xs text-muted-foreground ml-auto">Changes over 1%</span>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2">
+                {recentBigMovers.map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex-shrink-0 w-32 p-2 border rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors cursor-pointer"
+                  >
+                    {item.imageUrl && (
+                      <div className="w-full aspect-[2/3] relative overflow-hidden rounded border bg-secondary/20 mb-2">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-xs line-clamp-2 mb-1">{item.name}</h3>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold">${item.currentPrice.toFixed(2)}</span>
+                      <span className={`font-bold ${item.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                        {item.percentChange >= 0 ? "+" : ""}{item.percentChange.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          ) : null;
+        })()}
+
         {/* Top Daily Changes Section */}
         {topDailyChanges && topDailyChanges.length > 0 && (
           <motion.div
