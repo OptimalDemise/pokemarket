@@ -21,9 +21,10 @@ interface CardItemProps {
     averagePrice?: number;
     isRecentSale?: boolean;
   };
+  size?: "default" | "compact";
 }
 
-export function CardItem({ card }: CardItemProps) {
+export function CardItem({ card, size = "default" }: CardItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
   
@@ -32,6 +33,9 @@ export function CardItem({ card }: CardItemProps) {
     api.cards.getCardPriceHistory,
     isOpen ? { cardId: card._id, limit: 100 } : "skip"
   );
+
+  const isCompact = size === "compact";
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -42,11 +46,11 @@ export function CardItem({ card }: CardItemProps) {
             transition={{ duration: 0.3 }}
             className="cursor-pointer"
           >
-            <Card className="p-4 hover:border-primary transition-all hover:shadow-lg">
-              <div className="space-y-3">
+            <Card className={`${isCompact ? 'p-2' : 'p-4'} hover:border-primary transition-all hover:shadow-lg`}>
+              <div className={isCompact ? 'space-y-1.5' : 'space-y-3'}>
                 {/* Card Image */}
                 {card.imageUrl && (
-                  <div className="w-full aspect-[2/3] relative overflow-hidden rounded-lg border bg-secondary/20">
+                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-w-[120px] mx-auto' : 'aspect-[2/3]'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
                     <img
                       src={card.imageUrl}
                       alt={card.name}
@@ -58,28 +62,28 @@ export function CardItem({ card }: CardItemProps) {
                   </div>
                 )}
                 
-                <div className="space-y-2">
+                <div className={isCompact ? 'space-y-1' : 'space-y-2'}>
                   <div className="flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                    <h3 className="font-bold tracking-tight text-sm truncate">{card.name}</h3>
+                    <Sparkles className={`${isCompact ? 'h-3 w-3' : 'h-3.5 w-3.5'} text-primary flex-shrink-0`} />
+                    <h3 className={`font-bold tracking-tight ${isCompact ? 'text-xs' : 'text-sm'} truncate`}>{card.name}</h3>
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">{card.setName}</p>
+                  <p className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground truncate`}>{card.setName}</p>
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       {card.isRecentSale && card.averagePrice ? (
                         <>
-                          <span className="text-xs text-muted-foreground line-through">
+                          <span className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground line-through`}>
                             Avg: ${card.averagePrice.toFixed(2)}
                           </span>
-                          <span className="text-lg font-bold text-primary">
+                          <span className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold text-primary`}>
                             Recent: ${card.currentPrice.toFixed(2)}
                           </span>
                         </>
                       ) : (
-                        <span className="text-lg font-bold">${card.currentPrice.toFixed(2)}</span>
+                        <span className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold`}>${card.currentPrice.toFixed(2)}</span>
                       )}
                     </div>
-                    <span className={`text-xs font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                    <span className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
                       {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(2)}%
                     </span>
                   </div>
