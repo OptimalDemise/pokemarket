@@ -53,6 +53,29 @@ export default function Landing() {
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+          
+          {/* Animated Logo Background */}
+          <motion.div
+            initial={{ opacity: 0, x: -100, scale: 0.8 }}
+            animate={{ opacity: 0.15, x: 0, scale: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[600px] md:h-[600px]"
+          >
+            <motion.img
+              src="https://harmless-tapir-303.convex.cloud/api/storage/68e40f71-217c-4c22-a34e-0b8e58109ee3"
+              alt="Logo Background"
+              className="w-full h-full object-contain"
+              animate={{ 
+                rotate: [0, 5, -5, 0],
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ 
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
         </div>
         
         <motion.div
