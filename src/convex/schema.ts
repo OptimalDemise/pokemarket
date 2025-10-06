@@ -42,6 +42,11 @@ const schema = defineSchema(
       tcgplayerUrl: v.optional(v.string()),
       currentPrice: v.number(),
       lastUpdated: v.number(),
+      // Cached calculated values
+      percentChange: v.optional(v.number()),
+      overallPercentChange: v.optional(v.number()),
+      averagePrice: v.optional(v.number()),
+      isRecentSale: v.optional(v.boolean()),
     })
       .index("by_name", ["name"])
       .index("by_set", ["setName"])
