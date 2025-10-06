@@ -120,19 +120,25 @@ export const upsertCard = internalMutation({
     const now = Date.now();
 
     if (existingCard) {
-      // Update existing card
-      await ctx.db.patch(existingCard._id, {
-        currentPrice: args.currentPrice,
-        lastUpdated: now,
-      });
+      // Check if price has actually changed (more than 0.1% difference)
+      const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
+      const hasPriceChanged = priceChangePercent > 0.1;
 
-      // Add price history entry with slight variation to show change
-      const priceVariation = args.currentPrice * (0.98 + Math.random() * 0.04);
-      await ctx.db.insert("cardPriceHistory", {
-        cardId: existingCard._id,
-        price: priceVariation,
-        timestamp: now,
-      });
+      if (hasPriceChanged) {
+        // Update existing card only if price changed
+        await ctx.db.patch(existingCard._id, {
+          currentPrice: args.currentPrice,
+          lastUpdated: now,
+        });
+
+        // Add price history entry with slight variation to show change
+        const priceVariation = args.currentPrice * (0.98 + Math.random() * 0.04);
+        await ctx.db.insert("cardPriceHistory", {
+          cardId: existingCard._id,
+          price: priceVariation,
+          timestamp: now,
+        });
+      }
 
       return existingCard._id;
     } else {
