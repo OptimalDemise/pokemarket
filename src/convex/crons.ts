@@ -17,4 +17,11 @@ crons.interval(
   internal.pokemonTcgApi.updateAllCardsWithRealData
 );
 
+// Update product prices every minute
+crons.interval(
+  "update product prices",
+  { minutes: 1 },
+  internal.updateProducts.updateProductPrices
+);
+
 export default crons;
