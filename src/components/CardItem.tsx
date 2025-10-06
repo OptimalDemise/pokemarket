@@ -21,6 +21,7 @@ interface CardItemProps {
     tcgplayerUrl?: string;
     averagePrice?: number;
     isRecentSale?: boolean;
+    lastUpdated: number;
   };
   size?: "default" | "compact";
 }
@@ -36,6 +37,15 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
   );
 
   const isCompact = size === "compact";
+  
+  // Check if card was updated in the last 5 minutes
+  const now = Date.now();
+  const fiveMinutesAgo = now - 5 * 60 * 1000;
+  const isRecentlyUpdated = card.lastUpdated > fiveMinutesAgo;
+  
+  // Check if card was updated in the last minute (for "New" badge)
+  const oneMinuteAgo = now - 60 * 1000;
+  const isJustUpdated = card.lastUpdated > oneMinuteAgo;
 
   return (
     <>
@@ -43,11 +53,38 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
         <DialogTrigger asChild>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="cursor-pointer"
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              scale: isRecentlyUpdated ? [1, 1.02, 1] : 1
+            }}
+            transition={{ 
+              duration: 0.3,
+              scale: {
+                repeat: isRecentlyUpdated ? Infinity : 0,
+                duration: 2,
+                ease: "easeInOut"
+              }
+            }}
+            className="cursor-pointer relative"
           >
-            <Card className={`${isCompact ? 'p-2' : 'p-4'} hover:border-primary transition-all hover:shadow-lg`}>
+            <Card className={`${isCompact ? 'p-2' : 'p-4'} hover:border-primary transition-all hover:shadow-lg ${
+              isRecentlyUpdated ? 'border-primary/50 shadow-md shadow-primary/20' : ''
+            }`}>
+              {isJustUpdated && (
+                <div className="absolute -top-2 -right-2 z-10">
+                  <motion.div
+                    initial={{ scale: 0, rotate: -12 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                  >
+                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                      NEW
+                    </span>
+                  </motion.div>
+                </div>
+              )}
+=======
               <div className={isCompact ? 'space-y-1.5' : 'space-y-3'}>
                 {/* Card Image */}
                 {card.imageUrl && (
