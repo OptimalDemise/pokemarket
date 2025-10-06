@@ -37,6 +37,7 @@ export const getAllCards = query({
               .take(10);
 
             let percentChange = 0;
+            let overallPercentChange = 0;
             let averagePrice = card.currentPrice;
             let isRecentSale = false;
             
@@ -46,6 +47,12 @@ export const getAllCards = query({
               const previous = history[1].price;
               if (previous !== 0) {
                 percentChange = ((current - previous) / previous) * 100;
+              }
+              
+              // Calculate overall percent change from first to current price
+              const firstPrice = history[history.length - 1].price;
+              if (firstPrice !== 0) {
+                overallPercentChange = ((current - firstPrice) / firstPrice) * 100;
               }
               
               // Calculate average price from last 5-10 entries (excluding most recent)
@@ -65,6 +72,7 @@ export const getAllCards = query({
             return {
               ...card,
               percentChange,
+              overallPercentChange,
               averagePrice,
               isRecentSale,
               tcgplayerUrl,
@@ -74,6 +82,7 @@ export const getAllCards = query({
             return {
               ...card,
               percentChange: 0,
+              overallPercentChange: 0,
               averagePrice: card.currentPrice,
               isRecentSale: false,
             };
