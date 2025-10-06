@@ -161,7 +161,7 @@ export default function Dashboard() {
   const liveUpdates = (cards || [])
     .filter(card => card.lastUpdated > oneMinuteAgo)
     .sort((a, b) => a.lastUpdated - b.lastUpdated) // Oldest first (bottom to top)
-    .slice(0, 30);
+    .slice(0, 50);
 
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
@@ -605,11 +605,11 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground">Last minute</span>
           </div>
         </div>
-        <div className="p-3 space-y-2">
+        <div className="p-3">
           {liveUpdates.length > 0 ? (
-            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
+            <div className="grid grid-cols-2 gap-2">
               {liveUpdates.map((card) => (
-                <div key={card._id} className="scale-90 origin-top flex-shrink-0 w-32 lg:w-auto">
+                <div key={card._id} className="scale-90 origin-top">
                   <CardItem card={card} size="compact" />
                 </div>
               ))}
