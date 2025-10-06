@@ -606,7 +606,11 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="p-3">
-          {liveUpdates.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : liveUpdates.length > 0 ? (
             <div className="grid grid-cols-2 gap-2">
               {liveUpdates.map((card) => (
                 <div key={card._id}>
