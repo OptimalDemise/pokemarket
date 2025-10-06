@@ -34,7 +34,7 @@ export const getAllCards = query({
               .query("cardPriceHistory")
               .withIndex("by_card", (q) => q.eq("cardId", card._id))
               .order("desc")
-              .take(10);
+              .take(2);
 
             let percentChange = 0;
             let overallPercentChange = 0;
@@ -48,16 +48,25 @@ export const getAllCards = query({
               if (previous !== 0) {
                 percentChange = ((current - previous) / previous) * 100;
               }
-              
-              // Calculate overall percent change from first to current price
-              const firstPrice = history[history.length - 1].price;
+            }
+            
+            // For overall trend and average price, fetch additional history separately
+            const fullHistory = await ctx.db
+              .query("cardPriceHistory")
+              .withIndex("by_card", (q) => q.eq("cardId", card._id))
+              .order("desc")
+              .take(10);
+            
+            if (fullHistory.length >= 2) {
+              const current = fullHistory[0].price;
+              const firstPrice = fullHistory[fullHistory.length - 1].price;
               if (firstPrice !== 0) {
                 overallPercentChange = ((current - firstPrice) / firstPrice) * 100;
               }
               
               // Calculate average price from last 5-10 entries (excluding most recent)
-              if (history.length >= 5) {
-                const historicalPrices = history.slice(1, Math.min(10, history.length));
+              if (fullHistory.length >= 5) {
+                const historicalPrices = fullHistory.slice(1, Math.min(10, fullHistory.length));
                 averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
                 
                 // Check if current price deviates significantly from average (>15%)
