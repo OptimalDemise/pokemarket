@@ -33,11 +33,11 @@ export default function Dashboard() {
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
 
-  // Auto-refresh every 2 minutes
+  // Auto-refresh every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setLastUpdate(new Date());
-    }, 120000); // 2 minutes
+    }, 60000); // 1 minute
 
     return () => clearInterval(interval);
   }, []);
