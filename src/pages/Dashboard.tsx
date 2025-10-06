@@ -12,7 +12,7 @@ import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Fragment } from "react";
 import { useNavigate } from "react-router";
 
 type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
@@ -256,6 +256,14 @@ export default function Dashboard() {
             </div>
           </motion.div>
         )}
+
+        {/* Ad Zone 1: Top Banner (Below Top Daily Movers) */}
+        <div className="mb-6 p-4 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[120px]">
+          <div className="text-center text-muted-foreground">
+            <p className="text-sm font-medium">Advertisement</p>
+            <p className="text-xs mt-1">728x90 or 970x90 Banner Ad Space</p>
+          </div>
+        </div>
 
         {/* Search and Sort Controls */}
           <div className="flex flex-col gap-4 mb-8">
@@ -508,8 +516,17 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {paginatedCards.map((card) => (
-                  <CardItemWrapper key={card._id} card={card} />
+                {paginatedCards.map((card, index) => (
+                  <Fragment key={card._id}>
+                    <CardItemWrapper card={card} />
+                    {/* Native Ad Card - Every 10th position */}
+                    {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
+                      <div className="p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[200px] hover:border-primary/50 transition-colors">
+                        <p className="text-xs font-medium text-muted-foreground mb-2">Sponsored</p>
+                        <p className="text-xs text-center text-muted-foreground">300x250 Ad Space</p>
+                      </div>
+                    )}
+                  </Fragment>
                 ))}
               </div>
               {filteredAndSortedCards.length === 0 && (
@@ -518,6 +535,16 @@ export default function Dashboard() {
                 </div>
               )}
               
+              {/* Ad Zone 3: Above Pagination */}
+              {filteredAndSortedCards.length > 0 && (
+                <div className="mt-6 mb-4 p-3 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px]">
+                  <div className="text-center text-muted-foreground">
+                    <p className="text-xs font-medium">Advertisement</p>
+                    <p className="text-[10px] mt-1">728x90 Leaderboard Ad Space</p>
+                  </div>
+                </div>
+              )}
+
               {/* Pagination Controls for Cards */}
               {totalCardPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-8">
@@ -576,8 +603,17 @@ export default function Dashboard() {
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {paginatedProducts.map((product) => (
-                  <ProductItemWrapper key={product._id} product={product} />
+                {paginatedProducts.map((product, index) => (
+                  <Fragment key={product._id}>
+                    <ProductItemWrapper product={product} />
+                    {/* Native Ad Card - Every 10th position */}
+                    {(index + 1) % 10 === 0 && index < paginatedProducts.length - 1 && (
+                      <div className="p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[200px] hover:border-primary/50 transition-colors">
+                        <p className="text-xs font-medium text-muted-foreground mb-2">Sponsored</p>
+                        <p className="text-xs text-center text-muted-foreground">300x250 Ad Space</p>
+                      </div>
+                    )}
+                  </Fragment>
                 ))}
               </div>
               {filteredAndSortedProducts.length === 0 && (
@@ -586,6 +622,16 @@ export default function Dashboard() {
                 </div>
               )}
               
+              {/* Ad Zone 3: Above Pagination */}
+              {filteredAndSortedProducts.length > 0 && (
+                <div className="mt-6 mb-4 p-3 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px]">
+                  <div className="text-center text-muted-foreground">
+                    <p className="text-xs font-medium">Advertisement</p>
+                    <p className="text-[10px] mt-1">728x90 Leaderboard Ad Space</p>
+                  </div>
+                </div>
+              )}
+
               {/* Pagination Controls for Products */}
               {totalProductPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-8">
