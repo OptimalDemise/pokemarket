@@ -20,7 +20,7 @@ import { useState, useEffect } from "react";
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { isLoading, isAuthenticated, signOut } = useAuth();
+  const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -107,7 +107,9 @@ export default function Landing() {
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    Welcome back, {user?.name || user?.email || "User"}
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/account-settings")}>
                     <Settings className="mr-2 h-4 w-4" />
