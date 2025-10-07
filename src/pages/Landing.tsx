@@ -28,7 +28,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="sticky top-0 bg-background/95 backdrop-blur z-50">
+      <nav className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="https://harmless-tapir-303.convex.cloud/api/storage/68e40f71-217c-4c22-a34e-0b8e58109ee3" alt="Logo" className="h-12 w-12" />

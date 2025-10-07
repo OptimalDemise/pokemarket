@@ -173,10 +173,10 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Main Content Wrapper */}
       <div className="flex-1 min-w-0 order-2 lg:order-1">
-      {/* Header */}
-      <header className="sticky top-0 bg-background/95 backdrop-blur z-10 border-b">
+        {/* Header */}
+        <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -203,64 +203,11 @@ export default function Dashboard() {
               Refresh
             </Button>
           </div>
-          
-          {/* Search and Sort Controls - Now in Header */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search cards or products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-10"
-              />
-              {searchQuery && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-            <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
-              <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
-                <SelectValue placeholder="Sort by..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest" className="cursor-pointer hover:bg-primary/10">Newest First</SelectItem>
-                <SelectItem value="highest-change" className="cursor-pointer hover:bg-primary/10">Highest % Change</SelectItem>
-                <SelectItem value="lowest-change" className="cursor-pointer hover:bg-primary/10">Lowest % Change</SelectItem>
-                <SelectItem value="no-change" className="cursor-pointer hover:bg-primary/10">No Change</SelectItem>
-                <SelectItem value="highest-price" className="cursor-pointer hover:bg-primary/10">Highest Price</SelectItem>
-                <SelectItem value="lowest-price" className="cursor-pointer hover:bg-primary/10">Lowest Price</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        {/* Top Daily Changes Section */}
-=======
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Top Daily Changes Section */}
-=======
-        {/* Top Daily Changes Section */}
-=======
->>>>>>> REPLACE
         </div>
       </header>
 
-      {/* Main Content */}
+        {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Top Daily Changes Section */}
-=======
-        {/* Top Daily Changes Section */}
-=======
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Top Daily Changes Section */}
-=======
         {/* Top Daily Changes Section */}
         {topDailyChanges && topDailyChanges.length > 0 && (
           <motion.div
@@ -311,15 +258,51 @@ export default function Dashboard() {
         )}
 
         {/* Ad Zone 1: Top Banner (Below Top Daily Movers) */}
-        <div className="mb-6 p-4 rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px] sm:min-h-[120px]">
+        <div className="mb-6 p-4 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px] sm:min-h-[120px]">
           <div className="text-center text-muted-foreground">
             <p className="text-xs sm:text-sm font-medium">Advertisement</p>
             <p className="text-[10px] sm:text-xs mt-1">Banner Ad Space</p>
           </div>
         </div>
 
-        {/* Price and Rarity Filters */}
-        <div className="flex flex-col gap-4 mb-8">
+        {/* Search and Sort Controls */}
+          <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search cards or products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-10"
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
+              <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest" className="cursor-pointer hover:bg-primary/10">Newest First</SelectItem>
+                <SelectItem value="highest-change" className="cursor-pointer hover:bg-primary/10">Highest % Change</SelectItem>
+                <SelectItem value="lowest-change" className="cursor-pointer hover:bg-primary/10">Lowest % Change</SelectItem>
+                <SelectItem value="no-change" className="cursor-pointer hover:bg-primary/10">No Change</SelectItem>
+                <SelectItem value="highest-price" className="cursor-pointer hover:bg-primary/10">Highest Price</SelectItem>
+                <SelectItem value="lowest-price" className="cursor-pointer hover:bg-primary/10">Lowest Price</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Price and Rarity Filters */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
