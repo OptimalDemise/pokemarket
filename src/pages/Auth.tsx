@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/input-otp";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
+import { ArrowRight, Loader2, Mail, UserX, X } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -103,7 +103,17 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       {/* Auth Content */}
       <div className="flex-1 flex items-center justify-center">
         <div className="flex items-center justify-center h-full flex-col">
-        <Card className="min-w-[350px] pb-0 border shadow-md">
+        <Card className="min-w-[350px] pb-0 border shadow-md relative">
+          {/* Close button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 h-8 w-8"
+            onClick={() => navigate("/")}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          
           {step === "signIn" ? (
             <>
               <CardHeader className="text-center">
