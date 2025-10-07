@@ -174,6 +174,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   </p>
                 </CardContent>
               </form>
+              <CardFooter className="pb-4 pt-0">
+                <p className="text-xs text-center text-muted-foreground w-full">
+                  Secured by PokéMarket
+                </p>
+              </CardFooter>
             </>
           ) : (
             <>
