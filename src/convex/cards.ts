@@ -143,14 +143,13 @@ export const getAllCards = query({
 
 // Get price history for a specific card
 export const getCardPriceHistory = query({
-  args: { cardId: v.id("cards"), limit: v.optional(v.number()) },
+  args: { cardId: v.id("cards") },
   handler: async (ctx, args) => {
-    const limit = args.limit || 100;
     const history = await ctx.db
       .query("cardPriceHistory")
       .withIndex("by_card", (q) => q.eq("cardId", args.cardId))
       .order("desc")
-      .take(limit);
+      .collect();
 
     return history.reverse();
   },

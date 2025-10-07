@@ -34,7 +34,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
     api.cards.getCardPriceHistory,
-    isOpen ? { cardId: card._id, limit: 100 } : "skip"
+    isOpen ? { cardId: card._id } : "skip"
   );
 
   const isCompact = size === "compact";

@@ -30,7 +30,7 @@ export function ProductItem({ product }: ProductItemProps) {
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
     api.products.getProductPriceHistory,
-    isOpen ? { productId: product._id, limit: 100 } : "skip"
+    isOpen ? { productId: product._id } : "skip"
   );
   
   // Check if product was updated in the last 5 minutes

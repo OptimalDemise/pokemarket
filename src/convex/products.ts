@@ -24,14 +24,13 @@ export const getAllProducts = query({
 
 // Get price history for a specific product
 export const getProductPriceHistory = query({
-  args: { productId: v.id("products"), limit: v.optional(v.number()) },
+  args: { productId: v.id("products") },
   handler: async (ctx, args) => {
-    const limit = args.limit || 100;
     const history = await ctx.db
       .query("productPriceHistory")
       .withIndex("by_product", (q) => q.eq("productId", args.productId))
       .order("desc")
-      .take(limit);
+      .collect();
 
     return history.reverse();
   },
