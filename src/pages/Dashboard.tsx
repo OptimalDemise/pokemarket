@@ -239,9 +239,22 @@ export default function Dashboard() {
               </SelectContent>
             </Select>
           </div>
+        {/* Top Daily Changes Section */}
+=======
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Top Daily Changes Section */}
+=======
+        {/* Top Daily Changes Section */}
+=======
+>>>>>>> REPLACE
         </div>
       </header>
 
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Top Daily Changes Section */}
+=======
         {/* Top Daily Changes Section */}
 =======
       {/* Main Content */}
