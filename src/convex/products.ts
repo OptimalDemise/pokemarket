@@ -136,88 +136,111 @@ export const _upsertProduct = internalMutation({
     currentPrice: v.number(),
   },
   handler: async (ctx, args) => {
-    // Check if product exists
-    const existingProducts = await ctx.db
-      .query("products")
-      .withIndex("by_type", (q) => q.eq("productType", args.productType))
-      .collect();
+    try {
+      // Validate input
+      if (args.currentPrice < 0) {
+        console.error(`Invalid price for product ${args.name}: ${args.currentPrice}`);
+        return null;
+      }
 
-    const existingProduct = existingProducts.find(
-      (p) => p.name === args.name && p.setName === args.setName
-    );
+      // Check if product exists
+      const existingProducts = await ctx.db
+        .query("products")
+        .withIndex("by_type", (q) => q.eq("productType", args.productType))
+        .collect();
 
-    const now = Date.now();
+      const existingProduct = existingProducts.find(
+        (p) => p.name === args.name && p.setName === args.setName
+      );
 
-    if (existingProduct) {
-      // Check if price has actually changed (more than 0.1% difference)
-      const priceChangePercent = Math.abs((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
-      const hasPriceChanged = priceChangePercent > 0.1;
+      const now = Date.now();
 
-      if (hasPriceChanged) {
-        // Calculate new percentage change
-        const percentChange = ((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
-        
-        // Fetch limited history for calculations
-        const recentHistory = await ctx.db
-          .query("productPriceHistory")
-          .withIndex("by_product", (q) => q.eq("productId", existingProduct._id))
-          .order("desc")
-          .take(6);
-        
-        let averagePrice = existingProduct.currentPrice;
-        let isRecentSale = false;
-        
-        // Calculate average from last 5 entries (excluding current)
-        if (recentHistory.length >= 2) {
-          const historicalPrices = recentHistory.slice(0, Math.min(5, recentHistory.length));
-          averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
-          
-          // Check if current price deviates significantly from average (>15%)
-          const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
-          isRecentSale = deviation > 15;
+      if (existingProduct) {
+        // Validate existing product data
+        if (!existingProduct.currentPrice || existingProduct.currentPrice <= 0) {
+          console.warn(`Invalid existing price for product ${args.name}, resetting`);
+          existingProduct.currentPrice = args.currentPrice;
         }
-        
-        // Update existing product with calculated values (only when price changed >0.1%)
-        await ctx.db.patch(existingProduct._id, {
+
+        // Check if price has actually changed (more than 0.1% difference)
+        const priceChangePercent = Math.abs((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
+        const hasPriceChanged = priceChangePercent > 0.1;
+
+        if (hasPriceChanged) {
+          // Calculate new percentage change with safety check
+          let percentChange = 0;
+          if (existingProduct.currentPrice !== 0) {
+            percentChange = ((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
+          }
+          
+          // Fetch limited history for calculations
+          const recentHistory = await ctx.db
+            .query("productPriceHistory")
+            .withIndex("by_product", (q) => q.eq("productId", existingProduct._id))
+            .order("desc")
+            .take(6);
+          
+          let averagePrice = existingProduct.currentPrice;
+          let isRecentSale = false;
+          
+          // Calculate average from last 5 entries (excluding current)
+          if (recentHistory.length >= 2) {
+            const historicalPrices = recentHistory.slice(0, Math.min(5, recentHistory.length));
+            const sum = historicalPrices.reduce((sum, h) => sum + h.price, 0);
+            averagePrice = sum / historicalPrices.length;
+            
+            // Check if current price deviates significantly from average (>15%)
+            if (averagePrice !== 0) {
+              const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
+              isRecentSale = deviation > 15;
+            }
+          }
+          
+          // Update existing product with calculated values (only when price changed >0.1%)
+          await ctx.db.patch(existingProduct._id, {
+            currentPrice: args.currentPrice,
+            lastUpdated: now,
+            percentChange,
+            averagePrice,
+            isRecentSale,
+          });
+
+          // Add price history entry (only for significant changes >0.1%)
+          await ctx.db.insert("productPriceHistory", {
+            productId: existingProduct._id,
+            price: args.currentPrice,
+            timestamp: now,
+          });
+        }
+        // If price hasn't changed significantly, don't update lastUpdated or add history
+
+        return existingProduct._id;
+      } else {
+        // Create new product
+        const productId = await ctx.db.insert("products", {
+          name: args.name,
+          productType: args.productType,
+          setName: args.setName,
+          imageUrl: args.imageUrl,
           currentPrice: args.currentPrice,
           lastUpdated: now,
-          percentChange,
-          averagePrice,
-          isRecentSale,
+          percentChange: 0,
+          averagePrice: args.currentPrice,
+          isRecentSale: false,
         });
 
-        // Add price history entry (only for significant changes >0.1%)
+        // Add initial price history entry
         await ctx.db.insert("productPriceHistory", {
-          productId: existingProduct._id,
+          productId,
           price: args.currentPrice,
           timestamp: now,
         });
+
+        return productId;
       }
-      // If price hasn't changed significantly, don't update lastUpdated or add history
-
-      return existingProduct._id;
-    } else {
-      // Create new product
-      const productId = await ctx.db.insert("products", {
-        name: args.name,
-        productType: args.productType,
-        setName: args.setName,
-        imageUrl: args.imageUrl,
-        currentPrice: args.currentPrice,
-        lastUpdated: now,
-        percentChange: 0,
-        averagePrice: args.currentPrice,
-        isRecentSale: false,
-      });
-
-      // Add initial price history entry
-      await ctx.db.insert("productPriceHistory", {
-        productId,
-        price: args.currentPrice,
-        timestamp: now,
-      });
-
-      return productId;
+    } catch (error) {
+      console.error(`Error upserting product ${args.name}:`, error);
+      throw new Error(`Failed to upsert product: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 });

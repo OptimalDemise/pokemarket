@@ -16,7 +16,12 @@ function constructTCGPlayerUrl(cardName: string, setName: string, cardNumber: st
 export const _getAllCards = internalQuery({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("cards").collect();
+    try {
+      return await ctx.db.query("cards").collect();
+    } catch (error) {
+      console.error("Error fetching all cards:", error);
+      throw new Error("Failed to retrieve cards data");
+    }
   },
 });
 
@@ -139,123 +144,144 @@ export const upsertCard = internalMutation({
     currentPrice: v.number(),
   },
   handler: async (ctx, args) => {
-    // Check if card exists
-    const existingCards = await ctx.db
-      .query("cards")
-      .withIndex("by_name", (q) => q.eq("name", args.name))
-      .collect();
+    try {
+      // Validate input
+      if (args.currentPrice < 0) {
+        console.error(`Invalid price for card ${args.name}: ${args.currentPrice}`);
+        return null;
+      }
 
-    const existingCard = existingCards.find(
-      (c) => c.setName === args.setName && c.cardNumber === args.cardNumber
-    );
+      // Check if card exists
+      const existingCards = await ctx.db
+        .query("cards")
+        .withIndex("by_name", (q) => q.eq("name", args.name))
+        .collect();
 
-    const now = Date.now();
+      const existingCard = existingCards.find(
+        (c) => c.setName === args.setName && c.cardNumber === args.cardNumber
+      );
 
-    if (existingCard) {
-      // Check if price has actually changed (more than 0.1% difference)
-      const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
-      const hasPriceChanged = priceChangePercent > 0.1;
-      
-      // Check if it's been more than 30 minutes since last history entry (for chart data points)
-      const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
-      const shouldRecordHalfHourly = existingCard.lastUpdated < thirtyMinutesAgo;
+      const now = Date.now();
 
-      // Always update lastUpdated for live updates display, but only record history every 30 min or on significant change
-      if (hasPriceChanged || shouldRecordHalfHourly) {
-        // Calculate new percentage change
-        const percentChange = ((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
-        
-        // Fetch limited history for calculations
-        const recentHistory = await ctx.db
-          .query("cardPriceHistory")
-          .withIndex("by_card", (q) => q.eq("cardId", existingCard._id))
-          .order("desc")
-          .take(6);
-        
-        let overallPercentChange = existingCard.overallPercentChange || 0;
-        let averagePrice = existingCard.currentPrice;
-        let isRecentSale = false;
-        
-        // Calculate average from last 5 entries (excluding current)
-        if (recentHistory.length >= 2) {
-          const historicalPrices = recentHistory.slice(0, Math.min(5, recentHistory.length));
-          averagePrice = historicalPrices.reduce((sum, h) => sum + h.price, 0) / historicalPrices.length;
-          
-          // Check if current price deviates significantly from average (>15%)
-          const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
-          isRecentSale = deviation > 15;
+      if (existingCard) {
+        // Validate existing card data
+        if (!existingCard.currentPrice || existingCard.currentPrice <= 0) {
+          console.warn(`Invalid existing price for card ${args.name}, resetting`);
+          existingCard.currentPrice = args.currentPrice;
         }
+
+        // Check if price has actually changed (more than 0.1% difference)
+        const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
+        const hasPriceChanged = priceChangePercent > 0.1;
         
-        // Calculate overall trend from the very first recorded price
-        const firstHistoryEntry = await ctx.db
-          .query("cardPriceHistory")
-          .withIndex("by_card", (q) => q.eq("cardId", existingCard._id))
-          .order("asc")
-          .first();
-        
-        if (firstHistoryEntry) {
-          const firstPrice = firstHistoryEntry.price;
-          if (firstPrice !== 0) {
+        // Check if it's been more than 30 minutes since last history entry (for chart data points)
+        const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
+        const shouldRecordHalfHourly = existingCard.lastUpdated < thirtyMinutesAgo;
+
+        // Always update lastUpdated for live updates display, but only record history every 30 min or on significant change
+        if (hasPriceChanged || shouldRecordHalfHourly) {
+          // Calculate new percentage change with safety check
+          let percentChange = 0;
+          if (existingCard.currentPrice !== 0) {
+            percentChange = ((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
+          }
+          
+          // Fetch limited history for calculations
+          const recentHistory = await ctx.db
+            .query("cardPriceHistory")
+            .withIndex("by_card", (q) => q.eq("cardId", existingCard._id))
+            .order("desc")
+            .take(6);
+          
+          let overallPercentChange = existingCard.overallPercentChange || 0;
+          let averagePrice = existingCard.currentPrice;
+          let isRecentSale = false;
+          
+          // Calculate average from last 5 entries (excluding current)
+          if (recentHistory.length >= 2) {
+            const historicalPrices = recentHistory.slice(0, Math.min(5, recentHistory.length));
+            const sum = historicalPrices.reduce((sum, h) => sum + h.price, 0);
+            averagePrice = sum / historicalPrices.length;
+            
+            // Check if current price deviates significantly from average (>15%)
+            if (averagePrice !== 0) {
+              const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
+              isRecentSale = deviation > 15;
+            }
+          }
+          
+          // Calculate overall trend from the very first recorded price
+          const firstHistoryEntry = await ctx.db
+            .query("cardPriceHistory")
+            .withIndex("by_card", (q) => q.eq("cardId", existingCard._id))
+            .order("asc")
+            .first();
+          
+          if (firstHistoryEntry && firstHistoryEntry.price !== 0) {
+            const firstPrice = firstHistoryEntry.price;
             overallPercentChange = ((args.currentPrice - firstPrice) / firstPrice) * 100;
           }
+          
+          // Update existing card with calculated values
+          await ctx.db.patch(existingCard._id, {
+            currentPrice: args.currentPrice,
+            lastUpdated: now,
+            percentChange,
+            overallPercentChange,
+            averagePrice,
+            isRecentSale,
+          });
+
+          // Add price history entry ONLY for significant changes OR 30-minute intervals (for chart data)
+          await ctx.db.insert("cardPriceHistory", {
+            cardId: existingCard._id,
+            price: args.currentPrice,
+            timestamp: now,
+          });
+        } else {
+          // Price hasn't changed significantly and it's not time for 30-min update
+          // Still update lastUpdated for live updates display, but don't add history entry
+          // However, we still need to maintain the existing percentChange value
+          await ctx.db.patch(existingCard._id, {
+            lastUpdated: now,
+            // Keep existing calculated values so they don't reset to 0
+            percentChange: existingCard.percentChange || 0,
+            overallPercentChange: existingCard.overallPercentChange || 0,
+            averagePrice: existingCard.averagePrice || existingCard.currentPrice,
+            isRecentSale: existingCard.isRecentSale || false,
+          });
         }
-        
-        // Update existing card with calculated values
-        await ctx.db.patch(existingCard._id, {
+
+        return existingCard._id;
+      } else {
+        // Create new card
+        const cardId = await ctx.db.insert("cards", {
+          name: args.name,
+          setName: args.setName,
+          cardNumber: args.cardNumber,
+          rarity: args.rarity,
+          imageUrl: args.imageUrl,
+          tcgplayerUrl: args.tcgplayerUrl,
           currentPrice: args.currentPrice,
           lastUpdated: now,
-          percentChange,
-          overallPercentChange,
-          averagePrice,
-          isRecentSale,
+          percentChange: 0,
+          overallPercentChange: 0,
+          averagePrice: args.currentPrice,
+          isRecentSale: false,
         });
 
-        // Add price history entry ONLY for significant changes OR 30-minute intervals (for chart data)
+        // Add initial price history entry
         await ctx.db.insert("cardPriceHistory", {
-          cardId: existingCard._id,
+          cardId,
           price: args.currentPrice,
           timestamp: now,
         });
-      } else {
-        // Price hasn't changed significantly and it's not time for 30-min update
-        // Still update lastUpdated for live updates display, but don't add history entry
-        // However, we still need to maintain the existing percentChange value
-        await ctx.db.patch(existingCard._id, {
-          lastUpdated: now,
-          // Keep existing calculated values so they don't reset to 0
-          percentChange: existingCard.percentChange || 0,
-          overallPercentChange: existingCard.overallPercentChange || 0,
-          averagePrice: existingCard.averagePrice || existingCard.currentPrice,
-          isRecentSale: existingCard.isRecentSale || false,
-        });
+
+        return cardId;
       }
-
-      return existingCard._id;
-    } else {
-      // Create new card
-      const cardId = await ctx.db.insert("cards", {
-        name: args.name,
-        setName: args.setName,
-        cardNumber: args.cardNumber,
-        rarity: args.rarity,
-        imageUrl: args.imageUrl,
-        tcgplayerUrl: args.tcgplayerUrl,
-        currentPrice: args.currentPrice,
-        lastUpdated: now,
-        percentChange: 0,
-        overallPercentChange: 0,
-        averagePrice: args.currentPrice,
-        isRecentSale: false,
-      });
-
-      // Add initial price history entry
-      await ctx.db.insert("cardPriceHistory", {
-        cardId,
-        price: args.currentPrice,
-        timestamp: now,
-      });
-
-      return cardId;
+    } catch (error) {
+      console.error(`Error upserting card ${args.name}:`, error);
+      throw new Error(`Failed to upsert card: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 });
