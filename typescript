@@ -1,3 +1,6 @@
-const oneMinuteAgo = Date.now() - 60 * 1000;
-const liveUpdates = (cards || [])
-  .filter(card => card.lastUpdated > oneMinuteAgo)
+if (recentHistory.length > 0) {
+  const firstPrice = recentHistory[recentHistory.length - 1].price;
+  if (firstPrice !== 0) {
+    overallPercentChange = ((args.currentPrice - firstPrice) / firstPrice) * 100;
+  }
+}
