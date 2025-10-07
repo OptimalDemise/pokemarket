@@ -1,18 +1,37 @@
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { CardItem } from "@/components/CardItem";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useState, useEffect } from "react";
 
 export default function Landing() {
   const navigate = useNavigate();
   const { isLoading, isAuthenticated } = useAuth();
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Initialize theme from localStorage or default to light
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    }
+  }, []);
+
+  // Toggle theme function
+  const toggleTheme = (newTheme: "light" | "dark") => {
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
 
   // Get top 3 cards by percentage change
   const topPercentageChanges = cards
@@ -39,13 +58,47 @@ export default function Landing() {
             }}>PokéMarket</span>
           </div>
           {!isLoading && (
-            <Button
-              onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-              variant="outline"
-              className="cursor-pointer"
-            >
-              {isAuthenticated ? "Dashboard" : "Sign In"}
-            </Button>
+            <div className="flex items-center gap-3">
+              {/* Theme Toggle Buttons */}
+              <div className="flex items-center gap-1 border rounded-md p-1">
+                <Button
+                  variant={theme === "light" ? "default" : "ghost"}
+                  size="icon"
+                  onClick={() => toggleTheme("light")}
+                  className="cursor-pointer h-8 w-8"
+                >
+                  <Sun className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={theme === "dark" ? "default" : "ghost"}
+                  size="icon"
+                  onClick={() => toggleTheme("dark")}
+                  className="cursor-pointer h-8 w-8"
+                >
+                  <Moon className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Sign In Button */}
+              <Button
+                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                variant="outline"
+                className="cursor-pointer"
+              >
+                {isAuthenticated ? "Dashboard" : "Sign In"}
+              </Button>
+
+              {/* Profile Avatar */}
+              <Avatar className="cursor-pointer h-9 w-9" onClick={() => {
+                // Placeholder for future account center functionality
+                console.log("Account center clicked");
+              }}>
+                <AvatarImage src="" alt="Profile" />
+                <AvatarFallback>
+                  <User className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
+            </div>
           )}
         </div>
       </nav>
