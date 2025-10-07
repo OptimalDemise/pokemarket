@@ -517,16 +517,16 @@ export default function Dashboard() {
             >
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {paginatedCards.map((card, index) => (
-                  <div key={card._id} className="contents">
-                    <CardItemWrapper card={card} />
+                  <>
+                    <CardItemWrapper key={card._id} card={card} />
                     {/* Native Ad Card - Every 10th position */}
                     {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
-                      <div className="p-3 sm:p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] hover:border-primary/50 transition-colors">
+                      <div key={`ad-${card._id}`} className="p-3 sm:p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] hover:border-primary/50 transition-colors">
                         <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1 sm:mb-2">Sponsored</p>
                         <p className="text-[10px] sm:text-xs text-center text-muted-foreground">Ad Space</p>
                       </div>
                     )}
-                  </div>
+                  </>
                 ))}
               </div>
               {filteredAndSortedCards.length === 0 && (
@@ -604,16 +604,16 @@ export default function Dashboard() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {paginatedProducts.map((product, index) => (
-                  <div key={product._id} className="contents">
-                    <ProductItemWrapper product={product} />
+                  <>
+                    <ProductItemWrapper key={product._id} product={product} />
                     {/* Native Ad Card - Every 10th position */}
                     {(index + 1) % 10 === 0 && index < paginatedProducts.length - 1 && (
-                      <div className="p-3 sm:p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] hover:border-primary/50 transition-colors">
+                      <div key={`ad-${product._id}`} className="p-3 sm:p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] hover:border-primary/50 transition-colors">
                         <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1 sm:mb-2">Sponsored</p>
                         <p className="text-[10px] sm:text-xs text-center text-muted-foreground">Ad Space</p>
                       </div>
                     )}
-                  </div>
+                  </>
                 ))}
               </div>
               {filteredAndSortedProducts.length === 0 && (
