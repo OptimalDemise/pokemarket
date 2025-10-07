@@ -116,7 +116,7 @@ export default function Landing() {
       </section>
 
       {/* Market Activity Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 border-t">
+      <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -202,7 +202,7 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 border-t">
+      <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -270,7 +270,7 @@ export default function Landing() {
       </section>
 
       {/* Stats Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 border-t">
+      <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -303,7 +303,7 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 border-t">
+      <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -329,7 +329,7 @@ export default function Landing() {
       </section>
 
       {/* FAQ Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 border-t">
+      <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -407,7 +407,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
+      <footer className="py-8">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground space-y-2">
           <p>© 2024 PokéMarket. Built for collectors and investors.</p>
           <div className="flex items-center justify-center gap-4">
