@@ -219,8 +219,14 @@ export const upsertCard = internalMutation({
       } else {
         // Price hasn't changed significantly and it's not time for 30-min update
         // Still update lastUpdated for live updates display, but don't add history entry
+        // However, we still need to maintain the existing percentChange value
         await ctx.db.patch(existingCard._id, {
           lastUpdated: now,
+          // Keep existing calculated values so they don't reset to 0
+          percentChange: existingCard.percentChange || 0,
+          overallPercentChange: existingCard.overallPercentChange || 0,
+          averagePrice: existingCard.averagePrice || existingCard.currentPrice,
+          isRecentSale: existingCard.isRecentSale || false,
         });
       }
 
