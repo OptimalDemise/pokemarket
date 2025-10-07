@@ -242,8 +242,11 @@ export default function Dashboard() {
         </div>
       </header>
 
+        {/* Top Daily Changes Section */}
+=======
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Top Daily Changes Section */}
 =======
         {/* Top Daily Changes Section */}
         {topDailyChanges && topDailyChanges.length > 0 && (
