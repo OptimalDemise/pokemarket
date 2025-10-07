@@ -14,7 +14,6 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "@/hooks/use-auth";
 
 type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
 
@@ -22,7 +21,6 @@ const ITEMS_PER_PAGE = 50;
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { isLoading: isAuthLoading, isAuthenticated } = useAuth();
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
   const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
@@ -40,15 +38,8 @@ export default function Dashboard() {
   const [rarityOpen, setRarityOpen] = useState(false);
   const [setOpen, setSetOpen] = useState(false);
 
-  // Redirect to auth if not authenticated
-  useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated) {
-      navigate("/auth");
-    }
-  }, [isAuthLoading, isAuthenticated, navigate]);
-
   // Determine loading state first
-  const isLoading = isAuthLoading || cards === undefined || products === undefined;
+  const isLoading = cards === undefined || products === undefined;
 
   // Auto-refresh every minute
   useEffect(() => {
