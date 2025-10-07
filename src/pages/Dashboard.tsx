@@ -173,8 +173,8 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Main Content Wrapper */}
       <div className="flex-1 min-w-0 order-2 lg:order-1">
-        {/* Header */}
-        <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
+      {/* Header */}
+      <header className="sticky top-0 bg-background/95 backdrop-blur z-10 border-b">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
