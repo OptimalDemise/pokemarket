@@ -109,7 +109,7 @@ export default function Landing() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => console.log("Account settings clicked")}>
+                  <DropdownMenuItem onClick={() => navigate("/account-settings")}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Account Settings</span>
                   </DropdownMenuItem>
