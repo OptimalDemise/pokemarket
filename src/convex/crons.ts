@@ -10,10 +10,10 @@ crons.daily(
   internal.dailySnapshots.createDailySnapshots
 );
 
-// Update card prices every minute
+// Update card prices every hour
 crons.interval(
   "update card prices",
-  { minutes: 1 },
+  { hours: 1 },
   internal.pokemonTcgApi.updateAllCardsWithRealData
 );
 

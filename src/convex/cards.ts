@@ -184,8 +184,12 @@ export const upsertCard = internalMutation({
       // Check if price has actually changed (more than 0.1% difference)
       const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
       const hasPriceChanged = priceChangePercent > 0.1;
+      
+      // Also check if it's been more than 1 hour since last update (to ensure hourly data points)
+      const oneHourAgo = Date.now() - (60 * 60 * 1000);
+      const shouldRecordHourly = existingCard.lastUpdated < oneHourAgo;
 
-      if (hasPriceChanged) {
+      if (hasPriceChanged || shouldRecordHourly) {
         // Calculate new percentage change
         const percentChange = ((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
         
@@ -210,15 +214,21 @@ export const upsertCard = internalMutation({
           isRecentSale = deviation > 15;
         }
         
-        // Calculate overall trend if we have history
-        if (recentHistory.length > 0) {
-          const firstPrice = recentHistory[recentHistory.length - 1].price;
+        // Calculate overall trend from the very first recorded price
+        const firstHistoryEntry = await ctx.db
+          .query("cardPriceHistory")
+          .withIndex("by_card", (q) => q.eq("cardId", existingCard._id))
+          .order("asc")
+          .first();
+        
+        if (firstHistoryEntry) {
+          const firstPrice = firstHistoryEntry.price;
           if (firstPrice !== 0) {
             overallPercentChange = ((args.currentPrice - firstPrice) / firstPrice) * 100;
           }
         }
         
-        // Update existing card with calculated values (only when price changed >0.1%)
+        // Update existing card with calculated values
         await ctx.db.patch(existingCard._id, {
           currentPrice: args.currentPrice,
           lastUpdated: now,
@@ -228,14 +238,14 @@ export const upsertCard = internalMutation({
           isRecentSale,
         });
 
-        // Add price history entry (only for significant changes >0.1%)
+        // Add price history entry (for significant changes OR hourly updates)
         await ctx.db.insert("cardPriceHistory", {
           cardId: existingCard._id,
           price: args.currentPrice,
           timestamp: now,
         });
       }
-      // If price hasn't changed significantly, don't update lastUpdated or add history
+      // If price hasn't changed significantly and it's not time for hourly update, don't record
 
       return existingCard._id;
     } else {
