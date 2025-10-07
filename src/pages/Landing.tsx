@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { CardItem } from "@/components/CardItem";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -324,6 +325,84 @@ export default function Landing() {
             View Market Now
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
+        </motion.div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="max-w-7xl mx-auto px-6 py-24 border-t">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="space-y-8"
+        >
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl font-bold tracking-tight">Frequently Asked Questions</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Everything you need to know about PokéMarket
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>What cards does PokéMarket track?</AccordionTrigger>
+                <AccordionContent>
+                  PokéMarket focuses exclusively on valuable Pokemon cards, including Rare Holo, Ultra Rare, Secret Rare, Hyper Rare, Illustration Rare, Special Illustration Rare, and many other premium rarities. We track cards from vintage to modern sets, prioritizing those with market values above $5 to ensure you're monitoring the most valuable collectibles.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2">
+                <AccordionTrigger>How often are prices updated?</AccordionTrigger>
+                <AccordionContent>
+                  Card and product prices are updated every minute to provide you with the most current market data. Price history for charts is recorded every 30 minutes or when significant price changes occur (greater than 0.1%), ensuring you have accurate trend data without unnecessary noise.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3">
+                <AccordionTrigger>Where does the pricing data come from?</AccordionTrigger>
+                <AccordionContent>
+                  All pricing data is sourced from the Pokemon TCG API, which aggregates market prices from TCGPlayer. We prioritize holofoil market prices, followed by 1st Edition holofoil, reverse holofoil, and normal market prices to give you the most relevant pricing information for valuable cards.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4">
+                <AccordionTrigger>What do the percentage changes mean?</AccordionTrigger>
+                <AccordionContent>
+                  The percentage change shows how much a card's price has changed since the last recorded price point. We also display an "Overall Trend" percentage that shows the total price change from the very first recorded price to the current price, giving you both short-term and long-term market insights.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5">
+                <AccordionTrigger>What does "Recent Sale" mean?</AccordionTrigger>
+                <AccordionContent>
+                  When you see "Recent: $X" instead of the regular price, it indicates that the current price deviates significantly (more than 15%) from the average price of recent history. This often suggests a recent sale or unusual market activity, and we show the average price with a strikethrough for comparison.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-6">
+                <AccordionTrigger>Can I buy cards directly through PokéMarket?</AccordionTrigger>
+                <AccordionContent>
+                  PokéMarket is a tracking and monitoring tool, not a marketplace. However, each card includes a direct link to TCGPlayer's search results where you can find sellers and make purchases. We help you track prices and trends so you can make informed buying decisions.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-7">
+                <AccordionTrigger>How far back does price history go?</AccordionTrigger>
+                <AccordionContent>
+                  We maintain price history data for up to 90 days for individual cards and products. Daily snapshots are kept for up to one year, allowing you to analyze both short-term fluctuations and long-term trends in the Pokemon card market.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-8">
+                <AccordionTrigger>Do I need to create an account?</AccordionTrigger>
+                <AccordionContent>
+                  Yes, you need to sign in to access the market dashboard and track prices. We use a secure email OTP (one-time password) authentication system to protect your account. Simply enter your email, receive a verification code, and you're ready to start tracking the Pokemon card market.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </motion.div>
       </section>
 
