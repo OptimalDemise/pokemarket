@@ -301,7 +301,128 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Price and Rarity Filters */}
+        {/* Rarity and Set Filters */}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <span className="text-sm font-medium whitespace-nowrap">Rarity:</span>
+            <Popover open={rarityOpen} onOpenChange={setRarityOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={rarityOpen}
+                  className="w-full sm:w-[200px] justify-between"
+                >
+                  {selectedRarity === "all" ? "All Rarities" : selectedRarity}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search rarity..." />
+                  <CommandList>
+                    <CommandEmpty>No rarity found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all"
+                        onSelect={() => {
+                          setSelectedRarity("all");
+                          setRarityOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedRarity === "all" ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        All Rarities
+                      </CommandItem>
+                      {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Holo Rare", "Ultra Rare", "Secret Rare", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
+                        <CommandItem
+                          key={rarity}
+                          value={rarity}
+                          onSelect={() => {
+                            setSelectedRarity(rarity);
+                            setRarityOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedRarity === rarity ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {rarity}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            
+            <span className="text-sm font-medium whitespace-nowrap sm:ml-4">Set:</span>
+            <Popover open={setOpen} onOpenChange={setSetOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={setOpen}
+                  className="w-full sm:w-[250px] justify-between"
+                >
+                  {selectedSet === "all" ? "All Sets" : selectedSet}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[250px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search set..." />
+                  <CommandList>
+                    <CommandEmpty>No set found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all"
+                        onSelect={() => {
+                          setSelectedSet("all");
+                          setSetOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedSet === "all" ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        All Sets
+                      </CommandItem>
+                      {availableSets.map((set) => (
+                        <CommandItem
+                          key={set}
+                          value={set}
+                          onSelect={() => {
+                            setSelectedSet(set);
+                            setSetOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedSet === set ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {set}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        {/* Price Range Filter */}
         <div className="flex flex-col gap-4 mb-8">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
