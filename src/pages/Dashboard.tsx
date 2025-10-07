@@ -175,36 +175,72 @@ export default function Dashboard() {
       <div className="flex-1 min-w-0 order-2 lg:order-1">
         {/* Header */}
         <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/")}
+                  className="cursor-pointer"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight">Pokemon Market Tracker</h1>
+                  <p className="text-sm text-muted-foreground">
+                    Last updated: {lastUpdate.toLocaleTimeString()}
+                  </p>
+                </div>
+              </div>
               <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/")}
+                variant="outline"
+                size="sm"
+                onClick={() => setLastUpdate(new Date())}
                 className="cursor-pointer"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight">Pokemon Market Tracker</h1>
-                <p className="text-sm text-muted-foreground">
-                  Last updated: {lastUpdate.toLocaleTimeString()}
-                </p>
-              </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLastUpdate(new Date())}
-              className="cursor-pointer"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
+            
+            {/* Search and Sort Controls - Now in sticky header */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search cards or products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-10"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
+                <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
+                  <SelectValue placeholder="Sort by..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest" className="cursor-pointer hover:bg-primary/10">Newest First</SelectItem>
+                  <SelectItem value="highest-change" className="cursor-pointer hover:bg-primary/10">Highest % Change</SelectItem>
+                  <SelectItem value="lowest-change" className="cursor-pointer hover:bg-primary/10">Lowest % Change</SelectItem>
+                  <SelectItem value="no-change" className="cursor-pointer hover:bg-primary/10">No Change</SelectItem>
+                  <SelectItem value="highest-price" className="cursor-pointer hover:bg-primary/10">Highest Price</SelectItem>
+                  <SelectItem value="lowest-price" className="cursor-pointer hover:bg-primary/10">Lowest Price</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
         {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
@@ -265,200 +301,162 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Search and Sort Controls */}
-          <div className="flex flex-col gap-4 mb-8">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        {/* Price and Rarity Filters */}
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <Input
-                placeholder="Search cards or products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-10"
+                type="number"
+                placeholder="Min ($)"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="w-full sm:w-32"
+                min="0"
+                step="0.01"
               />
-              {searchQuery && (
+              <span className="text-muted-foreground">-</span>
+              <Input
+                type="number"
+                placeholder="Max ($)"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="w-full sm:w-32"
+                min="0"
+                step="0.01"
+              />
+              {(minPrice || maxPrice) && (
                 <Button
                   variant="ghost"
-                  size="icon"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 cursor-pointer"
+                  size="sm"
+                  onClick={() => {
+                    setMinPrice("");
+                    setMaxPrice("");
+                  }}
+                  className="cursor-pointer whitespace-nowrap"
                 >
-                  <X className="h-4 w-4" />
+                  Clear
                 </Button>
               )}
             </div>
-            <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
-              <SelectTrigger className="w-full sm:w-[200px] cursor-pointer">
-                <SelectValue placeholder="Sort by..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest" className="cursor-pointer hover:bg-primary/10">Newest First</SelectItem>
-                <SelectItem value="highest-change" className="cursor-pointer hover:bg-primary/10">Highest % Change</SelectItem>
-                <SelectItem value="lowest-change" className="cursor-pointer hover:bg-primary/10">Lowest % Change</SelectItem>
-                <SelectItem value="no-change" className="cursor-pointer hover:bg-primary/10">No Change</SelectItem>
-                <SelectItem value="highest-price" className="cursor-pointer hover:bg-primary/10">Highest Price</SelectItem>
-                <SelectItem value="lowest-price" className="cursor-pointer hover:bg-primary/10">Lowest Price</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
           
-          {/* Price and Rarity Filters */}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-              <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Input
-                  type="number"
-                  placeholder="Min ($)"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                  className="w-full sm:w-32"
-                  min="0"
-                  step="0.01"
-                />
-                <span className="text-muted-foreground">-</span>
-                <Input
-                  type="number"
-                  placeholder="Max ($)"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  className="w-full sm:w-32"
-                  min="0"
-                  step="0.01"
-                />
-                {(minPrice || maxPrice) && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setMinPrice("");
-                      setMaxPrice("");
-                    }}
-                    className="cursor-pointer whitespace-nowrap"
-                  >
-                    Clear
-                  </Button>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-              <span className="text-sm font-medium whitespace-nowrap">Rarity:</span>
-              <Popover open={rarityOpen} onOpenChange={setRarityOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={rarityOpen}
-                    className="w-full sm:w-[200px] justify-between"
-                  >
-                    {selectedRarity === "all" ? "All Rarities" : selectedRarity}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search rarity..." />
-                    <CommandList>
-                      <CommandEmpty>No rarity found.</CommandEmpty>
-                      <CommandGroup>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <span className="text-sm font-medium whitespace-nowrap">Rarity:</span>
+            <Popover open={rarityOpen} onOpenChange={setRarityOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={rarityOpen}
+                  className="w-full sm:w-[200px] justify-between"
+                >
+                  {selectedRarity === "all" ? "All Rarities" : selectedRarity}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search rarity..." />
+                  <CommandList>
+                    <CommandEmpty>No rarity found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all"
+                        onSelect={() => {
+                          setSelectedRarity("all");
+                          setRarityOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedRarity === "all" ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        All Rarities
+                      </CommandItem>
+                      {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Holo Rare", "Ultra Rare", "Secret Rare", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
                         <CommandItem
-                          value="all"
+                          key={rarity}
+                          value={rarity}
                           onSelect={() => {
-                            setSelectedRarity("all");
+                            setSelectedRarity(rarity);
                             setRarityOpen(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              selectedRarity === "all" ? "opacity-100" : "opacity-0"
+                              selectedRarity === rarity ? "opacity-100" : "opacity-0"
                             )}
                           />
-                          All Rarities
+                          {rarity}
                         </CommandItem>
-                        {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Holo Rare", "Ultra Rare", "Secret Rare", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
-                          <CommandItem
-                            key={rarity}
-                            value={rarity}
-                            onSelect={() => {
-                              setSelectedRarity(rarity);
-                              setRarityOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedRarity === rarity ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {rarity}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              
-              <span className="text-sm font-medium whitespace-nowrap sm:ml-4">Set:</span>
-              <Popover open={setOpen} onOpenChange={setSetOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={setOpen}
-                    className="w-full sm:w-[250px] justify-between"
-                  >
-                    {selectedSet === "all" ? "All Sets" : selectedSet}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[250px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search set..." />
-                    <CommandList>
-                      <CommandEmpty>No set found.</CommandEmpty>
-                      <CommandGroup>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            
+            <span className="text-sm font-medium whitespace-nowrap sm:ml-4">Set:</span>
+            <Popover open={setOpen} onOpenChange={setSetOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={setOpen}
+                  className="w-full sm:w-[250px] justify-between"
+                >
+                  {selectedSet === "all" ? "All Sets" : selectedSet}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[250px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search set..." />
+                  <CommandList>
+                    <CommandEmpty>No set found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all"
+                        onSelect={() => {
+                          setSelectedSet("all");
+                          setSetOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedSet === "all" ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        All Sets
+                      </CommandItem>
+                      {availableSets.map((set) => (
                         <CommandItem
-                          value="all"
+                          key={set}
+                          value={set}
                           onSelect={() => {
-                            setSelectedSet("all");
+                            setSelectedSet(set);
                             setSetOpen(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              selectedSet === "all" ? "opacity-100" : "opacity-0"
+                              selectedSet === set ? "opacity-100" : "opacity-0"
                             )}
                           />
-                          All Sets
+                          {set}
                         </CommandItem>
-                        {availableSets.map((set) => (
-                          <CommandItem
-                            key={set}
-                            value={set}
-                            onSelect={() => {
-                              setSelectedSet(set);
-                              setSetOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedSet === set ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {set}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
