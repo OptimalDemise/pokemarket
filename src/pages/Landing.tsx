@@ -1,8 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User } from "lucide-react";
+import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User, Settings, Crown, Star, LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -12,7 +20,7 @@ import { useState, useEffect } from "react";
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated, signOut } = useAuth();
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -89,15 +97,45 @@ export default function Landing() {
               </Button>
 
               {/* Profile Avatar */}
-              <Avatar className="cursor-pointer h-9 w-9" onClick={() => {
-                // Placeholder for future account center functionality
-                console.log("Account center clicked");
-              }}>
-                <AvatarImage src="" alt="Profile" />
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer h-10 w-10">
+                    <AvatarImage src="" alt="Profile" />
+                    <AvatarFallback>
+                      <User className="h-5 w-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => console.log("Account settings clicked")}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Account Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => console.log("Premium service clicked")}>
+                    <Crown className="mr-2 h-4 w-4" />
+                    <span>Premium Service</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => console.log("Favorites clicked")}>
+                    <Star className="mr-2 h-4 w-4" />
+                    <span>Favorites/Watchlist</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {isAuthenticated && (
+                    <DropdownMenuItem 
+                      variant="destructive"
+                      onClick={async () => {
+                        await signOut();
+                        navigate("/");
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </div>
