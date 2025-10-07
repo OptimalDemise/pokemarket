@@ -50,7 +50,8 @@ const schema = defineSchema(
     })
       .index("by_name", ["name"])
       .index("by_set", ["setName"])
-      .index("by_rarity", ["rarity"]),
+      .index("by_rarity", ["rarity"])
+      .index("by_last_updated", ["lastUpdated"]),
 
     // Price history for cards
     cardPriceHistory: defineTable({

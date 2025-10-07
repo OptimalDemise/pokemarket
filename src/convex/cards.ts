@@ -20,7 +20,7 @@ export const _getAllCards = internalQuery({
   },
 });
 
-// Get big movers from the past hour (cards with >3% change)
+// Get big movers from the past hour (cards with >3% change) - OPTIMIZED
 export const getBigMovers = query({
   args: { 
     hoursAgo: v.optional(v.number()),
@@ -35,51 +35,23 @@ export const getBigMovers = query({
     const timeThreshold = Date.now() - (hoursAgo * 60 * 60 * 1000);
     
     try {
-      // Get all cards directly without expensive calculations
-      const allCards = await ctx.db.query("cards").collect();
+      // Use index to efficiently filter by lastUpdated
+      const recentCards = await ctx.db
+        .query("cards")
+        .withIndex("by_last_updated", (q) => q.gt("lastUpdated", timeThreshold))
+        .collect();
       
-      // Filter for cards updated within time window
-      const recentCards = allCards.filter(card => card.lastUpdated > timeThreshold);
-      
-      // For these recent cards only, calculate percentage change
-      const cardsWithChanges = await Promise.all(
-        recentCards.map(async (card) => {
-          try {
-            // Fetch only last 2 entries for percentage calculation
-            const recentHistory = await ctx.db
-              .query("cardPriceHistory")
-              .withIndex("by_card", (q) => q.eq("cardId", card._id))
-              .order("desc")
-              .take(2);
-
-            let percentChange = 0;
-            if (recentHistory.length >= 2) {
-              const current = recentHistory[0].price;
-              const previous = recentHistory[1].price;
-              if (previous !== 0) {
-                percentChange = ((current - previous) / previous) * 100;
-              }
-            }
-
-            return {
-              ...card,
-              percentChange,
-              tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
-            };
-          } catch (error) {
-            return {
-              ...card,
-              percentChange: 0,
-              tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
-            };
-          }
+      // Filter using pre-calculated percentChange values (no expensive calculations)
+      const bigMovers = recentCards
+        .filter((card) => {
+          const change = card.percentChange || 0;
+          return Math.abs(change) > minPercentChange;
         })
-      );
-      
-      // Filter for significant changes and sort
-      const bigMovers = cardsWithChanges
-        .filter((card: any) => Math.abs(card.percentChange) > minPercentChange)
-        .sort((a: any, b: any) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
+        .map((card) => ({
+          ...card,
+          tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
+        }))
+        .sort((a, b) => Math.abs(b.percentChange || 0) - Math.abs(a.percentChange || 0))
         .slice(0, limit);
 
       return bigMovers;
