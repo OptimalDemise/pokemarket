@@ -7,8 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 
 export default function AccountSettings() {
   const navigate = useNavigate();
@@ -16,6 +19,13 @@ export default function AccountSettings() {
   const [username, setUsername] = useState("");
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [isSaving, setIsSaving] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const updateProfile = useMutation(api.userProfile.updateProfile);
+  const updateProfilePicture = useMutation(api.userProfile.updateProfilePicture);
+  const generateUploadUrl = useMutation(api.userProfile.generateUploadUrl);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -23,6 +33,14 @@ export default function AccountSettings() {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  // Initialize username and profile image from user data
+  useEffect(() => {
+    if (user) {
+      setUsername(user.name || "");
+      setProfileImage(user.image);
+    }
+  }, [user]);
 
   // Initialize theme from localStorage
   useEffect(() => {
@@ -37,6 +55,84 @@ export default function AccountSettings() {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
+
+  // Handle profile picture change
+  const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File size must be less than 2MB");
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      
+      // Get upload URL
+      const uploadUrl = await generateUploadUrl();
+      
+      // Upload the file
+      const result = await fetch(uploadUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!result.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const { storageId } = await result.json();
+
+      // Update profile with new image
+      const updateResult = await updateProfilePicture({ storageId });
+      
+      if (updateResult.imageUrl) {
+        setProfileImage(updateResult.imageUrl);
+        toast.success("Profile picture updated successfully!");
+      }
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      toast.error("Failed to update profile picture");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle save changes
+  const handleSaveChanges = async () => {
+    try {
+      setIsSaving(true);
+      
+      await updateProfile({
+        name: username || undefined,
+      });
+
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle cancel
+  const handleCancel = () => {
+    if (user) {
+      setUsername(user.name || "");
+      setProfileImage(user.image);
+    }
+    toast.info("Changes discarded");
   };
 
   if (isLoading) {
@@ -98,13 +194,25 @@ export default function AccountSettings() {
                   {/* Profile Picture */}
                   <div className="flex items-center gap-6">
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src="" alt="Profile" />
+                      <AvatarImage src={profileImage} alt="Profile" />
                       <AvatarFallback>
                         <User className="h-12 w-12" />
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-2">
-                      <Button variant="outline" className="cursor-pointer">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProfilePictureChange}
+                        className="hidden"
+                      />
+                      <Button 
+                        variant="outline" 
+                        className="cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isSaving}
+                      >
                         Change Picture
                       </Button>
                       <p className="text-xs text-muted-foreground">
@@ -155,8 +263,21 @@ export default function AccountSettings() {
                   </div>
 
                   <div className="flex gap-3 pt-4">
-                    <Button className="cursor-pointer">Save Changes</Button>
-                    <Button variant="outline" className="cursor-pointer">Cancel</Button>
+                    <Button 
+                      className="cursor-pointer" 
+                      onClick={handleSaveChanges}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="cursor-pointer"
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                    >
+                      Cancel
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
