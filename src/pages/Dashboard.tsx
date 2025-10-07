@@ -295,7 +295,7 @@ export default function Dashboard() {
         )}
 
         {/* Ad Zone 1: Top Banner (Below Top Daily Movers) */}
-        <div className="mb-6 p-4 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px] sm:min-h-[120px]">
+        <div className="mb-6 p-4 rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px] sm:min-h-[120px]">
           <div className="text-center text-muted-foreground">
             <p className="text-xs sm:text-sm font-medium">Advertisement</p>
             <p className="text-[10px] sm:text-xs mt-1">Banner Ad Space</p>
