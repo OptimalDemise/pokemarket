@@ -184,11 +184,11 @@ export const upsertCard = internalMutation({
       const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
       const hasPriceChanged = priceChangePercent > 0.1;
       
-      // Also check if it's been more than 1 hour since last update (to ensure hourly data points)
-      const oneHourAgo = Date.now() - (60 * 60 * 1000);
-      const shouldRecordHourly = existingCard.lastUpdated < oneHourAgo;
+      // Also check if it's been more than 30 minutes since last update (to ensure 30-minute data points)
+      const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
+      const shouldRecordHalfHourly = existingCard.lastUpdated < thirtyMinutesAgo;
 
-      if (hasPriceChanged || shouldRecordHourly) {
+      if (hasPriceChanged || shouldRecordHalfHourly) {
         // Calculate new percentage change
         const percentChange = ((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
         
@@ -237,7 +237,7 @@ export const upsertCard = internalMutation({
           isRecentSale,
         });
 
-        // Add price history entry (for significant changes OR hourly updates)
+        // Add price history entry (for significant changes OR 30-minute updates)
         await ctx.db.insert("cardPriceHistory", {
           cardId: existingCard._id,
           price: args.currentPrice,
