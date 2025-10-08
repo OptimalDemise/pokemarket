@@ -75,22 +75,6 @@ export default function PremiumService() {
 
   const plans = [
     {
-      name: "Basic",
-      price: "Free",
-      period: "",
-      description: "Perfect for casual collectors",
-      features: [
-        "Real-time price tracking",
-        "Price history up to 90 days",
-        "Email notifications",
-        "Basic analytics",
-        "Mobile access"
-      ],
-      icon: Star,
-      popular: false,
-      freeTrial: false
-    },
-    {
       name: "Pro",
       price: "$14.99",
       originalPrice: "$29.99",
@@ -128,6 +112,22 @@ export default function PremiumService() {
       popular: false,
       freeTrial: true,
       trialDays: 7
+    },
+    {
+      name: "Basic",
+      price: "Free",
+      period: "",
+      description: "Perfect for casual collectors",
+      features: [
+        "Real-time price tracking",
+        "Price history up to 90 days",
+        "Email notifications",
+        "Basic analytics",
+        "Mobile access"
+      ],
+      icon: Star,
+      popular: false,
+      freeTrial: false
     }
   ];
 
