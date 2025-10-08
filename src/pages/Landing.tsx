@@ -445,7 +445,7 @@ export default function Landing() {
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="h-8 w-8 text-primary" />
-              <div className="text-5xl font-bold tracking-tight">1min</div>
+              <div className="text-5xl font-bold tracking-tight">Up to 1 min</div>
             </div>
             <p className="text-muted-foreground">Update Frequency</p>
           </div>
