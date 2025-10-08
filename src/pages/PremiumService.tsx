@@ -194,7 +194,13 @@ export default function PremiumService() {
           {plans.map((plan) => {
             const Icon = plan.icon;
             return (
-              <Card key={plan.name} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
+              <Card key={plan.name} className={`relative flex flex-col ${
+                plan.name === 'Enterprise' 
+                  ? 'border-primary shadow-[0_0_30px_rgba(var(--primary-rgb,59,130,246),0.5)] animate-pulse-glow' 
+                  : plan.popular 
+                  ? 'border-primary shadow-[0_0_20px_rgba(var(--primary-rgb,59,130,246),0.3)]' 
+                  : ''
+              }`}>
                 {plan.popular && (
                   <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
                     <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
