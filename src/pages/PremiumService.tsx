@@ -1,10 +1,50 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield } from "lucide-react";
+import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function PremiumService() {
   const navigate = useNavigate();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleNavigateToDashboard = () => {
+    setIsNavigating(true);
+    navigate("/dashboard");
+  };
+
+  if (isNavigating) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-6 max-w-md px-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center"
+          >
+            <img 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
+              alt="PokéMarket Logo" 
+              className="h-24 w-24 opacity-90"
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-3"
+          >
+            <div className="flex items-center justify-center gap-3">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <h2 className="text-2xl font-bold tracking-tight">Accessing market...</h2>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   const plans = [
     {
@@ -153,10 +193,7 @@ export default function PremiumService() {
                   <Button 
                     className="w-full cursor-pointer" 
                     variant={plan.popular ? "default" : "outline"}
-                    onClick={() => {
-                      // Placeholder for future implementation
-                      console.log(`Selected ${plan.name} plan`);
-                    }}
+                    onClick={handleNavigateToDashboard}
                   >
                     Get Started
                   </Button>
@@ -204,7 +241,7 @@ export default function PremiumService() {
                 Join thousands of collectors who are already using PokéMarket Premium to track and grow their collections.
               </p>
               <div className="flex items-center justify-center gap-4">
-                <Button size="lg" className="cursor-pointer">
+                <Button size="lg" className="cursor-pointer" onClick={handleNavigateToDashboard}>
                   Start Free Trial
                 </Button>
                 <Button size="lg" variant="outline" className="cursor-pointer" onClick={() => navigate("/contact")}>
