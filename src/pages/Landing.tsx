@@ -258,7 +258,7 @@ export default function Landing() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           className="space-y-12"
         >
           <div className="text-center space-y-4">
@@ -274,7 +274,7 @@ export default function Landing() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               className="space-y-4"
             >
               <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
@@ -289,7 +289,7 @@ export default function Landing() {
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                     >
                       <CardItem card={item} size="compact" />
                     </motion.div>
@@ -307,7 +307,7 @@ export default function Landing() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               className="space-y-4"
             >
               <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
@@ -322,7 +322,7 @@ export default function Landing() {
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                     >
                       <CardItem card={card} size="compact" />
                     </motion.div>
@@ -344,7 +344,7 @@ export default function Landing() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           className="space-y-16"
         >
           <div className="text-center space-y-4">
@@ -359,7 +359,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               className="space-y-4 p-8 border rounded-lg"
             >
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -375,7 +375,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               className="space-y-4 p-8 border rounded-lg"
             >
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -391,7 +391,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               className="space-y-4 p-8 border rounded-lg"
             >
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -412,7 +412,7 @@ export default function Landing() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           className="grid md:grid-cols-3 gap-12 text-center"
         >
           <div className="space-y-2">
@@ -445,7 +445,7 @@ export default function Landing() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           className="text-center space-y-8 py-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
@@ -471,7 +471,7 @@ export default function Landing() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           className="space-y-8"
         >
           <div className="text-center space-y-4">
