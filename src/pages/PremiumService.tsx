@@ -133,10 +133,10 @@ export default function PremiumService() {
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" alt="Logo" className="h-12 w-12" />
-            <span className="text-2xl font-bold tracking-tight cursor-pointer" onClick={() => navigate("/")}>PokéMarket</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <img src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" alt="Logo" className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" />
+            <span className="text-lg sm:text-2xl font-bold tracking-tight cursor-pointer truncate" onClick={() => navigate("/")}>PokéMarket</span>
           </div>
           <Button
             onClick={() => {
@@ -144,87 +144,89 @@ export default function PremiumService() {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             variant="outline"
-            className="cursor-pointer"
+            className="cursor-pointer flex-shrink-0 text-xs sm:text-sm"
+            size="sm"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
+            <ArrowLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Back to Home</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-6 py-12 space-y-8">
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full text-sm">
-            <Crown className="h-4 w-4 text-primary" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-8">
+        <div className="text-center space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 bg-primary/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm">
+            <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
             <span className="font-medium">Premium Features</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight px-4">
             Upgrade Your Market Tracking
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
             Get access to advanced features, priority support, and powerful tools to maximize your Pokemon card investments.
           </p>
         </div>
 
         {/* Pricing Plans */}
-        <div className="grid md:grid-cols-3 gap-8 pt-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-6 sm:pt-8">
           {plans.map((plan) => {
             const Icon = plan.icon;
             return (
               <Card key={plan.name} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                  <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
+                    <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
                       MOST POPULAR
                     </span>
                   </div>
                 )}
-                <CardHeader className="text-center pb-8">
-                  <div className="flex justify-center mb-4">
-                    <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Icon className="h-6 w-6 text-primary" />
+                <CardHeader className="text-center pb-6 sm:pb-8">
+                  <div className="flex justify-center mb-3 sm:mb-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
                   </div>
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
-                  <div className="pt-4">
+                  <CardTitle className="text-xl sm:text-2xl">{plan.name}</CardTitle>
+                  <CardDescription className="text-sm">{plan.description}</CardDescription>
+                  <div className="pt-3 sm:pt-4">
                     {plan.originalPrice && (
-                      <span className="text-xl text-muted-foreground line-through mr-2">
+                      <span className="text-lg sm:text-xl text-muted-foreground line-through mr-2">
                         {plan.originalPrice}
                       </span>
                     )}
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
+                    <span className="text-3xl sm:text-4xl font-bold">{plan.price}</span>
+                    <span className="text-sm text-muted-foreground">{plan.period}</span>
                   </div>
                   {plan.freeTrial && (
-                    <div className="pt-3">
-                      <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-3">
-                        <span className="text-base font-bold text-primary block">
+                    <div className="pt-2 sm:pt-3">
+                      <div className="bg-primary/10 border border-primary/20 rounded-lg px-3 sm:px-4 py-2 sm:py-3">
+                        <span className="text-sm sm:text-base font-bold text-primary block break-words">
                           {plan.trialDays}-Day Free Trial (One Time Only)
                         </span>
-                        <span className="text-xs text-muted-foreground block">
+                        <span className="text-[10px] sm:text-xs text-muted-foreground block">
                           Cancel any time
                         </span>
-                        <span className="text-[10px] text-muted-foreground/70 block mt-1">
+                        <span className="text-[9px] sm:text-[10px] text-muted-foreground/70 block mt-1">
                           Subject to terms and conditions
                         </span>
                       </div>
                     </div>
                   )}
                 </CardHeader>
-                <CardContent className="space-y-6 flex-1 flex flex-col">
-                  <ul className="space-y-3 flex-1">
+                <CardContent className="space-y-4 sm:space-y-6 flex-1 flex flex-col px-4 sm:px-6">
+                  <ul className="space-y-2 sm:space-y-3 flex-1">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
+                        <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
+                        <span className="text-xs sm:text-sm break-words">{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-auto pt-6">
+                  <div className="mt-auto pt-4 sm:pt-6">
                     <Button 
-                      className="w-full cursor-pointer" 
+                      className="w-full cursor-pointer text-xs sm:text-sm" 
                       variant="outline"
                       onClick={handleGetStarted}
                       disabled={currentPlan === plan.name}
@@ -239,27 +241,27 @@ export default function PremiumService() {
         </div>
 
         {/* Features Section */}
-        <div className="pt-16 space-y-8">
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight">Premium Features</h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        <div className="pt-12 sm:pt-16 space-y-6 sm:space-y-8">
+          <div className="text-center space-y-3 sm:space-y-4">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight px-4">Premium Features</h2>
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
               Unlock powerful tools designed for serious collectors and investors
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <Card key={feature.title}>
-                  <CardHeader>
-                    <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                      <Icon className="h-6 w-6 text-primary" />
+                  <CardHeader className="px-4 sm:px-6">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3 sm:mb-4">
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">{feature.title}</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{feature.description}</p>
+                  <CardContent className="px-4 sm:px-6">
+                    <p className="text-muted-foreground text-sm sm:text-base">{feature.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -268,18 +270,18 @@ export default function PremiumService() {
         </div>
 
         {/* CTA Section */}
-        <div className="pt-16 pb-8">
+        <div className="pt-12 sm:pt-16 pb-6 sm:pb-8">
           <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="text-center py-12 space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight">Ready to upgrade?</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <CardContent className="text-center py-8 sm:py-12 space-y-4 sm:space-y-6 px-4 sm:px-6">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Ready to upgrade?</h2>
+              <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
                 Join thousands of collectors who are already using PokéMarket Premium to track and grow their collections.
               </p>
-              <div className="flex items-center justify-center gap-4">
-                <Button size="lg" className="cursor-pointer" onClick={handleGetStarted}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+                <Button size="lg" className="cursor-pointer w-full sm:w-auto text-sm sm:text-base" onClick={handleGetStarted}>
                   Start Free Trial
                 </Button>
-                <Button size="lg" variant="outline" className="cursor-pointer" onClick={() => navigate("/contact")}>
+                <Button size="lg" variant="outline" className="cursor-pointer w-full sm:w-auto text-sm sm:text-base" onClick={() => navigate("/contact")}>
                   Contact Sales
                 </Button>
               </div>
@@ -289,8 +291,8 @@ export default function PremiumService() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground">
+      <footer className="border-t py-6 sm:py-8 mt-8 sm:mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-xs sm:text-sm text-muted-foreground">
           <p>© 2024 PokéMarket. Built for collectors and investors.</p>
         </div>
       </footer>
