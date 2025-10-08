@@ -60,7 +60,8 @@ export default function PremiumService() {
         "Mobile access"
       ],
       icon: Star,
-      popular: false
+      popular: false,
+      freeTrial: false
     },
     {
       name: "Pro",
@@ -77,7 +78,9 @@ export default function PremiumService() {
         "Custom watchlists (unlimited)"
       ],
       icon: Crown,
-      popular: true
+      popular: true,
+      freeTrial: true,
+      trialDays: 14
     },
     {
       name: "Enterprise",
@@ -95,7 +98,9 @@ export default function PremiumService() {
         "Team collaboration tools"
       ],
       icon: Zap,
-      popular: false
+      popular: false,
+      freeTrial: true,
+      trialDays: 14
     }
   ];
 
@@ -180,6 +185,13 @@ export default function PremiumService() {
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
+                  {plan.freeTrial && (
+                    <div className="pt-2">
+                      <span className="text-sm text-primary font-medium">
+                        {plan.trialDays}-day free trial
+                      </span>
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <ul className="space-y-3">
