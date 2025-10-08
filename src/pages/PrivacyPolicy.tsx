@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { ArrowLeft } from "lucide-react";
+import { BackgroundWrapper } from "@/components/BackgroundWrapper";
+import { BackgroundImageSelector } from "@/components/BackgroundImageSelector";
 
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
 
   return (
+    <BackgroundWrapper>
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b">
@@ -14,14 +17,17 @@ export default function PrivacyPolicy() {
             <img src="https://harmless-tapir-303.convex.cloud/api/storage/3f3a450d-9cf0-49e2-9c25-860d9b84085b" alt="Logo" className="h-12 w-12" />
             <span className="text-2xl font-bold tracking-tight cursor-pointer" onClick={() => navigate("/")}>PokéMarket</span>
           </div>
-          <Button
-            onClick={() => navigate("/")}
-            variant="outline"
-            className="cursor-pointer"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Button>
+          <div className="flex items-center gap-3">
+            <BackgroundImageSelector />
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              className="cursor-pointer"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+          </div>
         </div>
       </nav>
 
@@ -288,5 +294,6 @@ export default function PrivacyPolicy() {
         </div>
       </footer>
     </div>
+    </BackgroundWrapper>
   );
 }
