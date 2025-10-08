@@ -863,11 +863,11 @@ function sortItems<T extends { percentChange: number; currentPrice: number; _cre
 }
 
 // Wrapper component for CardItem - memoized for performance
-const CardItemWrapper = memo(function CardItemWrapper({ card }: { card: any }) {
+const CardItemWrapper = memo(({ card }: { card: any }) => {
   return <CardItem card={card} />;
 });
 
 // Wrapper component for ProductItem - memoized for performance
-const ProductItemWrapper = memo(function ProductItemWrapper({ product }: { product: any }) {
+const ProductItemWrapper = memo(({ product }: { product: any }) => {
   return <ProductItem product={product} />;
 });
