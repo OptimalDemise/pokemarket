@@ -55,9 +55,10 @@ export const getBigMovers = query({
           cardIds.map(id => ctx.db.get(id))
         );
         
-        // Filter out any null cards and map to full card objects
+        // Filter out any null cards and ensure they still meet the threshold
         const validCards = cards
           .filter((card): card is NonNullable<typeof card> => card !== null)
+          .filter((card) => Math.abs(card.percentChange || 0) >= minPercentChange)
           .map((card) => ({
             ...card,
             tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
