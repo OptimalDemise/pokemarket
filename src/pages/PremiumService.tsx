@@ -9,9 +9,9 @@ export default function PremiumService() {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
 
-  const handleNavigateToDashboard = () => {
-    setIsNavigating(true);
-    navigate("/dashboard");
+  const handleGetStarted = () => {
+    // Placeholder for future premium service functionality
+    console.log("Get Started clicked - functionality coming soon");
   };
 
   if (isNavigating) {
@@ -193,7 +193,7 @@ export default function PremiumService() {
                   <Button 
                     className="w-full cursor-pointer" 
                     variant={plan.popular ? "default" : "outline"}
-                    onClick={handleNavigateToDashboard}
+                    onClick={handleGetStarted}
                   >
                     Get Started
                   </Button>
@@ -241,7 +241,7 @@ export default function PremiumService() {
                 Join thousands of collectors who are already using PokéMarket Premium to track and grow their collections.
               </p>
               <div className="flex items-center justify-center gap-4">
-                <Button size="lg" className="cursor-pointer" onClick={handleNavigateToDashboard}>
+                <Button size="lg" className="cursor-pointer" onClick={handleGetStarted}>
                   Start Free Trial
                 </Button>
                 <Button size="lg" variant="outline" className="cursor-pointer" onClick={() => navigate("/contact")}>
