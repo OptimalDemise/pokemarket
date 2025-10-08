@@ -119,7 +119,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               <CardHeader className="text-center">
               <div className="flex justify-center">
                     <img
-                      src="https://harmless-tapir-303.convex.cloud/api/storage/68e40f71-217c-4c22-a34e-0b8e58109ee3"
+                      src="https://harmless-tapir-303.convex.cloud/api/storage/3f3a450d-9cf0-49e2-9c25-860d9b84085b"
                       alt="Lock Icon"
                       width={64}
                       height={64}
