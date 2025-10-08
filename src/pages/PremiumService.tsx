@@ -201,6 +201,13 @@ export default function PremiumService() {
                   ? 'border-primary shadow-[0_0_20px_rgba(var(--primary-rgb,59,130,246),0.3)]' 
                   : ''
               }`}>
+                {plan.name === 'Enterprise' && (
+                  <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
+                    <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                      BEST OFFER
+                    </span>
+                  </div>
+                )}
                 {plan.popular && (
                   <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
                     <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
