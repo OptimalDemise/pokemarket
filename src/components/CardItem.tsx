@@ -74,11 +74,11 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
               <div className={isCompact ? 'space-y-1.5' : 'space-y-3'}>
                 {/* Card Image */}
                 {card.imageUrl && (
-                  <div className={`w-full ${isCompact ? 'aspect-[2/3]' : 'aspect-[2/3]'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
+                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-h-24' : 'aspect-[2/3] max-h-48 sm:max-h-none'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
                     <img
                       src={card.imageUrl}
                       alt={card.name}
-                      className="w-full h-full object-contain p-1"
+                      className="w-full h-full object-contain"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}

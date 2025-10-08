@@ -72,7 +72,7 @@ export function ProductItem({ product }: ProductItemProps) {
                     <img
                       src={product.imageUrl}
                       alt={product.name}
-                      className="w-full h-full object-contain p-1"
+                      className="w-full h-full object-contain p-2"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
