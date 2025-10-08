@@ -191,8 +191,11 @@ export default function PremiumService() {
                         <span className="text-base font-bold text-primary block">
                           {plan.trialDays}-Day Free Trial
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          No credit card required
+                        <span className="text-xs text-muted-foreground block">
+                          Cancel any time
+                        </span>
+                        <span className="text-[10px] text-muted-foreground/70 block mt-1">
+                          Subject to terms and conditions
                         </span>
                       </div>
                     </div>
