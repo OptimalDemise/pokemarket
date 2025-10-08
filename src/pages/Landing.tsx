@@ -17,6 +17,7 @@ import { api } from "@/convex/_generated/api";
 import { CardItem } from "@/components/CardItem";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function Landing() {
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [isNavigating, setIsNavigating] = useState(false);
 
   // Initialize theme from localStorage or default to light
   useEffect(() => {
@@ -52,6 +54,43 @@ export default function Landing() {
     ?.filter(card => Math.abs(card.percentChange) > 0.1) // Filter cards with meaningful changes
     .sort((a, b) => b.lastUpdated - a.lastUpdated)
     .slice(0, 3) || [];
+
+  const handleNavigateToDashboard = () => {
+    setIsNavigating(true);
+    navigate("/dashboard");
+  };
+
+  if (isNavigating) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-6 max-w-md px-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center"
+          >
+            <img 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/3f3a450d-9cf0-49e2-9c25-860d9b84085b" 
+              alt="PokéMarket Logo" 
+              className="h-24 w-24 opacity-90"
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-3"
+          >
+            <div className="flex items-center justify-center gap-3">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <h2 className="text-2xl font-bold tracking-tight">Accessing market...</h2>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -203,7 +242,7 @@ export default function Landing() {
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button
               size="lg"
-              onClick={() => navigate("/dashboard")}
+              onClick={handleNavigateToDashboard}
               className="cursor-pointer text-lg px-8"
             >
               View Market
@@ -417,7 +456,7 @@ export default function Landing() {
           </p>
           <Button
             size="lg"
-            onClick={() => navigate("/dashboard")}
+            onClick={handleNavigateToDashboard}
             className="cursor-pointer text-lg px-8"
           >
             View Market Now
