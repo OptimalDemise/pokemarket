@@ -812,6 +812,7 @@ export default function Dashboard() {
             onClick={() => setShowLiveUpdates(true)}
             className="cursor-pointer h-12 w-8 rounded-l-lg rounded-r-none shadow-lg"
             title="Open Live Updates"
+            aria-label="Open Live Updates"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
