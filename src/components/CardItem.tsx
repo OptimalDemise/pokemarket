@@ -74,7 +74,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
               <div className={isCompact ? 'space-y-1.5' : 'space-y-3'}>
                 {/* Card Image */}
                 {card.imageUrl && (
-                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-h-24' : 'aspect-[2/3] max-h-48 sm:max-h-none'} relative overflow-hidden rounded-lg border bg-secondary/20`}>
+                  <div className={`w-full ${isCompact ? 'aspect-[2/3] max-h-24' : 'aspect-[2/3] max-h-48 sm:max-h-none'} relative overflow-hidden rounded-lg bg-secondary/20`}>
                     <img
                       src={card.imageUrl}
                       alt={card.name}
@@ -131,7 +131,7 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
               {card.imageUrl && (
                 <div className="relative group">
                   <div 
-                    className="w-full aspect-[2/3] relative overflow-hidden rounded-lg border bg-secondary/20 cursor-pointer transition-all hover:border-primary"
+                    className="w-full aspect-[2/3] relative overflow-hidden rounded-lg bg-secondary/20 cursor-pointer transition-all"
                     onClick={() => setIsImageEnlarged(true)}
                   >
                     <img

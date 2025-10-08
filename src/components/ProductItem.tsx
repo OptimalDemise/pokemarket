@@ -68,7 +68,7 @@ export function ProductItem({ product }: ProductItemProps) {
               <div className="space-y-3">
                 {/* Product Image */}
                 {product.imageUrl && (
-                  <div className="w-full aspect-[3/2] relative overflow-hidden rounded-lg border bg-secondary/20">
+                  <div className="w-full aspect-[3/2] relative overflow-hidden rounded-lg bg-secondary/20">
                     <img
                       src={product.imageUrl}
                       alt={product.name}
@@ -125,7 +125,7 @@ export function ProductItem({ product }: ProductItemProps) {
               {product.imageUrl && (
                 <div className="relative group">
                   <div 
-                    className="w-full aspect-[3/2] relative overflow-hidden rounded-lg border bg-secondary/20 cursor-pointer transition-all hover:border-primary"
+                    className="w-full aspect-[3/2] relative overflow-hidden rounded-lg bg-secondary/20 cursor-pointer transition-all"
                     onClick={() => setIsImageEnlarged(true)}
                   >
                     <img
