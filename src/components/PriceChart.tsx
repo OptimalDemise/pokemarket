@@ -118,11 +118,19 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const svg = e.currentTarget;
     const rect = svg.getBoundingClientRect();
+    
+    // Get mouse position relative to the SVG element
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
+    
+    // Scale mouse position to viewBox coordinates
+    const scaleX = width / rect.width;
+    const scaleY = (height + bottomPadding) / rect.height;
+    const viewBoxX = mouseX * scaleX;
+    const viewBoxY = mouseY * scaleY;
 
-    // Find closest data point based on X position within the chart area
-    const chartX = mouseX - leftPadding - padding;
+    // Calculate position within the chart area (accounting for left padding)
+    const chartX = viewBoxX - leftPadding - padding;
     
     // Ensure we're within the chart bounds
     if (chartX < 0 || chartX > (chartWidth - padding * 2)) {
@@ -131,6 +139,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
       return;
     }
     
+    // Calculate which data point we're closest to
     const relativeX = chartX / (chartWidth - padding * 2);
     const index = Math.max(0, Math.min(data.length - 1, Math.round(relativeX * (data.length - 1))));
 
