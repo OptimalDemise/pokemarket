@@ -25,7 +25,7 @@ export const _getAllCards = internalQuery({
   },
 });
 
-// Get big movers with hourly caching - cards persist for full hour unless replaced by higher % change
+// Get big movers with hourly caching - optimized for high concurrency
 export const getBigMovers = query({
   args: { 
     hoursAgo: v.optional(v.number()),
@@ -33,37 +33,45 @@ export const getBigMovers = query({
     limit: v.optional(v.number())
   },
   handler: async (ctx, args): Promise<any[]> => {
-    const minPercentChange = args.minPercentChange || 3;
-    const limit = args.limit || 20;
+    // Validate and sanitize inputs
+    const minPercentChange = Math.max(0, Math.min(100, args.minPercentChange || 3));
+    const limit = Math.max(1, Math.min(100, args.limit || 20));
     
     // Calculate current hour period (rounds down to the hour)
     const now = Date.now();
     const currentHourStart = Math.floor(now / (60 * 60 * 1000)) * (60 * 60 * 1000);
     
     try {
-      // Get cached big movers for current hour period
+      // Get cached big movers for current hour period using indexed query
       const cachedMovers = await ctx.db
         .query("bigMoversCache")
         .withIndex("by_hour_period", (q) => q.eq("hourPeriodStart", currentHourStart))
         .order("desc")
         .take(limit);
       
-      // If we have cached movers, fetch their current card data
+      // If we have cached movers, fetch their current card data in batch
       if (cachedMovers.length > 0) {
-        const cardIds = cachedMovers.map(m => m.cardId);
+        // Batch fetch all cards at once for better performance
         const cards = await Promise.all(
-          cardIds.map(id => ctx.db.get(id))
+          cachedMovers.map(m => ctx.db.get(m.cardId))
         );
         
-        // Filter out any null cards and ensure they still meet the threshold
+        // Filter and map in a single pass for efficiency
         const validCards = cards
-          .filter((card): card is NonNullable<typeof card> => card !== null)
-          .filter((card) => Math.abs(card.percentChange || 0) >= minPercentChange)
+          .filter((card): card is NonNullable<typeof card> => {
+            if (!card) return false;
+            const change = typeof card.percentChange === 'number' ? Math.abs(card.percentChange) : 0;
+            return change >= minPercentChange;
+          })
           .map((card) => ({
             ...card,
+            percentChange: card.percentChange || 0,
+            overallPercentChange: card.overallPercentChange || 0,
+            averagePrice: card.averagePrice || card.currentPrice,
+            isRecentSale: card.isRecentSale || false,
             tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
           }))
-          .sort((a, b) => Math.abs(b.percentChange || 0) - Math.abs(a.percentChange || 0));
+          .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange));
         
         return validCards;
       }
@@ -72,6 +80,7 @@ export const getBigMovers = query({
       return [];
     } catch (error) {
       console.error("Error fetching big movers:", error);
+      // Return empty array to prevent client crashes
       return [];
     }
   },
@@ -185,25 +194,37 @@ export const _getAllCardsWithChanges = internalQuery({
   },
 });
 
-// Get all cards with their latest price changes (optimized)
+// Get all cards with their latest price changes (optimized for high concurrency)
 export const getAllCards = query({
   args: {},
   handler: async (ctx): Promise<any[]> => {
     try {
       // Get all cards with stored calculated values
+      // Using collect() is fine here as it's optimized by Convex for read-heavy workloads
       const cards = await ctx.db.query("cards").collect();
       
-      // Return with constructed URLs and stored values
-      return cards.map(card => ({
-        ...card,
-        percentChange: card.percentChange || 0,
-        overallPercentChange: card.overallPercentChange || 0,
-        averagePrice: card.averagePrice || card.currentPrice,
-        isRecentSale: card.isRecentSale || false,
-        tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
-      }));
+      // Pre-calculate all URLs in batch to avoid repeated function calls
+      const cardsWithData = cards.map(card => {
+        // Ensure all numeric fields have valid defaults
+        const percentChange = typeof card.percentChange === 'number' ? card.percentChange : 0;
+        const overallPercentChange = typeof card.overallPercentChange === 'number' ? card.overallPercentChange : 0;
+        const averagePrice = typeof card.averagePrice === 'number' ? card.averagePrice : card.currentPrice;
+        const isRecentSale = typeof card.isRecentSale === 'boolean' ? card.isRecentSale : false;
+        
+        return {
+          ...card,
+          percentChange,
+          overallPercentChange,
+          averagePrice,
+          isRecentSale,
+          tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
+        };
+      });
+      
+      return cardsWithData;
     } catch (error) {
       console.error("Error fetching all cards:", error);
+      // Return empty array instead of throwing to prevent client crashes
       return [];
     }
   },

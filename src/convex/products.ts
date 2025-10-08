@@ -1,23 +1,32 @@
 import { v } from "convex/values";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 
-// Get all products with their latest price changes (optimized - uses stored values)
+// Get all products with their latest price changes (optimized for high concurrency)
 export const getAllProducts = query({
   args: {},
   handler: async (ctx) => {
     try {
+      // Collect all products - Convex optimizes this for read-heavy workloads
       const products = await ctx.db.query("products").collect();
       
-      // Return products with stored calculated values
-      return products.map(product => ({
-        ...product,
-        percentChange: product.percentChange || 0,
-        averagePrice: product.averagePrice || product.currentPrice,
-        isRecentSale: product.isRecentSale || false,
-      }));
+      // Map with type safety and validation
+      return products.map(product => {
+        // Ensure all numeric fields have valid defaults
+        const percentChange = typeof product.percentChange === 'number' ? product.percentChange : 0;
+        const averagePrice = typeof product.averagePrice === 'number' ? product.averagePrice : product.currentPrice;
+        const isRecentSale = typeof product.isRecentSale === 'boolean' ? product.isRecentSale : false;
+        
+        return {
+          ...product,
+          percentChange,
+          averagePrice,
+          isRecentSale,
+        };
+      });
     } catch (error) {
       console.error("Error fetching products:", error);
-      throw new Error("Failed to retrieve product data");
+      // Return empty array instead of throwing to prevent client crashes
+      return [];
     }
   },
 });

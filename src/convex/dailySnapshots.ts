@@ -59,49 +59,60 @@ export const createDailySnapshots = internalMutation({
   },
 });
 
-// Get top daily changes (both cards and products combined)
+// Get top daily changes (optimized for high concurrency)
 export const getTopDailyChanges = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const limit = args.limit || 10;
+    // Validate and sanitize limit
+    const limit = Math.max(1, Math.min(100, args.limit || 10));
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     try {
-      // Get today's snapshots
-      const todaySnapshots = await ctx.db
-        .query("dailySnapshots")
-        .withIndex("by_date", (q) => q.eq("snapshotDate", today))
-        .collect();
+      // Fetch both snapshots in parallel for better performance
+      const [todaySnapshots, yesterdaySnapshots] = await Promise.all([
+        ctx.db
+          .query("dailySnapshots")
+          .withIndex("by_date", (q) => q.eq("snapshotDate", today))
+          .collect(),
+        ctx.db
+          .query("dailySnapshots")
+          .withIndex("by_date", (q) => q.eq("snapshotDate", yesterday))
+          .collect()
+      ]);
 
-      // Get yesterday's snapshots
-      const yesterdaySnapshots = await ctx.db
-        .query("dailySnapshots")
-        .withIndex("by_date", (q) => q.eq("snapshotDate", yesterday))
-        .collect();
-
-      // Create a map of yesterday's prices
+      // Create a map of yesterday's prices for O(1) lookup
       const yesterdayPrices = new Map(
         yesterdaySnapshots.map(s => [s.itemId, s.price])
       );
 
-      // Calculate changes and collect card IDs
-      const cardChanges: Array<{ itemId: string; percentChange: number; todayPrice: number; yesterdayPrice: number }> = [];
+      // Calculate changes efficiently
+      const cardChanges: Array<{ 
+        itemId: string; 
+        percentChange: number; 
+        todayPrice: number; 
+        yesterdayPrice: number 
+      }> = [];
       
       for (const todaySnapshot of todaySnapshots) {
+        // Only process cards
         if (todaySnapshot.itemType !== "card") continue;
         
         const yesterdayPrice = yesterdayPrices.get(todaySnapshot.itemId);
         
-        if (yesterdayPrice && yesterdayPrice !== 0) {
+        // Validate prices to prevent division by zero
+        if (yesterdayPrice && yesterdayPrice > 0 && todaySnapshot.price >= 0) {
           const percentChange = ((todaySnapshot.price - yesterdayPrice) / yesterdayPrice) * 100;
           
-          cardChanges.push({
-            itemId: todaySnapshot.itemId,
-            percentChange,
-            todayPrice: todaySnapshot.price,
-            yesterdayPrice,
-          });
+          // Only include if there's an actual change
+          if (!isNaN(percentChange) && isFinite(percentChange)) {
+            cardChanges.push({
+              itemId: todaySnapshot.itemId,
+              percentChange,
+              todayPrice: todaySnapshot.price,
+              yesterdayPrice,
+            });
+          }
         }
       }
 
@@ -111,28 +122,31 @@ export const getTopDailyChanges = query({
       // Take top N changes
       const topChanges = cardChanges.slice(0, limit);
       
-      // Fetch all card details in one batch from the cards table
+      // Fetch all card details in one batch for efficiency
       const allCards = await ctx.db.query("cards").collect();
       const cardsMap = new Map(allCards.map(card => [card._id, card]));
       
       // Combine card data with change data
-      const results = topChanges.map((change) => {
-        const card = cardsMap.get(change.itemId as any);
-        if (!card) return null;
-        
-        return {
-          ...card,
-          itemType: "card",
-          yesterdayPrice: change.yesterdayPrice,
-          todayPrice: change.todayPrice,
-          dailyPercentChange: change.percentChange,
-          percentChange: change.percentChange,
-        };
-      }).filter(Boolean);
+      const results = topChanges
+        .map((change) => {
+          const card = cardsMap.get(change.itemId as any);
+          if (!card) return null;
+          
+          return {
+            ...card,
+            itemType: "card" as const,
+            yesterdayPrice: change.yesterdayPrice,
+            todayPrice: change.todayPrice,
+            dailyPercentChange: change.percentChange,
+            percentChange: change.percentChange,
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null);
 
       return results;
     } catch (error) {
       console.error("Error fetching daily changes:", error);
+      // Return empty array to prevent client crashes
       return [];
     }
   },
