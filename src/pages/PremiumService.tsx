@@ -175,11 +175,16 @@ export default function PremiumService() {
       </nav>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-8 relative">
+        {/* Vibrant background gradients */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl" />
+        </div>
         <div className="text-center space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center gap-2 bg-primary/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm">
-            <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
-            <span className="font-medium">Premium Features</span>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm">
+            <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+            <span className="font-medium bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">Premium Features</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight px-4">
             Upgrade Your Market Tracking
@@ -203,22 +208,34 @@ export default function PremiumService() {
               }`}>
                 {plan.name === 'Enterprise' && (
                   <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                    <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap shadow-lg">
                       BEST OFFER
                     </span>
                   </div>
                 )}
                 {plan.popular && (
                   <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap shadow-lg">
                       MOST POPULAR
                     </span>
                   </div>
                 )}
                 <CardHeader className="text-center pb-6 sm:pb-8">
                   <div className="flex justify-center mb-3 sm:mb-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center ${
+                      plan.name === 'Enterprise' 
+                        ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20' 
+                        : plan.popular 
+                        ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' 
+                        : 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20'
+                    }`}>
+                      <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                        plan.name === 'Enterprise' 
+                          ? 'text-amber-600 dark:text-amber-400' 
+                          : plan.popular 
+                          ? 'text-purple-600 dark:text-purple-400' 
+                          : 'text-blue-600 dark:text-cyan-400'
+                      }`} />
                     </div>
                   </div>
                   <CardTitle className="text-xl sm:text-2xl">{plan.name}</CardTitle>
@@ -295,11 +312,17 @@ export default function PremiumService() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature) => {
               const Icon = feature.icon;
+              const gradients = [
+                { bg: 'bg-gradient-to-br from-green-500/20 to-emerald-500/20', icon: 'text-green-600 dark:text-green-400' },
+                { bg: 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20', icon: 'text-blue-600 dark:text-indigo-400' },
+                { bg: 'bg-gradient-to-br from-rose-500/20 to-pink-500/20', icon: 'text-rose-600 dark:text-pink-400' }
+              ];
+              const gradient = gradients[features.indexOf(feature)];
               return (
                 <Card key={feature.title}>
                   <CardHeader className="px-4 sm:px-6">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3 sm:mb-4">
-                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    <div className={`h-10 w-10 sm:h-12 sm:w-12 ${gradient.bg} rounded-lg flex items-center justify-center mb-3 sm:mb-4`}>
+                      <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${gradient.icon}`} />
                     </div>
                     <CardTitle className="text-lg sm:text-xl">{feature.title}</CardTitle>
                   </CardHeader>
@@ -314,8 +337,9 @@ export default function PremiumService() {
 
         {/* CTA Section */}
         <div className="pt-12 sm:pt-16 pb-6 sm:pb-8">
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="text-center py-8 sm:py-12 space-y-4 sm:space-y-6 px-4 sm:px-6">
+          <Card className="bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10 border-purple-500/30 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 animate-pulse" />
+            <CardContent className="text-center py-8 sm:py-12 space-y-4 sm:space-y-6 px-4 sm:px-6 relative z-10">
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Ready to upgrade?</h2>
               <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
                 Join thousands of collectors who are already using PokéMarket Premium to track and grow their collections.
