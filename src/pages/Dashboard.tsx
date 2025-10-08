@@ -259,8 +259,24 @@ export default function Dashboard() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
               {topDailyChanges.slice(0, 5).map((item: any) => (
-                <div key={item._id}>
+                <div key={item._id} className="space-y-2">
                   <CardItem card={item} size="compact" />
+                  <div className="px-2 py-1.5 bg-secondary/30 rounded text-xs space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Yesterday:</span>
+                      <span className="font-medium">${item.yesterdayPrice?.toFixed(2) || '0.00'}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Today:</span>
+                      <span className="font-medium">${item.todayPrice?.toFixed(2) || item.currentPrice?.toFixed(2) || '0.00'}</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-1 border-t border-border/50">
+                      <span className="text-muted-foreground">Change:</span>
+                      <span className={`font-bold ${(item.dailyPercentChange || item.percentChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {(item.dailyPercentChange || item.percentChange || 0) >= 0 ? '+' : ''}{(item.dailyPercentChange || item.percentChange || 0).toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
