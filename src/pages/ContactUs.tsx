@@ -46,7 +46,10 @@ export default function ContactUs() {
             <span className="text-2xl font-bold tracking-tight cursor-pointer" onClick={() => navigate("/")}>PokéMarket</span>
           </div>
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              navigate("/");
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             variant="outline"
             className="cursor-pointer"
           >
@@ -173,7 +176,12 @@ export default function ContactUs() {
                 <div>
                   <h3 className="font-medium mb-2">Common Issues</h3>
                   <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• Check our <button onClick={() => navigate("/#faq")} className="text-primary hover:underline">FAQ section</button> for quick answers</li>
+                    <li>• Check our <button onClick={() => {
+                      navigate("/");
+                      setTimeout(() => {
+                        document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" });
+                      }, 100);
+                    }} className="text-primary hover:underline">FAQ section</button> for quick answers</li>
                     <li>• Review our <button onClick={() => navigate("/terms")} className="text-primary hover:underline">Terms of Service</button></li>
                     <li>• Read our <button onClick={() => navigate("/privacy")} className="text-primary hover:underline">Privacy Policy</button></li>
                   </ul>
@@ -191,7 +199,10 @@ export default function ContactUs() {
 
         <div className="pt-8 border-t">
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              navigate("/");
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             variant="outline"
             className="cursor-pointer"
           >
