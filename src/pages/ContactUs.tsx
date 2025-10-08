@@ -173,7 +173,7 @@ export default function ContactUs() {
                 <div>
                   <h3 className="font-medium mb-2">Common Issues</h3>
                   <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• Check our <button onClick={() => navigate("/")} className="text-primary hover:underline">FAQ section</button> for quick answers</li>
+                    <li>• Check our <button onClick={() => navigate("/#faq")} className="text-primary hover:underline">FAQ section</button> for quick answers</li>
                     <li>• Review our <button onClick={() => navigate("/terms")} className="text-primary hover:underline">Terms of Service</button></li>
                     <li>• Read our <button onClick={() => navigate("/privacy")} className="text-primary hover:underline">Privacy Policy</button></li>
                   </ul>
