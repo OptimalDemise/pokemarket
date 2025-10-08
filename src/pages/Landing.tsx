@@ -510,7 +510,7 @@ export default function Landing() {
               <AccordionItem value="item-5">
                 <AccordionTrigger>What does "Recent Sale" mean?</AccordionTrigger>
                 <AccordionContent>
-                  When you see "Recent: $X" instead of the regular price, it indicates that the current price deviates significantly (more than 15%) from the average price of recent history. This often suggests a recent sale or unusual market activity, and we show the average price with a strikethrough for comparison.
+                  When you see "Recent: $X" instead of the regular price, it indicates that the current price deviates significantly (more than 10%) from the average price of recent history. This often suggests a recent sale or unusual market activity, and we show the average price with a strikethrough for comparison.
                 </AccordionContent>
               </AccordionItem>
 
