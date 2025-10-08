@@ -85,41 +85,52 @@ export const getTopDailyChanges = query({
         yesterdaySnapshots.map(s => [s.itemId, s.price])
       );
 
-      // Calculate changes
-      const changes = [];
+      // Calculate changes and collect card IDs
+      const cardChanges: Array<{ itemId: string; percentChange: number; todayPrice: number; yesterdayPrice: number }> = [];
       
       for (const todaySnapshot of todaySnapshots) {
+        if (todaySnapshot.itemType !== "card") continue;
+        
         const yesterdayPrice = yesterdayPrices.get(todaySnapshot.itemId);
         
         if (yesterdayPrice && yesterdayPrice !== 0) {
           const percentChange = ((todaySnapshot.price - yesterdayPrice) / yesterdayPrice) * 100;
           
-          // Get full item details - only process cards for now
-          if (todaySnapshot.itemType === "card") {
-            // Query the cards table directly to ensure proper typing
-            const card = await ctx.db
-              .query("cards")
-              .filter((q) => q.eq(q.field("_id"), todaySnapshot.itemId))
-              .first();
-            
-            if (card) {
-              changes.push({
-                ...card,
-                itemType: todaySnapshot.itemType,
-                yesterdayPrice,
-                todayPrice: todaySnapshot.price,
-                dailyPercentChange: percentChange,
-                percentChange: percentChange, // Add this for CardItem compatibility
-              });
-            }
-          }
+          cardChanges.push({
+            itemId: todaySnapshot.itemId,
+            percentChange,
+            todayPrice: todaySnapshot.price,
+            yesterdayPrice,
+          });
         }
       }
 
-      // Sort by absolute percentage change (biggest movers first)
-      changes.sort((a, b) => Math.abs(b.dailyPercentChange) - Math.abs(a.dailyPercentChange));
+      // Sort by absolute percentage change
+      cardChanges.sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange));
+      
+      // Take top N changes
+      const topChanges = cardChanges.slice(0, limit);
+      
+      // Fetch all card details in one batch from the cards table
+      const allCards = await ctx.db.query("cards").collect();
+      const cardsMap = new Map(allCards.map(card => [card._id, card]));
+      
+      // Combine card data with change data
+      const results = topChanges.map((change) => {
+        const card = cardsMap.get(change.itemId as any);
+        if (!card) return null;
+        
+        return {
+          ...card,
+          itemType: "card",
+          yesterdayPrice: change.yesterdayPrice,
+          todayPrice: change.todayPrice,
+          dailyPercentChange: change.percentChange,
+          percentChange: change.percentChange,
+        };
+      }).filter(Boolean);
 
-      return changes.slice(0, limit);
+      return results;
     } catch (error) {
       console.error("Error fetching daily changes:", error);
       return [];

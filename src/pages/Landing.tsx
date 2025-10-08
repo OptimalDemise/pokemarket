@@ -44,7 +44,7 @@ export default function Landing() {
   // Get top 3 cards by daily percentage change (resets daily at midnight UTC)
   const dailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
   const topPercentageChanges = (dailyChanges || [])
-    .filter(item => item.itemType === "card")
+    .filter((item): item is NonNullable<typeof item> => item !== null && item.itemType === "card")
     .slice(0, 3);
 
   // Get 3 most recently updated cards with actual price changes
