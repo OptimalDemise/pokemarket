@@ -58,9 +58,9 @@ export default function Landing() {
       {/* Navigation */}
       <nav className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink">
-            <img src="https://harmless-tapir-303.convex.cloud/api/storage/68e40f71-217c-4c22-a34e-0b8e58109ee3" alt="Logo" className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" />
-            <span className="text-lg sm:text-2xl font-bold tracking-tight cursor-pointer truncate" onClick={() => {
+          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-shrink">
+            <img src="https://harmless-tapir-303.convex.cloud/api/storage/68e40f71-217c-4c22-a34e-0b8e58109ee3" alt="Logo" className="h-7 w-7 sm:h-12 sm:w-12 flex-shrink-0" />
+            <span className="text-base sm:text-2xl font-bold tracking-tight cursor-pointer truncate" onClick={() => {
               navigate("/");
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}>PokéMarket</span>
@@ -73,17 +73,17 @@ export default function Landing() {
                   variant={theme === "light" ? "default" : "ghost"}
                   size="icon"
                   onClick={() => toggleTheme("light")}
-                  className="cursor-pointer h-7 w-7 sm:h-8 sm:w-8"
+                  className="cursor-pointer h-6 w-6 sm:h-8 sm:w-8"
                 >
-                  <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
                 <Button
                   variant={theme === "dark" ? "default" : "ghost"}
                   size="icon"
                   onClick={() => toggleTheme("dark")}
-                  className="cursor-pointer h-7 w-7 sm:h-8 sm:w-8"
+                  className="cursor-pointer h-6 w-6 sm:h-8 sm:w-8"
                 >
-                  <Moon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
 
@@ -99,10 +99,10 @@ export default function Landing() {
               {/* Profile Avatar */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="cursor-pointer h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
+                  <Avatar className="cursor-pointer h-7 w-7 sm:h-10 sm:w-10 flex-shrink-0">
                     <AvatarImage src="" alt="Profile" />
                     <AvatarFallback>
-                      <User className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <User className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
