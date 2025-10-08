@@ -224,7 +224,7 @@ export default function PremiumService() {
                   </ul>
                   <Button 
                     className="w-full cursor-pointer" 
-                    variant={plan.popular ? "default" : "outline"}
+                    variant="outline"
                     onClick={handleGetStarted}
                     disabled={currentPlan === plan.name}
                   >
