@@ -9,8 +9,8 @@ export default function PremiumService() {
   const plans = [
     {
       name: "Basic",
-      price: "$9.99",
-      period: "/month",
+      price: "Free",
+      period: "",
       description: "Perfect for casual collectors",
       features: [
         "Real-time price tracking",
@@ -24,7 +24,7 @@ export default function PremiumService() {
     },
     {
       name: "Pro",
-      price: "$19.99",
+      price: "$9.99",
       period: "/month",
       description: "For serious collectors and investors",
       features: [
@@ -41,7 +41,7 @@ export default function PremiumService() {
     },
     {
       name: "Enterprise",
-      price: "$49.99",
+      price: "$19.99",
       period: "/month",
       description: "For professional traders and stores",
       features: [
