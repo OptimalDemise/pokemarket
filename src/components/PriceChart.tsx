@@ -248,19 +248,35 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
         </svg>
         
         {/* Hover tooltip */}
-        {hoveredPoint && mousePosition && (
-          <div 
-            className="absolute z-10 bg-popover border rounded-lg shadow-lg px-3 py-2 pointer-events-none"
-            style={{
-              left: `${mousePosition.x + 10}px`,
-              top: `${mousePosition.y - 10}px`,
-              transform: 'translateY(-100%)'
-            }}
-          >
-            <div className="text-xs font-medium">${hoveredPoint.price.toFixed(2)}</div>
-            <div className="text-[10px] text-muted-foreground">{formatDateTime(hoveredPoint.timestamp)}</div>
-          </div>
-        )}
+        {hoveredPoint && mousePosition && (() => {
+          // Calculate the exact position of the hovered point in the SVG
+          const index = data.indexOf(hoveredPoint);
+          const pointX = (index / (data.length - 1)) * (chartWidth - padding * 2) + padding + leftPadding;
+          const pointY = chartHeight - ((hoveredPoint.price - minPrice) / priceRange) * (chartHeight - padding * 2) - padding;
+          
+          // Convert SVG coordinates to screen coordinates
+          const svg = document.querySelector('svg');
+          if (!svg) return null;
+          const rect = svg.getBoundingClientRect();
+          const scaleX = rect.width / width;
+          const scaleY = rect.height / height;
+          const screenX = pointX * scaleX;
+          const screenY = pointY * scaleY;
+          
+          return (
+            <div 
+              className="absolute z-10 bg-popover border rounded-lg shadow-lg px-3 py-2 pointer-events-none"
+              style={{
+                left: `${screenX + 10}px`,
+                top: `${screenY - 10}px`,
+                transform: 'translateY(-100%)'
+              }}
+            >
+              <div className="text-xs font-medium">${hoveredPoint.price.toFixed(2)}</div>
+              <div className="text-[10px] text-muted-foreground">{formatDateTime(hoveredPoint.timestamp)}</div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
