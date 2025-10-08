@@ -24,6 +24,14 @@ crons.interval(
   internal.updateProducts.updateProductPrices
 );
 
+// Update big movers cache every 5 minutes
+crons.interval(
+  "update big movers cache",
+  { minutes: 5 },
+  internal.cards.updateBigMoversCache,
+  {}
+);
+
 // Cleanup old price history weekly (Sundays at 2 AM UTC)
 crons.weekly(
   "cleanup old card price history",

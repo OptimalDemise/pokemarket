@@ -25,7 +25,7 @@ export const _getAllCards = internalQuery({
   },
 });
 
-// Get big movers from the past hour (cards with >3% change) - OPTIMIZED
+// Get big movers with hourly caching - cards persist for full hour unless replaced by higher % change
 export const getBigMovers = query({
   args: { 
     hoursAgo: v.optional(v.number()),
@@ -33,36 +33,126 @@ export const getBigMovers = query({
     limit: v.optional(v.number())
   },
   handler: async (ctx, args): Promise<any[]> => {
-    const hoursAgo = args.hoursAgo || 1;
     const minPercentChange = args.minPercentChange || 3;
     const limit = args.limit || 20;
     
-    const timeThreshold = Date.now() - (hoursAgo * 60 * 60 * 1000);
+    // Calculate current hour period (rounds down to the hour)
+    const now = Date.now();
+    const currentHourStart = Math.floor(now / (60 * 60 * 1000)) * (60 * 60 * 1000);
     
     try {
-      // Use index to efficiently filter by lastUpdated
-      const recentCards = await ctx.db
-        .query("cards")
-        .withIndex("by_last_updated", (q) => q.gt("lastUpdated", timeThreshold))
-        .collect();
+      // Get cached big movers for current hour period
+      const cachedMovers = await ctx.db
+        .query("bigMoversCache")
+        .withIndex("by_hour_period", (q) => q.eq("hourPeriodStart", currentHourStart))
+        .order("desc")
+        .take(limit);
       
-      // Filter using pre-calculated percentChange values (no expensive calculations)
-      const bigMovers = recentCards
-        .filter((card) => {
-          const change = card.percentChange || 0;
-          return Math.abs(change) > minPercentChange;
-        })
-        .map((card) => ({
-          ...card,
-          tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
-        }))
-        .sort((a, b) => Math.abs(b.percentChange || 0) - Math.abs(a.percentChange || 0))
-        .slice(0, limit);
-
-      return bigMovers;
+      // If we have cached movers, fetch their current card data
+      if (cachedMovers.length > 0) {
+        const cardIds = cachedMovers.map(m => m.cardId);
+        const cards = await Promise.all(
+          cardIds.map(id => ctx.db.get(id))
+        );
+        
+        // Filter out any null cards and map to full card objects
+        const validCards = cards
+          .filter((card): card is NonNullable<typeof card> => card !== null)
+          .map((card) => ({
+            ...card,
+            tcgplayerUrl: constructTCGPlayerUrl(card.name, card.setName, card.cardNumber),
+          }))
+          .sort((a, b) => Math.abs(b.percentChange || 0) - Math.abs(a.percentChange || 0));
+        
+        return validCards;
+      }
+      
+      // No cache exists, return empty (will be populated by background job)
+      return [];
     } catch (error) {
       console.error("Error fetching big movers:", error);
       return [];
+    }
+  },
+});
+
+// Internal mutation to update big movers cache
+export const updateBigMoversCache = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    const currentHourStart = Math.floor(now / (60 * 60 * 1000)) * (60 * 60 * 1000);
+    const oneHourAgo = now - (60 * 60 * 1000);
+    
+    try {
+      // Get all cards updated in the last hour with significant changes
+      const recentCards = await ctx.db
+        .query("cards")
+        .withIndex("by_last_updated", (q) => q.gt("lastUpdated", oneHourAgo))
+        .collect();
+      
+      // Filter for cards with >3% change
+      const significantMovers = recentCards
+        .filter((card) => {
+          const change = card.percentChange || 0;
+          return Math.abs(change) > 3;
+        })
+        .sort((a, b) => Math.abs(b.percentChange || 0) - Math.abs(a.percentChange || 0))
+        .slice(0, 20);
+      
+      // Get existing cache for current hour
+      const existingCache = await ctx.db
+        .query("bigMoversCache")
+        .withIndex("by_hour_period", (q) => q.eq("hourPeriodStart", currentHourStart))
+        .collect();
+      
+      // Create a map of existing cached cards
+      const existingMap = new Map(
+        existingCache.map(c => [c.cardId, c])
+      );
+      
+      // Update or insert new movers
+      for (let i = 0; i < significantMovers.length; i++) {
+        const card = significantMovers[i];
+        const existing = existingMap.get(card._id);
+        const absChange = Math.abs(card.percentChange || 0);
+        
+        if (existing) {
+          // Only update if new change is higher
+          if (absChange > Math.abs(existing.percentChange)) {
+            await ctx.db.patch(existing._id, {
+              percentChange: card.percentChange || 0,
+              rank: i + 1,
+            });
+          }
+        } else {
+          // Insert new entry
+          await ctx.db.insert("bigMoversCache", {
+            cardId: card._id,
+            percentChange: card.percentChange || 0,
+            hourPeriodStart: currentHourStart,
+            rank: i + 1,
+          });
+        }
+      }
+      
+      // Clean up old hour periods (older than 2 hours)
+      const twoHoursAgo = now - (2 * 60 * 60 * 1000);
+      const oldHourStart = Math.floor(twoHoursAgo / (60 * 60 * 1000)) * (60 * 60 * 1000);
+      
+      const oldEntries = await ctx.db
+        .query("bigMoversCache")
+        .withIndex("by_hour_period", (q) => q.lt("hourPeriodStart", oldHourStart))
+        .collect();
+      
+      for (const entry of oldEntries) {
+        await ctx.db.delete(entry._id);
+      }
+      
+      return { updated: significantMovers.length, cleaned: oldEntries.length };
+    } catch (error) {
+      console.error("Error updating big movers cache:", error);
+      throw error;
     }
   },
 });

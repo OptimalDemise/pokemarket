@@ -94,6 +94,15 @@ const schema = defineSchema(
     })
       .index("by_item_and_date", ["itemId", "snapshotDate"])
       .index("by_date", ["snapshotDate"]),
+
+    bigMoversCache: defineTable({
+      cardId: v.id("cards"),
+      percentChange: v.number(),
+      hourPeriodStart: v.number(), // Timestamp of when this hour period started
+      rank: v.number(), // Position in top 20 (1-20)
+    })
+      .index("by_hour_period", ["hourPeriodStart"])
+      .index("by_card_and_period", ["cardId", "hourPeriodStart"]),
   },
   {
     schemaValidation: false,
