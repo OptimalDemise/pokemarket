@@ -759,11 +759,11 @@ export default function Dashboard() {
                 variant="default"
                 size="icon"
                 onClick={() => setShowLiveUpdates(false)}
-                className="cursor-pointer h-12 w-8 rounded-l-lg rounded-r-none shadow-lg flex items-center gap-2 group hover:px-4 transition-all duration-300 flex-shrink-0"
+                className="cursor-pointer h-10 w-10 rounded-full shadow-lg flex items-center justify-center group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
                 title="Close Live Updates"
               >
                 <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
                   Close Live Updates
                 </span>
               </Button>
@@ -818,12 +818,12 @@ export default function Dashboard() {
           <Button
             variant="default"
             onClick={() => setShowLiveUpdates(true)}
-            className="cursor-pointer h-12 px-3 rounded-l-lg rounded-r-none shadow-lg flex items-center gap-2 group hover:px-4 transition-all duration-300"
+            className="cursor-pointer h-10 w-10 rounded-full shadow-lg flex items-center justify-center group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
             title="Open Live Updates"
             aria-label="Open Live Updates"
           >
             <ChevronLeft className="h-4 w-4 flex-shrink-0" />
-            <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
               Open Live Updates
             </span>
           </Button>
