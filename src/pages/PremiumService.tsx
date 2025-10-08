@@ -196,7 +196,7 @@ export default function PremiumService() {
                     <div className="pt-3">
                       <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-3">
                         <span className="text-base font-bold text-primary block">
-                          {plan.trialDays}-Day Free Trial
+                          {plan.trialDays}-Day Free Trial (One Time Only)
                         </span>
                         <span className="text-xs text-muted-foreground block">
                           Cancel any time
