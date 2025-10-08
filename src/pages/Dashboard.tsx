@@ -753,22 +753,6 @@ export default function Dashboard() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none relative"
           >
-            {/* Close button positioned at left edge, vertically centered */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20" style={{ left: '-32px' }}>
-              <Button
-                variant="default"
-                size="icon"
-                onClick={() => setShowLiveUpdates(false)}
-                className="cursor-pointer h-12 w-8 rounded-r-lg rounded-l-none shadow-lg flex items-center gap-2 group hover:px-4 transition-all duration-300 flex-shrink-0"
-                title="Close Live Updates"
-              >
-                <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  Close Live Updates
-                </span>
-              </Button>
-            </div>
-
             <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 h-[73px]">
           <div className="flex items-center justify-between">
             <div className="flex-1">
