@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate } from "react-router";
 import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield, Loader2, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -271,8 +272,8 @@ export default function PremiumService() {
                       <li key={index} className="flex items-start gap-2">
                         <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
                         <span className="text-xs sm:text-sm break-words flex-1">{feature}</span>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
+                        <Popover>
+                          <PopoverTrigger asChild>
                             <button 
                               className="flex-shrink-0 mt-0.5 touch-manipulation"
                               type="button"
@@ -280,11 +281,11 @@ export default function PremiumService() {
                             >
                               <HelpCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground hover:text-foreground transition-colors" />
                             </button>
-                          </TooltipTrigger>
-                          <TooltipContent side="right" className="max-w-xs">
-                            <p className="text-xs">{featureDescriptions[feature]}</p>
-                          </TooltipContent>
-                        </Tooltip>
+                          </PopoverTrigger>
+                          <PopoverContent side="right" className="max-w-xs text-xs" align="start">
+                            {featureDescriptions[feature]}
+                          </PopoverContent>
+                        </Popover>
                       </li>
                     ))}
                   </ul>
