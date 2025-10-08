@@ -118,17 +118,26 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const svg = e.currentTarget;
     const rect = svg.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-    // Find closest data point
-    const chartX = x - leftPadding - padding;
+    // Find closest data point based on X position within the chart area
+    const chartX = mouseX - leftPadding - padding;
+    
+    // Ensure we're within the chart bounds
+    if (chartX < 0 || chartX > (chartWidth - padding * 2)) {
+      setHoveredPoint(null);
+      setMousePosition(null);
+      return;
+    }
+    
     const relativeX = chartX / (chartWidth - padding * 2);
-    const index = Math.round(relativeX * (data.length - 1));
+    const index = Math.max(0, Math.min(data.length - 1, Math.round(relativeX * (data.length - 1))));
 
     if (index >= 0 && index < data.length) {
       setHoveredPoint(data[index]);
-      setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      // Store the actual mouse position for tooltip placement
+      setMousePosition({ x: mouseX, y: mouseY });
     }
   };
 
