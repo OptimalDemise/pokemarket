@@ -561,6 +561,13 @@ export default function Landing() {
             >
               Privacy Policy
             </button>
+            <span className="text-muted-foreground">•</span>
+            <button
+              onClick={() => navigate("/contact")}
+              className="hover:text-foreground transition-colors cursor-pointer"
+            >
+              Contact Us
+            </button>
           </div>
         </div>
       </footer>
