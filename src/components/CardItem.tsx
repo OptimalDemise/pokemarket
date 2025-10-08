@@ -6,7 +6,7 @@ import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { Sparkles, Loader2, Maximize2 } from "lucide-react";
 import { PriceChart } from "./PriceChart";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 interface CardItemProps {
   card: {
@@ -27,7 +27,7 @@ interface CardItemProps {
   size?: "default" | "compact";
 }
 
-export function CardItem({ card, size = "default" }: CardItemProps) {
+export const CardItem = memo(function CardItem({ card, size = "default" }: CardItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -85,6 +85,8 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                       src={card.imageUrl}
                       alt={card.name}
                       className="w-full h-full object-contain"
+                      loading="lazy"
+                      decoding="async"
                       onLoad={() => setImageLoading(false)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -147,6 +149,8 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                       src={card.imageUrl}
                       alt={card.name}
                       className="w-full h-full object-contain"
+                      loading="eager"
+                      decoding="async"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
@@ -229,6 +233,8 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                 src={card.imageUrl}
                 alt={card.name}
                 className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                loading="eager"
+                decoding="async"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -239,4 +245,4 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
       </Dialog>
     </>
   );
-}
+});

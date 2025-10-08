@@ -6,7 +6,7 @@ import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { Package, Loader2, Maximize2 } from "lucide-react";
 import { PriceChart } from "./PriceChart";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 interface ProductItemProps {
   product: {
@@ -23,7 +23,7 @@ interface ProductItemProps {
   };
 }
 
-export function ProductItem({ product }: ProductItemProps) {
+export const ProductItem = memo(function ProductItem({ product }: ProductItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -79,6 +79,8 @@ export function ProductItem({ product }: ProductItemProps) {
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-contain p-2"
+                      loading="lazy"
+                      decoding="async"
                       onLoad={() => setImageLoading(false)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -141,6 +143,8 @@ export function ProductItem({ product }: ProductItemProps) {
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-contain p-4"
+                      loading="eager"
+                      decoding="async"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
@@ -193,6 +197,8 @@ export function ProductItem({ product }: ProductItemProps) {
                 src={product.imageUrl}
                 alt={product.name}
                 className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                loading="eager"
+                decoding="async"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -203,4 +209,4 @@ export function ProductItem({ product }: ProductItemProps) {
       </Dialog>
     </>
   );
-}
+});

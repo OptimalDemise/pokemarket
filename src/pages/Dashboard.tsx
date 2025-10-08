@@ -12,12 +12,12 @@ import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, memo } from "react";
 import { useNavigate } from "react-router";
 
 type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 40;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -862,12 +862,12 @@ function sortItems<T extends { percentChange: number; currentPrice: number; _cre
   }
 }
 
-// Wrapper component for CardItem - no longer pre-fetches price history
-function CardItemWrapper({ card }: { card: any }) {
+// Wrapper component for CardItem - memoized for performance
+const CardItemWrapper = memo(function CardItemWrapper({ card }: { card: any }) {
   return <CardItem card={card} />;
-}
+});
 
-// Wrapper component for ProductItem - no longer pre-fetches price history
-function ProductItemWrapper({ product }: { product: any }) {
+// Wrapper component for ProductItem - memoized for performance
+const ProductItemWrapper = memo(function ProductItemWrapper({ product }: { product: any }) {
   return <ProductItem product={product} />;
-}
+});
