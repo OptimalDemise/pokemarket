@@ -172,7 +172,7 @@ export default function PremiumService() {
           {plans.map((plan) => {
             const Icon = plan.icon;
             return (
-              <Card key={plan.name} className={`relative ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
+              <Card key={plan.name} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
@@ -213,8 +213,8 @@ export default function PremiumService() {
                     </div>
                   )}
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <ul className="space-y-3">
+                <CardContent className="space-y-6 flex-1 flex flex-col">
+                  <ul className="space-y-3 flex-1">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
@@ -222,14 +222,16 @@ export default function PremiumService() {
                       </li>
                     ))}
                   </ul>
-                  <Button 
-                    className="w-full cursor-pointer" 
-                    variant="outline"
-                    onClick={handleGetStarted}
-                    disabled={currentPlan === plan.name}
-                  >
-                    {currentPlan === plan.name ? "Current Plan" : "Get Started"}
-                  </Button>
+                  <div className="mt-auto pt-6">
+                    <Button 
+                      className="w-full cursor-pointer" 
+                      variant="outline"
+                      onClick={handleGetStarted}
+                      disabled={currentPlan === plan.name}
+                    >
+                      {currentPlan === plan.name ? "Current Plan" : "Get Started"}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             );
