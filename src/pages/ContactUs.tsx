@@ -46,7 +46,10 @@ export default function ContactUs() {
             <span className="text-2xl font-bold tracking-tight cursor-pointer" onClick={() => navigate("/")}>PokéMarket</span>
           </div>
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              navigate("/");
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             variant="outline"
             className="cursor-pointer"
           >
@@ -191,7 +194,10 @@ export default function ContactUs() {
 
         <div className="pt-8 border-t">
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              navigate("/");
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             variant="outline"
             className="cursor-pointer"
           >
