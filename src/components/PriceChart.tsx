@@ -155,6 +155,49 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     setMousePosition(null);
   };
 
+  // Handle touch events for mobile
+  const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    
+    // Get touch position relative to the SVG element
+    const mouseX = touch.clientX - rect.left;
+    const mouseY = touch.clientY - rect.top;
+    
+    // Scale touch position to viewBox coordinates
+    const scaleX = width / rect.width;
+    const scaleY = height / rect.height;
+    const viewBoxX = mouseX * scaleX;
+    const viewBoxY = mouseY * scaleY;
+
+    // Calculate position within the chart area (accounting for left padding)
+    const chartX = viewBoxX - leftPadding - padding;
+    
+    // Ensure we're within the chart bounds
+    if (chartX < 0 || chartX > (chartWidth - padding * 2) || viewBoxY < 0 || viewBoxY > chartHeight) {
+      setHoveredPoint(null);
+      setMousePosition(null);
+      return;
+    }
+    
+    // Calculate which data point we're closest to
+    const relativeX = chartX / (chartWidth - padding * 2);
+    const index = Math.max(0, Math.min(data.length - 1, Math.round(relativeX * (data.length - 1))));
+
+    if (index >= 0 && index < data.length) {
+      setHoveredPoint(data[index]);
+      // Store the actual touch position for tooltip placement
+      setMousePosition({ x: mouseX, y: mouseY });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setHoveredPoint(null);
+    setMousePosition(null);
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-baseline gap-3">
@@ -168,11 +211,13 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
         <svg 
           width={width} 
           height={height + bottomPadding} 
-          className="w-full" 
+          className="w-full touch-none" 
           viewBox={`0 0 ${width} ${height + bottomPadding}`} 
           preserveAspectRatio="xMidYMid meet"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Y-axis labels */}
           {yAxisLabels.map((label, i) => (
