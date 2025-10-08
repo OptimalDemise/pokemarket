@@ -132,7 +132,7 @@ export default function Landing() {
                 variant="outline"
                 className="cursor-pointer"
               >
-                {isAuthenticated ? "Dashboard" : "Sign In"}
+                {isAuthenticated ? "Market" : "Sign In"}
               </Button>
 
               {/* Profile Avatar */}
