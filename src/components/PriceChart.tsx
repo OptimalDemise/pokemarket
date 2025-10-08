@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { useState } from "react";
 
 interface PriceDataPoint {
   timestamp: number;
@@ -13,6 +14,9 @@ interface PriceChartProps {
 }
 
 export function PriceChart({ data, currentPrice, percentChange }: PriceChartProps) {
+  const [hoveredPoint, setHoveredPoint] = useState<PriceDataPoint | null>(null);
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
+
   if (!data || data.length === 0) {
     return <div className="text-sm text-muted-foreground">No price history</div>;
   }
@@ -57,6 +61,18 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     }
   };
 
+  // Format date and time for hover tooltip
+  const formatDateTime = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   // Determine number of X-axis labels based on data density
   const getXAxisLabels = () => {
     const labels: { value: string; x: number }[] = [];
@@ -98,6 +114,29 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     { value: minPrice, y: chartHeight - padding }
   ];
 
+  // Handle mouse move over SVG
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Find closest data point
+    const chartX = x - leftPadding - padding;
+    const relativeX = chartX / (chartWidth - padding * 2);
+    const index = Math.round(relativeX * (data.length - 1));
+
+    if (index >= 0 && index < data.length) {
+      setHoveredPoint(data[index]);
+      setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredPoint(null);
+    setMousePosition(null);
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-baseline gap-3">
@@ -107,67 +146,104 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
           {Math.abs(percentChange).toFixed(2)}%
         </div>
       </div>
-      <svg width={width} height={height + bottomPadding} className="w-full" viewBox={`0 0 ${width} ${height + bottomPadding}`} preserveAspectRatio="xMidYMid meet">
-        {/* Y-axis labels */}
-        {yAxisLabels.map((label, i) => (
-          <text
-            key={i}
-            x={leftPadding - 8}
-            y={label.y}
-            textAnchor="end"
-            className="text-[10px] fill-muted-foreground"
-            dominantBaseline="middle"
+      <div className="relative">
+        <svg 
+          width={width} 
+          height={height + bottomPadding} 
+          className="w-full" 
+          viewBox={`0 0 ${width} ${height + bottomPadding}`} 
+          preserveAspectRatio="xMidYMid meet"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/* Y-axis labels */}
+          {yAxisLabels.map((label, i) => (
+            <text
+              key={i}
+              x={leftPadding - 8}
+              y={label.y}
+              textAnchor="end"
+              className="text-[10px] fill-muted-foreground"
+              dominantBaseline="middle"
+            >
+              ${label.value.toFixed(0)}
+            </text>
+          ))}
+          
+          {/* Y-axis line */}
+          <line
+            x1={leftPadding}
+            y1={padding}
+            x2={leftPadding}
+            y2={chartHeight}
+            stroke="currentColor"
+            strokeWidth="1"
+            className="stroke-border"
+          />
+          
+          {/* X-axis line */}
+          <line
+            x1={leftPadding}
+            y1={chartHeight}
+            x2={width}
+            y2={chartHeight}
+            stroke="currentColor"
+            strokeWidth="1"
+            className="stroke-border"
+          />
+          
+          {/* Price line */}
+          <motion.polyline
+            points={points}
+            fill="none"
+            stroke={isPositive ? "#16a34a" : "#dc2626"}
+            strokeWidth="2"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          />
+          
+          {/* Hover indicator circle */}
+          {hoveredPoint && mousePosition && (
+            <circle
+              cx={leftPadding + padding + ((data.indexOf(hoveredPoint) / (data.length - 1)) * (chartWidth - padding * 2))}
+              cy={chartHeight - ((hoveredPoint.price - minPrice) / priceRange) * (chartHeight - padding * 2) - padding}
+              r="4"
+              fill={isPositive ? "#16a34a" : "#dc2626"}
+              stroke="white"
+              strokeWidth="2"
+            />
+          )}
+          
+          {/* X-axis labels - dynamically positioned */}
+          {xAxisLabels.map((label, i) => (
+            <text
+              key={i}
+              x={label.x}
+              y={chartHeight + 20}
+              textAnchor={i === 0 ? "start" : i === xAxisLabels.length - 1 ? "end" : "middle"}
+              className="text-[10px] fill-muted-foreground"
+            >
+              {label.value}
+            </text>
+          ))}
+        </svg>
+        
+        {/* Hover tooltip */}
+        {hoveredPoint && mousePosition && (
+          <div 
+            className="absolute z-10 bg-popover border rounded-lg shadow-lg px-3 py-2 pointer-events-none"
+            style={{
+              left: `${mousePosition.x + 10}px`,
+              top: `${mousePosition.y - 10}px`,
+              transform: 'translateY(-100%)'
+            }}
           >
-            ${label.value.toFixed(0)}
-          </text>
-        ))}
-        
-        {/* Y-axis line */}
-        <line
-          x1={leftPadding}
-          y1={padding}
-          x2={leftPadding}
-          y2={chartHeight}
-          stroke="currentColor"
-          strokeWidth="1"
-          className="stroke-border"
-        />
-        
-        {/* X-axis line */}
-        <line
-          x1={leftPadding}
-          y1={chartHeight}
-          x2={width}
-          y2={chartHeight}
-          stroke="currentColor"
-          strokeWidth="1"
-          className="stroke-border"
-        />
-        
-        {/* Price line */}
-        <motion.polyline
-          points={points}
-          fill="none"
-          stroke={isPositive ? "#16a34a" : "#dc2626"}
-          strokeWidth="2"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        />
-        
-        {/* X-axis labels - dynamically positioned */}
-        {xAxisLabels.map((label, i) => (
-          <text
-            key={i}
-            x={label.x}
-            y={chartHeight + 20}
-            textAnchor={i === 0 ? "start" : i === xAxisLabels.length - 1 ? "end" : "middle"}
-            className="text-[10px] fill-muted-foreground"
-          >
-            {label.value}
-          </text>
-        ))}
-      </svg>
+            <div className="text-xs font-medium">${hoveredPoint.price.toFixed(2)}</div>
+            <div className="text-[10px] text-muted-foreground">{formatDateTime(hoveredPoint.timestamp)}</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
