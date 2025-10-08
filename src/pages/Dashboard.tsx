@@ -753,8 +753,8 @@ export default function Dashboard() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none relative"
           >
-            {/* Close button positioned at left edge, vertically centered */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20">
+            {/* Close button positioned at left edge, vertically centered - sticky */}
+            <div className="lg:sticky top-1/2 -translate-y-1/2 absolute left-0 z-20">
               <Button
                 variant="default"
                 size="icon"
