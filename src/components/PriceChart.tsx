@@ -18,7 +18,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
 
   if (!data || data.length === 0) {
-    return <div className="text-sm text-muted-foreground">No price history (Within recent 90 days)</div>;
+    return <div className="text-sm text-muted-foreground">No price history</div>;
   }
 
   const maxPrice = Math.max(...data.map((d) => d.price));
