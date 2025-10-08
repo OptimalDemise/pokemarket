@@ -315,10 +315,10 @@ export const upsertCard = internalMutation({
             const sum = historicalPrices.reduce((sum, h) => sum + h.price, 0);
             averagePrice = sum / historicalPrices.length;
             
-            // Check if current price deviates significantly from average (>15%)
+            // Check if current price deviates significantly from average (>10%)
             if (averagePrice !== 0) {
               const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
-              isRecentSale = deviation > 15;
+              isRecentSale = deviation > 10;
             }
           }
           
