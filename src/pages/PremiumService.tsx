@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield, Loader2, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -51,6 +52,27 @@ export default function PremiumService() {
     );
   }
 
+  const featureDescriptions: Record<string, string> = {
+    "Real-time price tracking": "Monitor card prices as they update every minute",
+    "Price history up to 90 days": "View historical price charts for the past 3 months",
+    "Email notifications": "Get notified about important price changes via email",
+    "Basic analytics": "See simple statistics and trends for your tracked cards",
+    "Mobile access": "Access PokéMarket from any mobile device",
+    "Everything in Basic": "Includes all features from the Basic plan",
+    "Advanced price alerts": "Set custom price targets and get instant notifications when reached",
+    "Portfolio tracking": "Monitor the total value of your entire card collection",
+    "Market trend analysis": "View detailed analytics on price movements and market patterns",
+    "Priority support": "Get faster response times for your questions and issues",
+    "Export data to CSV": "Download your tracking data to spreadsheet files",
+    "Custom watchlists (unlimited)": "Create unlimited lists to organize cards you're watching",
+    "Everything in Pro": "Includes all features from the Pro plan",
+    "API access": "Connect PokéMarket data to your own software programmatically",
+    "Bulk import/export": "Upload or download large amounts of card data at once",
+    "Advanced analytics dashboard": "Access more detailed charts and business insights",
+    "Custom integrations": "Connect PokéMarket to other business tools you use",
+    "Team collaboration tools": "Multiple users can work together on the same account"
+  };
+
   const plans = [
     {
       name: "Basic",
@@ -99,9 +121,7 @@ export default function PremiumService() {
         "API access",
         "Bulk import/export",
         "Advanced analytics dashboard",
-        "Dedicated account manager",
         "Custom integrations",
-        "White-label options",
         "Team collaboration tools"
       ],
       icon: Zap,
@@ -220,7 +240,17 @@ export default function PremiumService() {
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-xs sm:text-sm break-words">{feature}</span>
+                        <span className="text-xs sm:text-sm break-words flex-1">{feature}</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button className="flex-shrink-0 mt-0.5">
+                              <HelpCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground hover:text-foreground transition-colors" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-xs">
+                            <p className="text-xs">{featureDescriptions[feature]}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </li>
                     ))}
                   </ul>
