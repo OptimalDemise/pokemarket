@@ -759,13 +759,15 @@ export default function Dashboard() {
                 variant="default"
                 size="icon"
                 onClick={() => setShowLiveUpdates(false)}
-                className="cursor-pointer h-10 w-10 rounded-full shadow-lg flex items-center justify-center group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
+                className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
                 title="Close Live Updates"
               >
-                <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
-                  Close Live Updates
-                </span>
+                <div className="flex items-center justify-center">
+                  <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
+                    Close Live Updates
+                  </span>
+                </div>
               </Button>
             </div>
 
@@ -818,14 +820,16 @@ export default function Dashboard() {
           <Button
             variant="default"
             onClick={() => setShowLiveUpdates(true)}
-            className="cursor-pointer h-10 w-10 rounded-full shadow-lg flex items-center justify-center group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
+            className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
             title="Open Live Updates"
             aria-label="Open Live Updates"
           >
-            <ChevronLeft className="h-4 w-4 flex-shrink-0" />
-            <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
-              Open Live Updates
-            </span>
+            <div className="flex items-center justify-center">
+              <ChevronLeft className="h-4 w-4 flex-shrink-0" />
+              <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
+                Open Live Updates
+              </span>
+            </div>
           </Button>
         </motion.div>
       )}
