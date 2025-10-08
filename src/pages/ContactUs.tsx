@@ -46,10 +46,7 @@ export default function ContactUs() {
             <span className="text-2xl font-bold tracking-tight cursor-pointer" onClick={() => navigate("/")}>PokéMarket</span>
           </div>
           <Button
-            onClick={() => {
-              navigate("/");
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={() => navigate("/")}
             variant="outline"
             className="cursor-pointer"
           >
@@ -176,15 +173,7 @@ export default function ContactUs() {
                 <div>
                   <h3 className="font-medium mb-2">Common Issues</h3>
                   <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• Check our <button onClick={() => {
-                      navigate("/");
-                      setTimeout(() => {
-                        const faqElement = document.getElementById("faq");
-                        if (faqElement) {
-                          faqElement.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }
-                      }, 300);
-                    }} className="text-primary hover:underline">FAQ section</button> for quick answers</li>
+                    <li>• Check our <button onClick={() => navigate("/")} className="text-primary hover:underline">FAQ section</button> for quick answers</li>
                     <li>• Review our <button onClick={() => navigate("/terms")} className="text-primary hover:underline">Terms of Service</button></li>
                     <li>• Read our <button onClick={() => navigate("/privacy")} className="text-primary hover:underline">Privacy Policy</button></li>
                   </ul>
@@ -202,10 +191,7 @@ export default function ContactUs() {
 
         <div className="pt-8 border-t">
           <Button
-            onClick={() => {
-              navigate("/");
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={() => navigate("/")}
             variant="outline"
             className="cursor-pointer"
           >
