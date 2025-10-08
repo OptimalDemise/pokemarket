@@ -247,6 +247,16 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* Ad Space 1: Subtle Banner */}
+      <section className="max-w-7xl mx-auto px-6 py-8">
+        <div className="p-4 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[100px]">
+          <div className="text-center text-muted-foreground">
+            <p className="text-xs font-medium">Advertisement</p>
+            <p className="text-[10px] mt-1">Sponsored Content</p>
+          </div>
+        </div>
+      </section>
+
       {/* Market Activity Section */}
       <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
@@ -366,6 +376,26 @@ export default function Landing() {
               </p>
             </motion.div>
 
+            {/* Ad Space 2: Native Ad within Features */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: false }}
+              className="space-y-4 p-8 border rounded-lg bg-secondary/5"
+            >
+              <div className="h-12 w-12 bg-secondary/20 rounded-lg flex items-center justify-center">
+                <Star className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">Sponsored</p>
+                <h3 className="text-lg font-semibold">Ad Space</h3>
+                <p className="text-sm text-muted-foreground">
+                  Partner with us to reach collectors
+                </p>
+              </div>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -381,7 +411,10 @@ export default function Landing() {
                 Visual price history with percentage changes. See trends at a glance.
               </p>
             </motion.div>
+          </div>
 
+          {/* Additional Feature Row */}
+          <div className="grid md:grid-cols-3 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -536,6 +569,16 @@ export default function Landing() {
             </Accordion>
           </div>
         </motion.div>
+      </section>
+
+      {/* Ad Space 3: Footer Banner */}
+      <section className="max-w-7xl mx-auto px-6 py-8">
+        <div className="p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
+          <div className="text-center text-muted-foreground">
+            <p className="text-xs font-medium">Advertisement</p>
+            <p className="text-[10px] mt-1">Footer Banner Space</p>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
