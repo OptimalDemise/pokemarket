@@ -66,6 +66,7 @@ export default function PremiumService() {
     {
       name: "Pro",
       price: "$9.99",
+      originalPrice: "$29.99",
       period: "/month",
       description: "For serious collectors and investors",
       features: [
@@ -85,6 +86,7 @@ export default function PremiumService() {
     {
       name: "Enterprise",
       price: "$19.99",
+      originalPrice: "$49.99",
       period: "/month",
       description: "For professional traders and stores",
       features: [
@@ -182,6 +184,11 @@ export default function PremiumService() {
                   <CardTitle className="text-2xl">{plan.name}</CardTitle>
                   <CardDescription>{plan.description}</CardDescription>
                   <div className="pt-4">
+                    {plan.originalPrice && (
+                      <span className="text-xl text-muted-foreground line-through mr-2">
+                        {plan.originalPrice}
+                      </span>
+                    )}
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
