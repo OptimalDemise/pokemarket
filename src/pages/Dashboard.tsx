@@ -818,7 +818,7 @@ export default function Dashboard() {
           <Button
             variant="default"
             onClick={() => setShowLiveUpdates(true)}
-            className="cursor-pointer h-12 px-3 rounded-l-lg rounded-r-none shadow-lg flex items-center gap-2 group hover:px-4 transition-all duration-300 rotate-180"
+            className="cursor-pointer h-12 px-3 rounded-l-lg rounded-r-none shadow-lg flex items-center gap-2 group hover:px-4 transition-all duration-300"
             title="Open Live Updates"
             aria-label="Open Live Updates"
           >
