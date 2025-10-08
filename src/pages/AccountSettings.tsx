@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe } from "lucide-react";
+import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe, Crown } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
@@ -259,6 +259,11 @@ export default function AccountSettings() {
                           ? new Date(user._creationTime).toLocaleDateString()
                           : "Unknown"}
                       </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Crown className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Current plan:</span>
+                      <span className="font-medium">Basic (Free)</span>
                     </div>
                   </div>
 
