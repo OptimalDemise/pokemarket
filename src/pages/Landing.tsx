@@ -17,8 +17,6 @@ import { api } from "@/convex/_generated/api";
 import { CardItem } from "@/components/CardItem";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useState, useEffect } from "react";
-import { BackgroundImageSelector } from "@/components/BackgroundImageSelector";
-import { BackgroundWrapper } from "@/components/BackgroundWrapper";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -56,7 +54,6 @@ export default function Landing() {
     .slice(0, 3) || [];
 
   return (
-    <BackgroundWrapper>
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
@@ -80,7 +77,6 @@ export default function Landing() {
                 >
                   <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
-                <BackgroundImageSelector />
                 <Button
                   variant={theme === "dark" ? "default" : "ghost"}
                   size="icon"
@@ -530,6 +526,5 @@ export default function Landing() {
         </div>
       </footer>
     </div>
-    </BackgroundWrapper>
   );
 }
