@@ -179,8 +179,11 @@ export default function ContactUs() {
                     <li>• Check our <button onClick={() => {
                       navigate("/");
                       setTimeout(() => {
-                        document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" });
-                      }, 100);
+                        const faqElement = document.getElementById("faq");
+                        if (faqElement) {
+                          faqElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                      }, 300);
                     }} className="text-primary hover:underline">FAQ section</button> for quick answers</li>
                     <li>• Review our <button onClick={() => navigate("/terms")} className="text-primary hover:underline">Terms of Service</button></li>
                     <li>• Read our <button onClick={() => navigate("/privacy")} className="text-primary hover:underline">Privacy Policy</button></li>
