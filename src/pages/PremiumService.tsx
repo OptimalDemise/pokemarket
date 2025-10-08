@@ -273,7 +273,11 @@ export default function PremiumService() {
                         <span className="text-xs sm:text-sm break-words flex-1">{feature}</span>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button className="flex-shrink-0 mt-0.5">
+                            <button 
+                              className="flex-shrink-0 mt-0.5 touch-manipulation"
+                              type="button"
+                              aria-label={`More information about ${feature}`}
+                            >
                               <HelpCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground hover:text-foreground transition-colors" />
                             </button>
                           </TooltipTrigger>
