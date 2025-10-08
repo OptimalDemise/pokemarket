@@ -257,8 +257,8 @@ export default function Dashboard() {
               <h2 className="text-xl font-bold tracking-tight">Top Daily Movers</h2>
               <span className="text-sm text-muted-foreground ml-auto">Updates daily at midnight UTC</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-              {topDailyChanges.slice(0, 5).map((item: any) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {topDailyChanges.slice(0, 10).map((item: any) => (
                 <div key={item._id} className="space-y-2">
                   <CardItem card={item} size="compact" />
                   <div className="px-2 py-1.5 bg-secondary/30 rounded text-xs space-y-1">
