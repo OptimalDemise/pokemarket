@@ -57,41 +57,41 @@ export default function Landing() {
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="https://harmless-tapir-303.convex.cloud/api/storage/68e40f71-217c-4c22-a34e-0b8e58109ee3" alt="Logo" className="h-12 w-12" />
-            <span className="text-2xl font-bold tracking-tight cursor-pointer" onClick={() => {
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink">
+            <img src="https://harmless-tapir-303.convex.cloud/api/storage/68e40f71-217c-4c22-a34e-0b8e58109ee3" alt="Logo" className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" />
+            <span className="text-lg sm:text-2xl font-bold tracking-tight cursor-pointer truncate" onClick={() => {
               navigate("/");
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}>PokéMarket</span>
           </div>
           {!isLoading && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
               {/* Theme Toggle Buttons */}
-              <div className="flex items-center gap-1 border rounded-md p-1">
+              <div className="flex items-center gap-0.5 sm:gap-1 border rounded-md p-0.5 sm:p-1">
                 <Button
                   variant={theme === "light" ? "default" : "ghost"}
                   size="icon"
                   onClick={() => toggleTheme("light")}
-                  className="cursor-pointer h-8 w-8"
+                  className="cursor-pointer h-7 w-7 sm:h-8 sm:w-8"
                 >
-                  <Sun className="h-4 w-4" />
+                  <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
                 <Button
                   variant={theme === "dark" ? "default" : "ghost"}
                   size="icon"
                   onClick={() => toggleTheme("dark")}
-                  className="cursor-pointer h-8 w-8"
+                  className="cursor-pointer h-7 w-7 sm:h-8 sm:w-8"
                 >
-                  <Moon className="h-4 w-4" />
+                  <Moon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
               </div>
 
-              {/* Sign In Button */}
+              {/* Sign In Button - Hidden on very small screens, shown on sm+ */}
               <Button
                 onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
                 variant="outline"
-                className="cursor-pointer"
+                className="cursor-pointer hidden sm:inline-flex"
               >
                 {isAuthenticated ? "Dashboard" : "Sign In"}
               </Button>
@@ -99,10 +99,10 @@ export default function Landing() {
               {/* Profile Avatar */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="cursor-pointer h-10 w-10">
+                  <Avatar className="cursor-pointer h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                     <AvatarImage src="" alt="Profile" />
                     <AvatarFallback>
-                      <User className="h-5 w-5" />
+                      <User className="h-4 w-4 sm:h-5 sm:w-5" />
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
@@ -114,6 +114,11 @@ export default function Landing() {
                   <DropdownMenuItem onClick={() => navigate("/account-settings")}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Account Settings</span>
+                  </DropdownMenuItem>
+                  {/* Dashboard link visible in dropdown on mobile */}
+                  <DropdownMenuItem onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")} className="sm:hidden">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>{isAuthenticated ? "Dashboard" : "Sign In"}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => console.log("Premium service clicked")}>
                     <Crown className="mr-2 h-4 w-4" />
