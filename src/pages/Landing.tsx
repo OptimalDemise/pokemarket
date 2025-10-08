@@ -415,7 +415,7 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: false }}
-            className="max-w-2xl mx-auto p-6 border rounded-lg bg-secondary/5"
+            className="max-w-xl mx-auto p-4 border rounded-lg bg-secondary/5"
           >
             <div className="flex items-center justify-center">
               <div className="text-center space-y-2">
@@ -572,7 +572,7 @@ export default function Landing() {
 
       {/* Ad Space 3: Footer Banner */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[70px]">
+        <div className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
           <div className="text-center text-muted-foreground">
             <p className="text-xs font-medium">Advertisement</p>
             <p className="text-[10px] mt-1">Footer Banner Space</p>
