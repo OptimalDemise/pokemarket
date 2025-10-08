@@ -249,7 +249,7 @@ export default function Landing() {
 
       {/* Ad Space 1: Subtle Banner */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="max-w-3xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
+        <div className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
           <div className="text-center text-muted-foreground">
             <p className="text-xs font-medium">Advertisement</p>
             <p className="text-[10px] mt-1">Sponsored Content</p>
@@ -572,7 +572,7 @@ export default function Landing() {
 
       {/* Ad Space 3: Footer Banner */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="max-w-3xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[70px]">
+        <div className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[70px]">
           <div className="text-center text-muted-foreground">
             <p className="text-xs font-medium">Advertisement</p>
             <p className="text-[10px] mt-1">Footer Banner Space</p>
