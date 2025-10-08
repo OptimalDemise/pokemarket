@@ -60,9 +60,9 @@ export const ProductItem = memo(function ProductItem({ product }: ProductItemPro
           >
             <Card className={`p-4 hover:border-primary transition-all hover:shadow-lg`}>
               {isJustUpdated && (
-                <div className="absolute top-1 right-1 z-[5]">
-                  <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
-                    JUST UPDATED
+                <div className="absolute top-2 right-2 z-[5]">
+                  <span className="bg-primary text-primary-foreground text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow-lg whitespace-nowrap">
+                    UPDATED
                   </span>
                 </div>
               )}
