@@ -754,8 +754,8 @@ export default function Dashboard() {
             className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none relative"
           >
             <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 h-[73px]">
-              {/* Close button positioned at left edge, sticky during scroll */}
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20">
+              {/* Close button positioned at left edge, sticky at vertical center */}
+              <div className="lg:sticky top-1/2 -translate-y-1/2 absolute left-0 z-20">
                 <Button
                   variant="default"
                   size="icon"
