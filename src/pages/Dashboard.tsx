@@ -753,25 +753,24 @@ export default function Dashboard() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none relative"
           >
-            {/* Close button positioned at left edge, vertically centered */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20">
-              <Button
-                variant="default"
-                size="icon"
-                onClick={() => setShowLiveUpdates(false)}
-                className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
-                title="Close Live Updates"
-              >
-                <div className="flex items-center justify-center">
-                  <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
-                    Close Live Updates
-                  </span>
-                </div>
-              </Button>
-            </div>
-
             <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 h-[73px]">
+              {/* Close button positioned at left edge, sticky during scroll */}
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20">
+                <Button
+                  variant="default"
+                  size="icon"
+                  onClick={() => setShowLiveUpdates(false)}
+                  className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
+                  title="Close Live Updates"
+                >
+                  <div className="flex items-center justify-center">
+                    <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-2">
+                      Close Live Updates
+                    </span>
+                  </div>
+                </Button>
+              </div>
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
