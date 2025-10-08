@@ -376,26 +376,6 @@ export default function Landing() {
               </p>
             </motion.div>
 
-            {/* Ad Space 2: Native Ad within Features */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: false }}
-              className="space-y-4 p-8 border rounded-lg bg-secondary/5"
-            >
-              <div className="h-12 w-12 bg-secondary/20 rounded-lg flex items-center justify-center">
-                <Star className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="text-center space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Sponsored</p>
-                <h3 className="text-lg font-semibold">Ad Space</h3>
-                <p className="text-sm text-muted-foreground">
-                  Partner with us to reach collectors
-                </p>
-              </div>
-            </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -411,10 +391,7 @@ export default function Landing() {
                 Visual price history with percentage changes. See trends at a glance.
               </p>
             </motion.div>
-          </div>
 
-          {/* Additional Feature Row */}
-          <div className="grid md:grid-cols-3 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -431,6 +408,28 @@ export default function Landing() {
               </p>
             </motion.div>
           </div>
+
+          {/* Ad Space 2: Native Ad below Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            viewport={{ once: false }}
+            className="p-8 border rounded-lg bg-secondary/5"
+          >
+            <div className="flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <div className="h-12 w-12 bg-secondary/20 rounded-lg flex items-center justify-center mx-auto">
+                  <Star className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <p className="text-xs font-medium text-muted-foreground">Sponsored</p>
+                <h3 className="text-lg font-semibold">Ad Space</h3>
+                <p className="text-sm text-muted-foreground">
+                  Partner with us to reach collectors
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
 
