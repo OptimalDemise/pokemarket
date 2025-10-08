@@ -415,7 +415,7 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: false }}
-            className="max-w-xl mx-auto p-4 border rounded-lg bg-secondary/5"
+            className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/5 min-h-[80px]"
           >
             <div className="flex items-center justify-center">
               <div className="text-center space-y-2">
