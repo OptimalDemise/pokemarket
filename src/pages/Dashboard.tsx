@@ -808,13 +808,26 @@ export default function Dashboard() {
         >
           <Button
             variant="default"
-            size="icon"
             onClick={() => setShowLiveUpdates(true)}
-            className="cursor-pointer h-12 w-8 rounded-l-lg rounded-r-none shadow-lg"
+            className="cursor-pointer h-12 px-3 rounded-l-lg rounded-r-none shadow-lg flex items-center gap-2 group hover:px-4 transition-all duration-300"
             title="Open Live Updates"
             aria-label="Open Live Updates"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <motion.div
+              initial={{ opacity: 1, width: "auto" }}
+              animate={{ opacity: 1, width: "auto" }}
+              className="flex items-center gap-2"
+            >
+              <ChevronLeft className="h-4 w-4 flex-shrink-0" />
+              <motion.span
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="text-xs font-medium whitespace-nowrap overflow-hidden"
+              >
+                Open Live Updates
+              </motion.span>
+            </motion.div>
           </Button>
         </motion.div>
       )}
