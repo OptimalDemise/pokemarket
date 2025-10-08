@@ -154,8 +154,7 @@ export default function Landing() {
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Account Settings</span>
                   </DropdownMenuItem>
-                  {/* Dashboard link removed from dropdown since it's now always visible as a button */}
-                  <DropdownMenuItem onClick={() => console.log("Premium service clicked")}>
+                  <DropdownMenuItem onClick={() => navigate("/premium")}>
                     <Crown className="mr-2 h-4 w-4" />
                     <span>Premium Service</span>
                   </DropdownMenuItem>
