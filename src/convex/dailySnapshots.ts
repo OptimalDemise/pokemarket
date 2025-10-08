@@ -94,22 +94,24 @@ export const getTopDailyChanges = query({
         if (yesterdayPrice && yesterdayPrice !== 0) {
           const percentChange = ((todaySnapshot.price - yesterdayPrice) / yesterdayPrice) * 100;
           
-          // Get full item details
-          let itemDetails = null;
+          // Get full item details - only process cards for now
           if (todaySnapshot.itemType === "card") {
-            itemDetails = await ctx.db.get(todaySnapshot.itemId as any);
-          } else {
-            itemDetails = await ctx.db.get(todaySnapshot.itemId as any);
-          }
-
-          if (itemDetails) {
-            changes.push({
-              ...itemDetails,
-              itemType: todaySnapshot.itemType,
-              yesterdayPrice,
-              todayPrice: todaySnapshot.price,
-              dailyPercentChange: percentChange,
-            });
+            // Query the cards table directly to ensure proper typing
+            const card = await ctx.db
+              .query("cards")
+              .filter((q) => q.eq(q.field("_id"), todaySnapshot.itemId))
+              .first();
+            
+            if (card) {
+              changes.push({
+                ...card,
+                itemType: todaySnapshot.itemType,
+                yesterdayPrice,
+                todayPrice: todaySnapshot.price,
+                dailyPercentChange: percentChange,
+                percentChange: percentChange, // Add this for CardItem compatibility
+              });
+            }
           }
         }
       }

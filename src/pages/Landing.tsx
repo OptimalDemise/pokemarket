@@ -41,11 +41,11 @@ export default function Landing() {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  // Get top 3 cards by percentage change
-  const topPercentageChanges = cards
-    ?.filter(card => card.percentChange !== 0)
-    .sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))
-    .slice(0, 3) || [];
+  // Get top 3 cards by daily percentage change (resets daily at midnight UTC)
+  const dailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
+  const topPercentageChanges = (dailyChanges || [])
+    .filter(item => item.itemType === "card")
+    .slice(0, 3);
 
   // Get 3 most recently updated cards with actual price changes
   const recentlyUpdated = cards
@@ -239,15 +239,15 @@ export default function Landing() {
               </h3>
               <div className="space-y-3">
                 {topPercentageChanges.length > 0 ? (
-                  topPercentageChanges.map((card, index) => (
+                  topPercentageChanges.map((item, index) => (
                     <motion.div
-                      key={card._id}
+                      key={item._id}
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       viewport={{ once: true }}
                     >
-                      <CardItem card={card} size="compact" />
+                      <CardItem card={item} size="compact" />
                     </motion.div>
                   ))
                 ) : (
