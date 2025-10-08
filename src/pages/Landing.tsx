@@ -249,7 +249,7 @@ export default function Landing() {
 
       {/* Ad Space 1: Subtle Banner */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="p-4 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[100px]">
+        <div className="max-w-3xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
           <div className="text-center text-muted-foreground">
             <p className="text-xs font-medium">Advertisement</p>
             <p className="text-[10px] mt-1">Sponsored Content</p>
@@ -415,16 +415,16 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: false }}
-            className="p-8 border rounded-lg bg-secondary/5"
+            className="max-w-2xl mx-auto p-6 border rounded-lg bg-secondary/5"
           >
             <div className="flex items-center justify-center">
               <div className="text-center space-y-2">
-                <div className="h-12 w-12 bg-secondary/20 rounded-lg flex items-center justify-center mx-auto">
-                  <Star className="h-6 w-6 text-muted-foreground" />
+                <div className="h-10 w-10 bg-secondary/20 rounded-lg flex items-center justify-center mx-auto">
+                  <Star className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <p className="text-xs font-medium text-muted-foreground">Sponsored</p>
-                <h3 className="text-lg font-semibold">Ad Space</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="text-base font-semibold">Ad Space</h3>
+                <p className="text-xs text-muted-foreground">
                   Partner with us to reach collectors
                 </p>
               </div>
@@ -572,7 +572,7 @@ export default function Landing() {
 
       {/* Ad Space 3: Footer Banner */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
+        <div className="max-w-3xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[70px]">
           <div className="text-center text-muted-foreground">
             <p className="text-xs font-medium">Advertisement</p>
             <p className="text-[10px] mt-1">Footer Banner Space</p>
