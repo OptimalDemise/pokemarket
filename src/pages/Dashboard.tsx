@@ -755,10 +755,10 @@ export default function Dashboard() {
           >
             <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 flex items-center h-[73px]">
               <Button
-                variant="ghost"
+                variant="default"
                 size="icon"
                 onClick={() => setShowLiveUpdates(false)}
-                className="cursor-pointer h-8 w-8 mr-2 flex-shrink-0"
+                className="cursor-pointer h-8 w-8 mr-2 flex-shrink-0 rounded-lg shadow-lg"
                 title="Close Live Updates"
               >
                 <ChevronRight className="h-4 w-4" />
