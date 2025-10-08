@@ -26,6 +26,7 @@ interface ProductItemProps {
 export function ProductItem({ product }: ProductItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
   
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
@@ -69,13 +70,21 @@ export function ProductItem({ product }: ProductItemProps) {
                 {/* Product Image */}
                 {product.imageUrl && (
                   <div className="w-full aspect-[3/2] relative overflow-hidden rounded-lg bg-secondary/20">
+                    {imageLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      </div>
+                    )}
                     <img
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-contain p-2"
+                      onLoad={() => setImageLoading(false)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
+                        setImageLoading(false);
                       }}
+                      style={{ display: imageLoading ? 'none' : 'block' }}
                     />
                   </div>
                 )}

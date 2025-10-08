@@ -30,6 +30,7 @@ interface CardItemProps {
 export function CardItem({ card, size = "default" }: CardItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
   
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
@@ -75,13 +76,21 @@ export function CardItem({ card, size = "default" }: CardItemProps) {
                 {/* Card Image */}
                 {card.imageUrl && (
                   <div className={`w-full ${isCompact ? 'aspect-[2/3] max-h-24' : 'aspect-[2/3] max-h-48 sm:max-h-none'} relative overflow-hidden rounded-lg bg-secondary/20`}>
+                    {imageLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      </div>
+                    )}
                     <img
                       src={card.imageUrl}
                       alt={card.name}
                       className="w-full h-full object-contain"
+                      onLoad={() => setImageLoading(false)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
+                        setImageLoading(false);
                       }}
+                      style={{ display: imageLoading ? 'none' : 'block' }}
                     />
                   </div>
                 )}
