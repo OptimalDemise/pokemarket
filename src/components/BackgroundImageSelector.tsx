@@ -130,7 +130,7 @@ export function BackgroundImageSelector() {
                 className="flex-1 sm:flex-none"
               >
                 <Upload className="mr-2 h-4 w-4" />
-                Save
+                Use as Background
               </Button>
             </div>
           </DialogFooter>
