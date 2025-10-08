@@ -132,23 +132,24 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     // Calculate position within the chart area (accounting for left padding)
     const chartX = viewBoxX - leftPadding - padding;
     
-    // More lenient Y-axis bounds check - allow interaction within the full chart height
-    if (viewBoxY < 0 || viewBoxY > (height + bottomPadding)) {
+    // Y-axis bounds check
+    if (viewBoxY < 0 || viewBoxY > height) {
       setHoveredPoint(null);
       setMousePosition(null);
       return;
     }
     
-    // More lenient X-axis bounds - extend slightly beyond chart edges
+    // X-axis bounds check - use the actual chart area width
     const chartAreaWidth = chartWidth - padding * 2;
-    if (chartX < -padding || chartX > chartAreaWidth + padding) {
+    if (chartX < 0 || chartX > chartAreaWidth) {
       setHoveredPoint(null);
       setMousePosition(null);
       return;
     }
     
-    // Calculate which data point we're closest to with clamping
-    const relativeX = Math.max(0, Math.min(1, chartX / chartAreaWidth));
+    // Calculate which data point we're closest to
+    // Map the chart X position directly to the data index
+    const relativeX = chartX / chartAreaWidth;
     const index = Math.round(relativeX * (data.length - 1));
 
     if (index >= 0 && index < data.length) {
@@ -183,23 +184,24 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     // Calculate position within the chart area (accounting for left padding)
     const chartX = viewBoxX - leftPadding - padding;
     
-    // More lenient Y-axis bounds check - allow interaction within the full chart height
-    if (viewBoxY < 0 || viewBoxY > (height + bottomPadding)) {
+    // Y-axis bounds check
+    if (viewBoxY < 0 || viewBoxY > height) {
       setHoveredPoint(null);
       setMousePosition(null);
       return;
     }
     
-    // More lenient X-axis bounds - extend slightly beyond chart edges
+    // X-axis bounds check - use the actual chart area width
     const chartAreaWidth = chartWidth - padding * 2;
-    if (chartX < -padding || chartX > chartAreaWidth + padding) {
+    if (chartX < 0 || chartX > chartAreaWidth) {
       setHoveredPoint(null);
       setMousePosition(null);
       return;
     }
     
-    // Calculate which data point we're closest to with clamping
-    const relativeX = Math.max(0, Math.min(1, chartX / chartAreaWidth));
+    // Calculate which data point we're closest to
+    // Map the chart X position directly to the data index
+    const relativeX = chartX / chartAreaWidth;
     const index = Math.round(relativeX * (data.length - 1));
 
     if (index >= 0 && index < data.length) {
