@@ -247,7 +247,7 @@ export default function PremiumService() {
                               <HelpCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground hover:text-foreground transition-colors" />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent side="left" className="max-w-xs">
+                          <TooltipContent side="right" className="max-w-xs">
                             <p className="text-xs">{featureDescriptions[feature]}</p>
                           </TooltipContent>
                         </Tooltip>
