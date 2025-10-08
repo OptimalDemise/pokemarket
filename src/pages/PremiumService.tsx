@@ -4,10 +4,15 @@ import { useNavigate } from "react-router";
 import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function PremiumService() {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
+  const { user } = useAuth();
+  
+  // Default to "Basic" if no plan is set
+  const currentPlan = user?.plan || "Basic";
 
   const handleGetStarted = () => {
     // Placeholder for future premium service functionality
@@ -221,8 +226,9 @@ export default function PremiumService() {
                     className="w-full cursor-pointer" 
                     variant={plan.popular ? "default" : "outline"}
                     onClick={handleGetStarted}
+                    disabled={currentPlan === plan.name}
                   >
-                    Get Started
+                    {currentPlan === plan.name ? "Current Plan" : "Get Started"}
                   </Button>
                 </CardContent>
               </Card>

@@ -30,6 +30,7 @@ const schema = defineSchema(
       isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
 
       role: v.optional(roleValidator), // role of the user. do not remove
+      plan: v.optional(v.string()), // user's subscription plan: "Basic", "Pro", or "Enterprise"
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
     // Pokemon cards table - tracks individual cards
