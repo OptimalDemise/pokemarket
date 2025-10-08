@@ -39,6 +39,7 @@ export default function Dashboard() {
   const [setOpen, setSetOpen] = useState(false);
   const [showTopDailyMovers, setShowTopDailyMovers] = useState(true);
   const [showBigMovers, setShowBigMovers] = useState(true);
+  const [showLiveUpdates, setShowLiveUpdates] = useState(true);
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -160,11 +161,14 @@ export default function Dashboard() {
     );
   }
 
+  // Only fetch live updates if sidebar is open
   const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-  const liveUpdates = (cards || [])
-    .filter(card => card.lastUpdated > fiveMinutesAgo)
-    .sort((a, b) => b.lastUpdated - a.lastUpdated)
-    .slice(0, 50);
+  const liveUpdates = showLiveUpdates 
+    ? (cards || [])
+        .filter(card => card.lastUpdated > fiveMinutesAgo)
+        .sort((a, b) => b.lastUpdated - a.lastUpdated)
+        .slice(0, 50)
+    : [];
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
@@ -740,8 +744,25 @@ export default function Dashboard() {
       </div>
 
       {/* Live Market Updates - Vertical Sidebar (Right Side) */}
-      <aside className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none">
-        <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 flex items-center h-[73px]">
+      <AnimatePresence>
+        {showLiveUpdates && (
+          <motion.aside
+            initial={{ x: "100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "100%", opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none"
+          >
+            <div className="p-4 border-b bg-background/95 backdrop-blur lg:sticky top-0 z-10 flex items-center h-[73px]">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowLiveUpdates(false)}
+                className="cursor-pointer h-8 w-8 mr-2 flex-shrink-0"
+                title="Close Live Updates"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <div className={`h-2 w-2 rounded-full ${liveUpdates.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
@@ -772,8 +793,30 @@ export default function Dashboard() {
               </p>
             </div>
           )}
-        </div>
-      </aside>
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* Toggle button when sidebar is closed */}
+      {!showLiveUpdates && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-20"
+        >
+          <Button
+            variant="default"
+            size="icon"
+            onClick={() => setShowLiveUpdates(true)}
+            className="cursor-pointer h-12 w-8 rounded-l-lg rounded-r-none shadow-lg"
+            title="Open Live Updates"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        </motion.div>
+      )}
     </div>
   );
 }
