@@ -813,21 +813,10 @@ export default function Dashboard() {
             title="Open Live Updates"
             aria-label="Open Live Updates"
           >
-            <motion.div
-              initial={{ opacity: 1, width: "auto" }}
-              animate={{ opacity: 1, width: "auto" }}
-              className="flex items-center gap-2"
-            >
-              <ChevronLeft className="h-4 w-4 flex-shrink-0" />
-              <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="text-xs font-medium whitespace-nowrap overflow-hidden"
-              >
-                Open Live Updates
-              </motion.span>
-            </motion.div>
+            <ChevronLeft className="h-4 w-4 flex-shrink-0" />
+            <span className="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[120px] opacity-0 group-hover:opacity-100 transition-all duration-300">
+              Open Live Updates
+            </span>
           </Button>
         </motion.div>
       )}
