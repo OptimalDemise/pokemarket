@@ -80,7 +80,7 @@ export default function PremiumService() {
       icon: Crown,
       popular: true,
       freeTrial: true,
-      trialDays: 14
+      trialDays: 7
     },
     {
       name: "Enterprise",
@@ -100,7 +100,7 @@ export default function PremiumService() {
       icon: Zap,
       popular: false,
       freeTrial: true,
-      trialDays: 14
+      trialDays: 7
     }
   ];
 
@@ -186,10 +186,15 @@ export default function PremiumService() {
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                   {plan.freeTrial && (
-                    <div className="pt-2">
-                      <span className="text-sm text-primary font-medium">
-                        {plan.trialDays}-day free trial
-                      </span>
+                    <div className="pt-3">
+                      <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-3">
+                        <span className="text-base font-bold text-primary block">
+                          {plan.trialDays}-Day Free Trial
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          No credit card required
+                        </span>
+                      </div>
                     </div>
                   )}
                 </CardHeader>
