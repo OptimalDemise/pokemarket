@@ -125,7 +125,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     
     // Scale mouse position to viewBox coordinates
     const scaleX = width / rect.width;
-    const scaleY = (height + bottomPadding) / rect.height;
+    const scaleY = height / rect.height;
     const viewBoxX = mouseX * scaleX;
     const viewBoxY = mouseY * scaleY;
 
@@ -133,7 +133,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     const chartX = viewBoxX - leftPadding - padding;
     
     // Ensure we're within the chart bounds
-    if (chartX < 0 || chartX > (chartWidth - padding * 2)) {
+    if (chartX < 0 || chartX > (chartWidth - padding * 2) || viewBoxY < 0 || viewBoxY > chartHeight) {
       setHoveredPoint(null);
       setMousePosition(null);
       return;
