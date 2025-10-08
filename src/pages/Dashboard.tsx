@@ -759,7 +759,7 @@ export default function Dashboard() {
                 variant="default"
                 size="icon"
                 onClick={() => setShowLiveUpdates(false)}
-                className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
+                className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300 opacity-70 hover:opacity-100"
                 title="Close Live Updates"
               >
                 <div className="flex items-center justify-center">
@@ -820,7 +820,7 @@ export default function Dashboard() {
           <Button
             variant="default"
             onClick={() => setShowLiveUpdates(true)}
-            className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300"
+            className="cursor-pointer h-10 w-10 rounded-full shadow-lg group hover:w-auto hover:rounded-full hover:px-4 transition-all duration-300 opacity-70 hover:opacity-100"
             title="Open Live Updates"
             aria-label="Open Live Updates"
           >
