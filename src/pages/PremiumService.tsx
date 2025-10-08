@@ -65,7 +65,7 @@ export default function PremiumService() {
     },
     {
       name: "Pro",
-      price: "$9.99",
+      price: "$14.99",
       originalPrice: "$29.99",
       period: "/month",
       description: "For serious collectors and investors",
@@ -85,7 +85,7 @@ export default function PremiumService() {
     },
     {
       name: "Enterprise",
-      price: "$19.99",
+      price: "$24.99",
       originalPrice: "$49.99",
       period: "/month",
       description: "For professional traders and stores",
