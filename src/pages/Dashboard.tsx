@@ -142,7 +142,7 @@ export default function Dashboard() {
             className="flex justify-center"
           >
             <img 
-              src="https://harmless-tapir-303.convex.cloud/api/storage/3f3a450d-9cf0-49e2-9c25-860d9b84085b" 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
               alt="PokéMarket Logo" 
               className="h-24 w-24 opacity-90"
             />
