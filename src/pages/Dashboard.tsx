@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -37,6 +37,8 @@ export default function Dashboard() {
   const [selectedSet, setSelectedSet] = useState<string>("all");
   const [rarityOpen, setRarityOpen] = useState(false);
   const [setOpen, setSetOpen] = useState(false);
+  const [showTopDailyMovers, setShowTopDailyMovers] = useState(true);
+  const [showBigMovers, setShowBigMovers] = useState(true);
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -255,31 +257,41 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-bold tracking-tight">Top Daily Movers</h2>
-              <span className="text-sm text-muted-foreground ml-auto">Updates daily at midnight UTC</span>
+              <span className="text-sm text-muted-foreground ml-auto mr-2">Updates daily at midnight UTC</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowTopDailyMovers(!showTopDailyMovers)}
+                className="cursor-pointer h-8 w-8"
+              >
+                {showTopDailyMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {topDailyChanges.slice(0, 10).map((item: any) => (
-                <div key={item._id} className="space-y-2">
-                  <CardItem card={item} size="compact" />
-                  <div className="px-2 py-1.5 bg-secondary/30 rounded text-xs space-y-1">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Yesterday:</span>
-                      <span className="font-medium">${item.yesterdayPrice?.toFixed(2) || '0.00'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Today:</span>
-                      <span className="font-medium">${item.todayPrice?.toFixed(2) || item.currentPrice?.toFixed(2) || '0.00'}</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-1 border-t border-border/50">
-                      <span className="text-muted-foreground">Change:</span>
-                      <span className={`font-bold ${(item.dailyPercentChange || item.percentChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {(item.dailyPercentChange || item.percentChange || 0) >= 0 ? '+' : ''}{(item.dailyPercentChange || item.percentChange || 0).toFixed(2)}%
-                      </span>
+            {showTopDailyMovers && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {topDailyChanges.slice(0, 10).map((item: any) => (
+                  <div key={item._id} className="space-y-2">
+                    <CardItem card={item} size="compact" />
+                    <div className="px-2 py-1.5 bg-secondary/30 rounded text-xs space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Yesterday:</span>
+                        <span className="font-medium">${item.yesterdayPrice?.toFixed(2) || '0.00'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Today:</span>
+                        <span className="font-medium">${item.todayPrice?.toFixed(2) || item.currentPrice?.toFixed(2) || '0.00'}</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-1 border-t border-border/50">
+                        <span className="text-muted-foreground">Change:</span>
+                        <span className={`font-bold ${(item.dailyPercentChange || item.percentChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {(item.dailyPercentChange || item.percentChange || 0) >= 0 ? '+' : ''}{(item.dailyPercentChange || item.percentChange || 0).toFixed(2)}%
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -465,27 +477,47 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="h-4 w-4 text-primary" />
                 <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
+                <span className="text-xs text-muted-foreground ml-auto mr-2">Changes over 3%</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowBigMovers(!showBigMovers)}
+                  className="cursor-pointer h-8 w-8"
+                >
+                  {showBigMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
               </div>
-              <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
-                {bigMovers.map((card) => (
-                  <div key={card._id} className="flex-shrink-0 w-32">
-                    <CardItem card={card} size="compact" />
-                  </div>
-                ))}
-              </div>
+              {showBigMovers && (
+                <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
+                  {bigMovers.map((card) => (
+                    <div key={card._id} className="flex-shrink-0 w-32">
+                      <CardItem card={card} size="compact" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           ) : (
             <>
               <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
                 <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                <span className="text-xs text-muted-foreground ml-auto">Changes over 3%</span>
+                <span className="text-xs text-muted-foreground ml-auto mr-2">Changes over 3%</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowBigMovers(!showBigMovers)}
+                  className="cursor-pointer h-8 w-8"
+                >
+                  {showBigMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
               </div>
-              <div className="text-center py-8 text-muted-foreground text-sm">
-                <p>No significant movers in the past hour</p>
-                <p className="mt-1 text-xs">Waiting for changes over 3%...</p>
-              </div>
+              {showBigMovers && (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  <p>No significant movers in the past hour</p>
+                  <p className="mt-1 text-xs">Waiting for changes over 3%...</p>
+                </div>
+              )}
             </>
           )}
         </motion.div>
