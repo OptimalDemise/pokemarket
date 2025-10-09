@@ -93,7 +93,7 @@ export default function PremiumService() {
       icon: Crown,
       popular: true,
       freeTrial: true,
-      trialDays: 7
+      trialDays: 3
     },
     {
       name: "Enterprise",
@@ -112,7 +112,7 @@ export default function PremiumService() {
       icon: Building,
       popular: false,
       freeTrial: true,
-      trialDays: 7
+      trialDays: 3
     },
     {
       name: "Basic",
