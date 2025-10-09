@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield, Loader2, HelpCircle } from "lucide-react";
+import { ArrowLeft, Check, Zap, TrendingUp, Bell, Star, Shield, Loader2, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -90,7 +90,7 @@ export default function PremiumService() {
         "Export data to CSV",
         "Custom watchlists (unlimited)"
       ],
-      icon: Crown,
+      icon: "custom-crown",
       popular: true,
       freeTrial: true,
       trialDays: 7
@@ -184,7 +184,11 @@ export default function PremiumService() {
         </div>
         <div className="text-center space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm">
-            <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+            <img 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/c93f0f27-c59d-4cbd-9eb9-22e3bdbdbc17" 
+              alt="Crown" 
+              className="h-3 w-3 sm:h-4 sm:w-4 object-contain flex-shrink-0"
+            />
             <span className="font-medium bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">Premium Features</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight px-4">
@@ -198,7 +202,7 @@ export default function PremiumService() {
         {/* Pricing Plans */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-6 sm:pt-8">
           {plans.map((plan) => {
-            const Icon = plan.icon;
+            const Icon = typeof plan.icon === "string" ? null : plan.icon;
             return (
               <Card key={plan.name} className={`relative flex flex-col ${
                 plan.name === 'Enterprise' 
@@ -230,13 +234,21 @@ export default function PremiumService() {
                         ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' 
                         : 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20'
                     }`}>
-                      <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${
-                        plan.name === 'Enterprise' 
-                          ? 'text-amber-600 dark:text-amber-400' 
-                          : plan.popular 
-                          ? 'text-purple-600 dark:text-purple-400' 
-                          : 'text-blue-600 dark:text-cyan-400'
-                      }`} />
+                      {plan.icon === "custom-crown" ? (
+                        <img 
+                          src="https://harmless-tapir-303.convex.cloud/api/storage/c93f0f27-c59d-4cbd-9eb9-22e3bdbdbc17" 
+                          alt="Crown" 
+                          className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
+                        />
+                      ) : Icon ? (
+                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                          plan.name === 'Enterprise' 
+                            ? 'text-amber-600 dark:text-amber-400' 
+                            : plan.popular 
+                            ? 'text-purple-600 dark:text-purple-400' 
+                            : 'text-blue-600 dark:text-cyan-400'
+                        }`} />
+                      ) : null}
                     </div>
                   </div>
                   <CardTitle className="text-xl sm:text-2xl">{plan.name}</CardTitle>
