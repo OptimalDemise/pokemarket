@@ -139,7 +139,8 @@ export default function Landing() {
               <Button
                 onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
                 variant="outline"
-                className="cursor-pointer"
+                size="sm"
+                className="cursor-pointer h-6 sm:h-9 text-xs sm:text-sm px-2 sm:px-4"
               >
                 {isAuthenticated ? "Market" : "Sign In"}
               </Button>
