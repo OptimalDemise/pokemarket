@@ -18,7 +18,7 @@ import { useNavigate } from "react-router";
 
 type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
 
-const ITEMS_PER_PAGE = 40;
+const ITEMS_PER_PAGE = 24;
 
 export default function Dashboard() {
   const navigate = useNavigate();

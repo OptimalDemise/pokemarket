@@ -79,6 +79,7 @@ export const ProductItem = memo(function ProductItem({ product }: ProductItemPro
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-contain p-2"
+                      loading="lazy"
                       decoding="async"
                       onLoad={() => setImageLoading(false)}
                       onError={(e) => {
