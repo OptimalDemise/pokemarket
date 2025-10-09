@@ -1,16 +1,24 @@
 import { internalMutation } from "./_generated/server";
+import { v } from "convex/values";
 
 // Cleanup redundant price history entries that are too close together
+// Processes cards in batches to avoid hitting read limits
 export const cleanupRedundantPriceHistory = internalMutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    batchSize: v.optional(v.number()),
+    cursor: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
     const TEN_MINUTES = 10 * 60 * 1000;
+    const BATCH_SIZE = args.batchSize || 50; // Process 50 cards at a time
     let totalDeleted = 0;
 
-    // Get all cards
-    const cards = await ctx.db.query("cards").collect();
+    // Get a batch of cards using pagination
+    const cardsPage = await ctx.db
+      .query("cards")
+      .paginate({ numItems: BATCH_SIZE, cursor: args.cursor || null });
 
-    for (const card of cards) {
+    for (const card of cardsPage.page) {
       // Get all price history for this card, sorted by timestamp
       const history = await ctx.db
         .query("cardPriceHistory")
@@ -24,7 +32,6 @@ export const cleanupRedundantPriceHistory = internalMutation({
       }
 
       // Keep first entry, then only keep entries that are at least 10 minutes apart
-      const entriesToKeep = [history[0]];
       let lastKeptTimestamp = history[0].timestamp;
 
       for (let i = 1; i < history.length - 1; i++) {
@@ -32,7 +39,6 @@ export const cleanupRedundantPriceHistory = internalMutation({
         const timeDiff = entry.timestamp - lastKeptTimestamp;
 
         if (timeDiff >= TEN_MINUTES) {
-          entriesToKeep.push(entry);
           lastKeptTimestamp = entry.timestamp;
         } else {
           // Delete this redundant entry
@@ -40,14 +46,13 @@ export const cleanupRedundantPriceHistory = internalMutation({
           totalDeleted++;
         }
       }
-
-      // Always keep the last entry (most recent)
-      entriesToKeep.push(history[history.length - 1]);
     }
 
     return { 
-      cardsProcessed: cards.length, 
-      entriesDeleted: totalDeleted 
+      cardsProcessed: cardsPage.page.length,
+      entriesDeleted: totalDeleted,
+      isDone: cardsPage.isDone,
+      continueCursor: cardsPage.continueCursor,
     };
   },
 });
