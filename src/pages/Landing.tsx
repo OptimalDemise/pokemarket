@@ -105,6 +105,17 @@ export default function Landing() {
           </div>
           {!isLoading && (
             <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+              {/* Premium Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/premium")}
+                className="cursor-pointer gap-1 h-6 sm:h-8 px-2 sm:px-3 hover:bg-amber-500/10 hover:text-amber-600 hover:border-amber-500/50 dark:hover:text-amber-400 transition-colors"
+              >
+                <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline text-xs sm:text-sm">Premium</span>
+              </Button>
+
               {/* Theme Toggle Buttons */}
               <div className="flex items-center gap-0.5 sm:gap-1 border rounded-md p-0.5 sm:p-1">
                 <Button
@@ -124,17 +135,6 @@ export default function Landing() {
                   <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
-
-              {/* Premium Button */}
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => navigate("/premium")}
-                className="cursor-pointer gap-1 h-6 sm:h-8 px-2 sm:px-3"
-              >
-                <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline text-xs sm:text-sm">Premium</span>
-              </Button>
 
               {/* Sign In Button - Now visible on all screen sizes */}
               <Button
