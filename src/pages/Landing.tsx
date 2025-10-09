@@ -203,13 +203,15 @@ export default function Landing() {
             alt="Logo Background"
             className="w-full h-full object-contain"
             animate={{ 
-              rotate: [0, 5, -5, 0],
-              scale: [1, 1.05, 1]
+              rotate: [0, 3, 0, -3, 0],
+              scale: [1, 1.03, 1, 1.03, 1],
+              y: [0, -10, 0, -10, 0]
             }}
             transition={{ 
-              duration: 8,
+              duration: 12,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: "easeInOut",
+              times: [0, 0.25, 0.5, 0.75, 1]
             }}
           />
         </motion.div>
