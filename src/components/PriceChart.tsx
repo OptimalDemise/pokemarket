@@ -78,7 +78,9 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     
     if (viewMode === "weekly") {
       // For weekly view, show week start date
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const weekEnd = new Date(date);
+      weekEnd.setDate(date.getDate() + 6);
+      return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
     } else {
       // For daily view, use existing logic
       const timeRangeMs = data[data.length - 1].timestamp - data[0].timestamp;
