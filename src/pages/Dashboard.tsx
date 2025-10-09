@@ -8,6 +8,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,6 +41,7 @@ export default function Dashboard() {
   const [showTopDailyMovers, setShowTopDailyMovers] = useState(true);
   const [showBigMovers, setShowBigMovers] = useState(true);
   const [showLiveUpdates, setShowLiveUpdates] = useState(true);
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
 
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
@@ -69,13 +71,57 @@ export default function Dashboard() {
     return Array.from(sets).sort();
   }, [cards]);
 
-  // Filter and sort cards
+  // Helper function for fuzzy string matching (Levenshtein distance)
+  const levenshteinDistance = (str1: string, str2: string): number => {
+    const matrix: number[][] = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    
+    return matrix[str2.length][str1.length];
+  };
+
+  // Calculate similarity percentage
+  const calculateSimilarity = (str1: string, str2: string): number => {
+    const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
+    const maxLength = Math.max(str1.length, str2.length);
+    return maxLength === 0 ? 100 : ((maxLength - distance) / maxLength) * 100;
+  };
+
+  // Filter and sort cards with multi-keyword search
   const filteredAndSortedCards = useMemo(() => {
     if (!cards) return [];
     
     let filtered = cards.filter(card => {
-      const matchesSearch = card.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.setName.toLowerCase().includes(searchQuery.toLowerCase());
+      // Multi-keyword search logic
+      if (searchQuery.trim()) {
+        const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
+        const cardText = `${card.name} ${card.setName}`.toLowerCase();
+        
+        // Check if ALL search words are present in the card text
+        const matchesSearch = searchWords.every(word => cardText.includes(word));
+        
+        if (!matchesSearch) return false;
+      }
       
       const min = minPrice ? parseFloat(minPrice) : 0;
       const max = maxPrice ? parseFloat(maxPrice) : Infinity;
@@ -85,25 +131,33 @@ export default function Dashboard() {
       
       const matchesSet = selectedSet === "all" || card.setName === selectedSet;
       
-      return matchesSearch && matchesPrice && matchesRarity && matchesSet;
+      return matchesPrice && matchesRarity && matchesSet;
     });
 
     return sortItems(filtered, sortOption);
   }, [cards, searchQuery, sortOption, minPrice, maxPrice, selectedRarity, selectedSet]);
 
-  // Filter and sort products
+  // Filter and sort products with multi-keyword search
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
     
     let filtered = products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.setName.toLowerCase().includes(searchQuery.toLowerCase());
+      // Multi-keyword search logic
+      if (searchQuery.trim()) {
+        const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
+        const productText = `${product.name} ${product.setName}`.toLowerCase();
+        
+        // Check if ALL search words are present in the product text
+        const matchesSearch = searchWords.every(word => productText.includes(word));
+        
+        if (!matchesSearch) return false;
+      }
       
       const min = minPrice ? parseFloat(minPrice) : 0;
       const max = maxPrice ? parseFloat(maxPrice) : Infinity;
       const matchesPrice = product.currentPrice >= min && product.currentPrice <= max;
       
-      return matchesSearch && matchesPrice;
+      return matchesPrice;
     });
 
     return sortItems(filtered, sortOption);
@@ -124,6 +178,67 @@ export default function Dashboard() {
     const endIndex = startIndex + ITEMS_PER_PAGE;
     return filteredAndSortedProducts.slice(startIndex, endIndex);
   }, [filteredAndSortedProducts, currentProductPage]);
+
+  // Generate search suggestions when no results found
+  useEffect(() => {
+    if (!searchQuery.trim() || !cards || !products) {
+      setSearchSuggestions([]);
+      return;
+    }
+
+    const hasResults = filteredAndSortedCards.length > 0 || filteredAndSortedProducts.length > 0;
+    
+    if (!hasResults) {
+      // Extract all unique words from card and product names
+      const allWords = new Set<string>();
+      
+      cards.forEach(card => {
+        card.name.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+        card.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+      });
+      
+      products.forEach(product => {
+        product.name.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+        product.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+      });
+      
+      // Find similar words for each search term
+      const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
+      const suggestions = new Map<string, number>();
+      
+      searchWords.forEach(searchWord => {
+        if (searchWord.length < 2) return;
+        
+        Array.from(allWords).forEach(word => {
+          const similarity = calculateSimilarity(searchWord, word);
+          
+          // If similarity is high (70%+) and word is not already in search
+          if (similarity >= 70 && similarity < 100 && !searchWords.includes(word)) {
+            const currentScore = suggestions.get(word) || 0;
+            suggestions.set(word, Math.max(currentScore, similarity));
+          }
+        });
+      });
+      
+      // Sort by similarity and take top 5
+      const topSuggestions = Array.from(suggestions.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([word]) => word);
+      
+      setSearchSuggestions(topSuggestions);
+    } else {
+      setSearchSuggestions([]);
+    }
+  }, [searchQuery, filteredAndSortedCards, filteredAndSortedProducts, cards, products]);
 
   // Reset to page 1 when search or sort changes
   useEffect(() => {
@@ -243,22 +358,53 @@ export default function Dashboard() {
             {/* Search and Sort Controls - Now in sticky header */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search cards or products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-10"
-                />
-                {searchQuery && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 cursor-pointer"
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search cards or products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-10"
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSearchSuggestions([]);
+                      }}
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 cursor-pointer"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Search Suggestions */}
+                {searchSuggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 p-3 bg-secondary/50 rounded-lg border"
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
+                    <p className="text-xs text-muted-foreground mb-2">Did you mean:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {searchSuggestions.map((suggestion) => (
+                        <Badge
+                          key={suggestion}
+                          variant="outline"
+                          className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                          onClick={() => {
+                            setSearchQuery(suggestion);
+                            setSearchSuggestions([]);
+                          }}
+                        >
+                          {suggestion}
+                        </Badge>
+                      ))}
+                    </div>
+                  </motion.div>
                 )}
               </div>
               <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
