@@ -10,7 +10,7 @@ export const cleanupRedundantPriceHistory = internalMutation({
   },
   handler: async (ctx, args) => {
     const TEN_MINUTES = 10 * 60 * 1000;
-    const BATCH_SIZE = args.batchSize || 50; // Process 50 cards at a time
+    const BATCH_SIZE = args.batchSize || 10; // Process 10 cards at a time to avoid read limits
     let totalDeleted = 0;
 
     // Get a batch of cards using pagination
