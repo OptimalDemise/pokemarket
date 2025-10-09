@@ -125,6 +125,17 @@ export default function Landing() {
                 </Button>
               </div>
 
+              {/* Premium Button */}
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => navigate("/premium")}
+                className="cursor-pointer gap-1 h-6 sm:h-8 px-2 sm:px-3"
+              >
+                <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline text-xs sm:text-sm">Premium</span>
+              </Button>
+
               {/* Sign In Button - Now visible on all screen sizes */}
               <Button
                 onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
