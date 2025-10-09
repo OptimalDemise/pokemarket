@@ -23,7 +23,6 @@ export default function Landing() {
   const navigate = useNavigate();
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const cards = useQuery(api.cards.getAllCards);
-  const products = useQuery(api.products.getAllProducts);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isNavigating, setIsNavigating] = useState(false);
 

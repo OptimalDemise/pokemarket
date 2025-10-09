@@ -53,9 +53,10 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
       return;
     }
     
-    toggleFavorite({ cardId: card._id }).catch((error) => {
-      console.error("Failed to toggle favorite:", error);
-    });
+    toggleFavorite({ cardId: card._id })
+      .catch((error) => {
+        console.error("Failed to toggle favorite:", error);
+      });
   };
 
   const handleConfirmUnfavorite = () => {
