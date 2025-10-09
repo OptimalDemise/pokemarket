@@ -224,9 +224,9 @@ export const fetchAllCardsAbovePrice = internalAction({
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
-    // Fetch all cards above $5 to get more results
+    // Fetch all cards above $3 to get more results
     const result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
-      minPrice: 5,
+      minPrice: 3,
     });
     return result;
   },
