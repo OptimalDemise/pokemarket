@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Check, Crown, Zap, TrendingUp, Bell, Star, Shield, Loader2, HelpCircle } from "lucide-react";
+import { ArrowLeft, Check, Crown, Building2, TrendingUp, Bell, Star, Shield, Loader2, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -109,7 +109,7 @@ export default function PremiumService() {
         "Custom integrations",
         "Team collaboration tools"
       ],
-      icon: Zap,
+      icon: Building2,
       popular: false,
       freeTrial: true,
       trialDays: 7
