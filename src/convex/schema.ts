@@ -104,6 +104,16 @@ const schema = defineSchema(
     })
       .index("by_hour_period", ["hourPeriodStart"])
       .index("by_card_and_period", ["cardId", "hourPeriodStart"]),
+
+    // User favorites/watchlist
+    favorites: defineTable({
+      userId: v.id("users"),
+      cardId: v.id("cards"),
+      createdAt: v.number(),
+    })
+      .index("by_user", ["userId"])
+      .index("by_card", ["cardId"])
+      .index("by_user_and_card", ["userId", "cardId"]),
   },
   {
     schemaValidation: false,

@@ -2,9 +2,9 @@ import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Id } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { motion } from "framer-motion";
-import { Sparkles, Loader2, Maximize2 } from "lucide-react";
+import { Sparkles, Loader2, Maximize2, Heart } from "lucide-react";
 import { PriceChart } from "./PriceChart";
 import { useState, memo } from "react";
 
@@ -38,6 +38,19 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     isOpen ? { cardId: card._id } : "skip"
   );
 
+  // Favorites functionality
+  const isFavorited = useQuery(api.favorites.isFavorited, { cardId: card._id }) ?? false;
+  const toggleFavorite = useMutation(api.favorites.toggleFavorite);
+
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening the dialog
+    try {
+      await toggleFavorite({ cardId: card._id });
+    } catch (error) {
+      console.error("Failed to toggle favorite:", error);
+    }
+  };
+
   const isCompact = size === "compact";
   
   // Check if card was updated in the last 5 minutes
@@ -65,6 +78,21 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
             className="cursor-pointer relative"
           >
             <Card className={`${isCompact ? 'p-2' : 'p-2 sm:p-4'} hover:border-primary transition-all hover:shadow-lg`}>
+              {/* Favorite Heart Icon */}
+              <button
+                onClick={handleFavoriteClick}
+                className="absolute top-2 left-2 z-[5] p-1.5 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all"
+                aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Heart
+                  className={`h-4 w-4 transition-all ${
+                    isFavorited 
+                      ? "fill-red-500 text-red-500" 
+                      : "text-muted-foreground hover:text-red-500"
+                  }`}
+                />
+              </button>
+
               {isJustUpdated && (
                 <div className="absolute top-2 right-2 z-[5]">
                   <span className="bg-primary text-primary-foreground text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow-lg whitespace-nowrap">
