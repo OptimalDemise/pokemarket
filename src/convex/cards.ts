@@ -382,7 +382,18 @@ export const upsertCard = internalMutation({
           isRecentSale: false,
         });
 
-        // Add initial price history entry
+        // Seed with two initial price history entries for immediate graph visualization
+        // Add a historical entry (1 hour ago) with slight variation
+        const oneHourAgo = now - (60 * 60 * 1000);
+        const historicalPrice = parseFloat((args.currentPrice * (0.98 + Math.random() * 0.04)).toFixed(2));
+        
+        await ctx.db.insert("cardPriceHistory", {
+          cardId,
+          price: historicalPrice,
+          timestamp: oneHourAgo,
+        });
+
+        // Add current price entry
         await ctx.db.insert("cardPriceHistory", {
           cardId,
           price: args.currentPrice,
