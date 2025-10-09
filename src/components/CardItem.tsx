@@ -117,8 +117,8 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                         <span className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold`}>${card.currentPrice.toFixed(2)}</span>
                       )}
                     </div>
-                    <span className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium ${card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                      {card.percentChange >= 0 ? "+" : ""}{card.percentChange.toFixed(2)}%
+                    <span className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium ${card.percentChange === 0 ? "text-muted-foreground" : card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                      {card.percentChange === 0 ? "—" : `${card.percentChange >= 0 ? "+" : ""}${card.percentChange.toFixed(2)}%`}
                     </span>
                   </div>
                 </div>

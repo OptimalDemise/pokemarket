@@ -111,8 +111,8 @@ export const ProductItem = memo(function ProductItem({ product }: ProductItemPro
                         <span className="text-lg font-bold">${product.currentPrice.toFixed(2)}</span>
                       )}
                     </div>
-                    <span className={`text-xs font-medium ${product.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
-                      {product.percentChange >= 0 ? "+" : ""}{product.percentChange.toFixed(2)}%
+                    <span className={`text-xs font-medium ${product.percentChange === 0 ? "text-muted-foreground" : product.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                      {product.percentChange === 0 ? "—" : `${product.percentChange >= 0 ? "+" : ""}${product.percentChange.toFixed(2)}%`}
                     </span>
                   </div>
                 </div>
