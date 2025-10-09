@@ -121,17 +121,17 @@ export default function Landing() {
                   variant={theme === "light" ? "default" : "ghost"}
                   size="icon"
                   onClick={() => toggleTheme("light")}
-                  className="cursor-pointer h-6 w-6 sm:h-8 sm:w-8"
+                  className="cursor-pointer h-6 w-6 sm:h-8 sm:w-8 group"
                 >
-                  <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Sun className="h-3 w-3 sm:h-4 sm:w-4 group-hover:fill-current transition-all" />
                 </Button>
                 <Button
                   variant={theme === "dark" ? "default" : "ghost"}
                   size="icon"
                   onClick={() => toggleTheme("dark")}
-                  className="cursor-pointer h-6 w-6 sm:h-8 sm:w-8"
+                  className="cursor-pointer h-6 w-6 sm:h-8 sm:w-8 group"
                 >
-                  <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Moon className="h-3 w-3 sm:h-4 sm:w-4 group-hover:fill-current transition-all" />
                 </Button>
               </div>
 
