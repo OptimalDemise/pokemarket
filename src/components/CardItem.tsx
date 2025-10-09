@@ -44,30 +44,28 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   const isFavorited = useQuery(api.favorites.isFavorited, { cardId: card._id }) ?? false;
   const toggleFavorite = useMutation(api.favorites.toggleFavorite);
 
-  const handleFavoriteClick = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent opening the dialog
+  const handleFavoriteClick = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     
-    // If already favorited, show confirmation dialog
     if (isFavorited) {
       setShowUnfavoriteDialog(true);
       return;
     }
     
-    // If not favorited, add to favorites immediately
-    try {
-      await toggleFavorite({ cardId: card._id });
-    } catch (error) {
+    toggleFavorite({ cardId: card._id }).catch((error) => {
       console.error("Failed to toggle favorite:", error);
-    }
+    });
   };
 
-  const handleConfirmUnfavorite = async () => {
-    try {
-      await toggleFavorite({ cardId: card._id });
-      setShowUnfavoriteDialog(false);
-    } catch (error) {
-      console.error("Failed to unfavorite:", error);
-    }
+  const handleConfirmUnfavorite = () => {
+    toggleFavorite({ cardId: card._id })
+      .then(() => {
+        setShowUnfavoriteDialog(false);
+      })
+      .catch((error) => {
+        console.error("Failed to unfavorite:", error);
+      });
   };
 
   const isCompact = size === "compact";
@@ -121,8 +119,10 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
               {/* Favorite Heart Icon */}
               <button
                 onClick={handleFavoriteClick}
+                onTouchEnd={handleFavoriteClick}
                 className="absolute top-2 left-2 z-[5] p-1.5 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all touch-manipulation"
                 aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                type="button"
               >
                 <Heart
                   className={`h-4 w-4 transition-all ${
