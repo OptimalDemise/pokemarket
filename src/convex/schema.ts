@@ -114,6 +114,14 @@ const schema = defineSchema(
       .index("by_user", ["userId"])
       .index("by_card", ["cardId"])
       .index("by_user_and_card", ["userId", "cardId"]),
+
+    // Update logs for tracking website changes
+    updateLogs: defineTable({
+      title: v.string(),
+      description: v.string(),
+      category: v.optional(v.string()), // "Feature", "Bug Fix", "Improvement", etc.
+      timestamp: v.number(),
+    }),
   },
   {
     schemaValidation: false,

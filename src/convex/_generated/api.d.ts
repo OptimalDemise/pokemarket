@@ -25,6 +25,7 @@ import type * as http from "../http.js";
 import type * as pokemonTcgApi from "../pokemonTcgApi.js";
 import type * as products from "../products.js";
 import type * as seedData from "../seedData.js";
+import type * as updateLogs from "../updateLogs.js";
 import type * as updateProducts from "../updateProducts.js";
 import type * as userProfile from "../userProfile.js";
 import type * as users from "../users.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   pokemonTcgApi: typeof pokemonTcgApi;
   products: typeof products;
   seedData: typeof seedData;
+  updateLogs: typeof updateLogs;
   updateProducts: typeof updateProducts;
   userProfile: typeof userProfile;
   users: typeof users;

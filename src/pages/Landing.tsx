@@ -18,6 +18,7 @@ import { CardItem } from "@/components/CardItem";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { UpdateLogsDialog } from "@/components/UpdateLogsDialog";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -624,6 +625,9 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Update Logs Button */}
+      <UpdateLogsDialog />
     </div>
   );
 }
