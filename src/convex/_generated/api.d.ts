@@ -16,6 +16,7 @@ import type {
 import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth from "../auth.js";
 import type * as cards from "../cards.js";
+import type * as cleanupPriceHistory from "../cleanupPriceHistory.js";
 import type * as crons from "../crons.js";
 import type * as dailySnapshots from "../dailySnapshots.js";
 import type * as favorites from "../favorites.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   "auth/emailOtp": typeof auth_emailOtp;
   auth: typeof auth;
   cards: typeof cards;
+  cleanupPriceHistory: typeof cleanupPriceHistory;
   crons: typeof crons;
   dailySnapshots: typeof dailySnapshots;
   favorites: typeof favorites;

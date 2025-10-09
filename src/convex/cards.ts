@@ -427,3 +427,48 @@ export const cleanupOldPriceHistory = internalMutation({
     return { deleted: oldEntries.length };
   },
 });
+
+// Cleanup redundant price history entries (keep only entries 10+ minutes apart)
+export const cleanupRedundantPriceHistory = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const allCards = await ctx.db.query("cards").collect();
+    let totalCleaned = 0;
+    
+    for (const card of allCards) {
+      // Get all history entries for this card, ordered by timestamp
+      const history = await ctx.db
+        .query("cardPriceHistory")
+        .withIndex("by_card", (q) => q.eq("cardId", card._id))
+        .order("asc")
+        .collect();
+      
+      if (history.length <= 2) continue; // Keep at least 2 entries
+      
+      const entriesToKeep = [history[0]]; // Always keep the first entry
+      let lastKeptTimestamp = history[0].timestamp;
+      
+      // Iterate through remaining entries
+      for (let i = 1; i < history.length - 1; i++) {
+        const entry = history[i];
+        const timeDiff = entry.timestamp - lastKeptTimestamp;
+        const tenMinutes = 10 * 60 * 1000;
+        
+        // Keep entry if it's at least 10 minutes apart from the last kept entry
+        if (timeDiff >= tenMinutes) {
+          entriesToKeep.push(entry);
+          lastKeptTimestamp = entry.timestamp;
+        } else {
+          // Delete redundant entry
+          await ctx.db.delete(entry._id);
+          totalCleaned++;
+        }
+      }
+      
+      // Always keep the last entry (most recent)
+      entriesToKeep.push(history[history.length - 1]);
+    }
+    
+    return { cleaned: totalCleaned };
+  },
+});
