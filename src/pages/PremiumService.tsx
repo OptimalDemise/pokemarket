@@ -187,7 +187,7 @@ export default function PremiumService() {
             <img 
               src="https://harmless-tapir-303.convex.cloud/api/storage/c93f0f27-c59d-4cbd-9eb9-22e3bdbdbc17" 
               alt="Crown" 
-              className="h-3 w-3 sm:h-4 sm:w-4 object-contain flex-shrink-0"
+              className="h-4 w-4 sm:h-5 sm:w-5 object-contain flex-shrink-0"
             />
             <span className="font-medium bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">Premium Features</span>
           </div>
