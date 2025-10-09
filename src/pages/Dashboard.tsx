@@ -873,50 +873,52 @@ export default function Dashboard() {
 
               {/* Pagination Controls for Cards */}
               {totalCardPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentCardPage(p => Math.max(1, p - 1))}
-                    disabled={currentCardPage === 1}
-                    className="cursor-pointer"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
-                  </Button>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">
-                      Page
-                    </span>
-                    <Select 
-                      value={currentCardPage.toString()} 
-                      onValueChange={(value) => setCurrentCardPage(parseInt(value))}
+                <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t py-3 z-20">
+                  <div className="flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentCardPage(p => Math.max(1, p - 1))}
+                      disabled={currentCardPage === 1}
+                      className="cursor-pointer"
                     >
-                      <SelectTrigger className="w-[80px] cursor-pointer">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: totalCardPages }, (_, i) => i + 1).map((page) => (
-                          <SelectItem key={page} value={page.toString()} className="cursor-pointer">
-                            {page}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">
-                      of {totalCardPages}
-                    </span>
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">
+                        Page
+                      </span>
+                      <Select 
+                        value={currentCardPage.toString()} 
+                        onValueChange={(value) => setCurrentCardPage(parseInt(value))}
+                      >
+                        <SelectTrigger className="w-[80px] cursor-pointer">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: totalCardPages }, (_, i) => i + 1).map((page) => (
+                            <SelectItem key={page} value={page.toString()} className="cursor-pointer">
+                              {page}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">
+                        of {totalCardPages}
+                      </span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentCardPage(p => Math.min(totalCardPages, p + 1))}
+                      disabled={currentCardPage === totalCardPages}
+                      className="cursor-pointer"
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentCardPage(p => Math.min(totalCardPages, p + 1))}
-                    disabled={currentCardPage === totalCardPages}
-                    className="cursor-pointer"
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
                 </div>
               )}
             </motion.div>
@@ -960,50 +962,52 @@ export default function Dashboard() {
 
               {/* Pagination Controls for Products */}
               {totalProductPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentProductPage(p => Math.max(1, p - 1))}
-                    disabled={currentProductPage === 1}
-                    className="cursor-pointer"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
-                  </Button>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">
-                      Page
-                    </span>
-                    <Select 
-                      value={currentProductPage.toString()} 
-                      onValueChange={(value) => setCurrentProductPage(parseInt(value))}
+                <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t py-3 z-20">
+                  <div className="flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentProductPage(p => Math.max(1, p - 1))}
+                      disabled={currentProductPage === 1}
+                      className="cursor-pointer"
                     >
-                      <SelectTrigger className="w-[80px] cursor-pointer">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: totalProductPages }, (_, i) => i + 1).map((page) => (
-                          <SelectItem key={page} value={page.toString()} className="cursor-pointer">
-                            {page}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">
-                      of {totalProductPages}
-                    </span>
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">
+                        Page
+                      </span>
+                      <Select 
+                        value={currentProductPage.toString()} 
+                        onValueChange={(value) => setCurrentProductPage(parseInt(value))}
+                      >
+                        <SelectTrigger className="w-[80px] cursor-pointer">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: totalProductPages }, (_, i) => i + 1).map((page) => (
+                            <SelectItem key={page} value={page.toString()} className="cursor-pointer">
+                              {page}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">
+                        of {totalProductPages}
+                      </span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentProductPage(p => Math.min(totalProductPages, p + 1))}
+                      disabled={currentProductPage === totalProductPages}
+                      className="cursor-pointer"
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentProductPage(p => Math.min(totalProductPages, p + 1))}
-                    disabled={currentProductPage === totalProductPages}
-                    className="cursor-pointer"
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
                 </div>
               )}
             </motion.div>
