@@ -120,8 +120,17 @@ export default function Dashboard() {
         const allCardWords = [...cardNameWords, ...setNameWords];
         
         // Check if ALL search words match complete words in the card text
+        // Also check singular/plural variations (add/remove 's')
         const matchesSearch = searchWords.every(searchWord => 
-          allCardWords.some(cardWord => cardWord === searchWord)
+          allCardWords.some(cardWord => {
+            // Exact match
+            if (cardWord === searchWord) return true;
+            // Check if search word + 's' matches card word
+            if (cardWord === searchWord + 's') return true;
+            // Check if card word + 's' matches search word
+            if (cardWord + 's' === searchWord) return true;
+            return false;
+          })
         );
         
         if (!matchesSearch) return false;
@@ -154,8 +163,17 @@ export default function Dashboard() {
         const allProductWords = [...productNameWords, ...setNameWords];
         
         // Check if ALL search words match complete words in the product text
+        // Also check singular/plural variations (add/remove 's')
         const matchesSearch = searchWords.every(searchWord => 
-          allProductWords.some(productWord => productWord === searchWord)
+          allProductWords.some(productWord => {
+            // Exact match
+            if (productWord === searchWord) return true;
+            // Check if search word + 's' matches product word
+            if (productWord === searchWord + 's') return true;
+            // Check if product word + 's' matches search word
+            if (productWord + 's' === searchWord) return true;
+            return false;
+          })
         );
         
         if (!matchesSearch) return false;
