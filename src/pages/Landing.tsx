@@ -235,7 +235,7 @@ export default function Landing() {
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Monitor prices and trends for hollow rare cards and booster products. 
-            Stay ahead of the market with live updates every minute.
+            Stay ahead of the market with live updates.
           </p>
 
           <div className="flex items-center justify-center gap-4 pt-4">
@@ -524,7 +524,7 @@ export default function Landing() {
               <AccordionItem value="item-2">
                 <AccordionTrigger>How often are prices updated?</AccordionTrigger>
                 <AccordionContent>
-                  Card and product prices are updated every minute to provide you with the most current market data. Price history for charts is recorded every 30 minutes or when significant price changes occur (greater than 0.1%), ensuring you have accurate trend data without unnecessary noise.
+                  Card prices are updated every 10 minutes with staggered updates to ensure smooth performance, while product prices refresh every minute. Price history for charts is recorded every 10 minutes or when significant price changes occur (greater than 0.1%), ensuring you have accurate trend data without unnecessary noise.
                 </AccordionContent>
               </AccordionItem>
 
