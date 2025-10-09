@@ -235,13 +235,16 @@ export const updateAllCardsWithRealData = internalAction({
     
     // Process cards in small batches with delays to stagger updates
     const BATCH_SIZE = 5; // Update 5 cards at a time
-    const DELAY_MS = 2000; // 2 second delay between batches
+    const DELAY_BETWEEN_CARDS_MS = 500; // 500ms delay between individual cards
+    const DELAY_BETWEEN_BATCHES_MS = 5000; // 5 second delay between batches
     
     for (let i = 0; i < allCards.length; i += BATCH_SIZE) {
       const batch = allCards.slice(i, i + BATCH_SIZE);
       
-      // Process batch
-      for (const card of batch) {
+      // Process batch with delays between individual cards
+      for (let j = 0; j < batch.length; j++) {
+        const card = batch[j];
+        
         // Simulate realistic price fluctuations (±3%)
         const fluctuation = 0.97 + Math.random() * 0.06;
         const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
@@ -257,11 +260,16 @@ export const updateAllCardsWithRealData = internalAction({
         });
         
         fluctuationCount++;
+        
+        // Add delay between individual cards within the batch (except for the last card in the batch)
+        if (j < batch.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
+        }
       }
       
       // Add delay between batches (except for the last batch)
       if (i + BATCH_SIZE < allCards.length) {
-        await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+        await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS));
       }
     }
     
