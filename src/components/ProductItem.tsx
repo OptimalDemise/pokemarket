@@ -79,7 +79,6 @@ export const ProductItem = memo(function ProductItem({ product }: ProductItemPro
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-contain p-2"
-                      loading="lazy"
                       decoding="async"
                       onLoad={() => setImageLoading(false)}
                       onError={(e) => {
@@ -143,7 +142,7 @@ export const ProductItem = memo(function ProductItem({ product }: ProductItemPro
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-contain p-4"
-                      loading="eager"
+                      loading="lazy"
                       decoding="async"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';

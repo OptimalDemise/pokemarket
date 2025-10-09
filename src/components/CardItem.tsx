@@ -85,7 +85,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                       src={card.imageUrl}
                       alt={card.name}
                       className="w-full h-full object-contain"
-                      loading="lazy"
                       decoding="async"
                       onLoad={() => setImageLoading(false)}
                       onError={(e) => {
@@ -149,7 +148,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                       src={card.imageUrl}
                       alt={card.name}
                       className="w-full h-full object-contain"
-                      loading="eager"
+                      loading="lazy"
                       decoding="async"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
