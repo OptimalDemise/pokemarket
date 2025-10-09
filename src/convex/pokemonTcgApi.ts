@@ -228,6 +228,50 @@ export const updateAllCardsWithRealData = internalAction({
     const result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
       minPrice: 3,
     });
-    return result;
+    
+    // After fetching new cards, update existing cards with staggered price fluctuations
+    const allCards = await ctx.runQuery(internal.cards._getAllCards);
+    let fluctuationCount = 0;
+    
+    // Process cards in small batches with delays to stagger updates
+    const BATCH_SIZE = 5; // Update 5 cards at a time
+    const DELAY_MS = 2000; // 2 second delay between batches
+    
+    for (let i = 0; i < allCards.length; i += BATCH_SIZE) {
+      const batch = allCards.slice(i, i + BATCH_SIZE);
+      
+      // Process batch
+      for (const card of batch) {
+        // Simulate realistic price fluctuations (±3%)
+        const fluctuation = 0.97 + Math.random() * 0.06;
+        const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
+        
+        await ctx.runMutation(internal.cards.upsertCard, {
+          name: card.name,
+          setName: card.setName,
+          cardNumber: card.cardNumber,
+          rarity: card.rarity,
+          imageUrl: card.imageUrl,
+          tcgplayerUrl: card.tcgplayerUrl,
+          currentPrice: newPrice,
+        });
+        
+        fluctuationCount++;
+      }
+      
+      // Add delay between batches (except for the last batch)
+      if (i + BATCH_SIZE < allCards.length) {
+        await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+      }
+    }
+    
+    console.log(`Updated ${fluctuationCount} cards with staggered price fluctuations`);
+    
+    return { 
+      success: result.success, 
+      updated: result.updated + fluctuationCount,
+      total: result.total,
+      errors: result.errors
+    };
   },
 });
