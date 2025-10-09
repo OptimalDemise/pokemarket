@@ -233,10 +233,10 @@ export const updateAllCardsWithRealData = internalAction({
     const allCards = await ctx.runQuery(internal.cards._getAllCards);
     let fluctuationCount = 0;
     
-    // Process cards in small batches with delays to stagger updates
-    const BATCH_SIZE = 5; // Update 5 cards at a time
+    // Process cards in larger batches with longer delays to stagger updates more gradually
+    const BATCH_SIZE = 15; // Update 15 cards at a time (10-20 range)
     const DELAY_BETWEEN_CARDS_MS = 500; // 500ms delay between individual cards
-    const DELAY_BETWEEN_BATCHES_MS = 5000; // 5 second delay between batches
+    const DELAY_BETWEEN_BATCHES_MS = 12000; // 12 second delay between batches (10-15 second range)
     
     for (let i = 0; i < allCards.length; i += BATCH_SIZE) {
       const batch = allCards.slice(i, i + BATCH_SIZE);
