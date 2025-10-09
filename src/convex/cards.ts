@@ -316,9 +316,12 @@ export const upsertCard = internalMutation({
             averagePrice = sum / historicalPrices.length;
             
             // Check if current price deviates significantly from average (>10%)
+            // AND if the last update was within the last hour (3600000 ms)
+            const oneHourAgo = now - (60 * 60 * 1000);
             if (averagePrice !== 0) {
               const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
-              isRecentSale = deviation > 10;
+              // Only mark as recent sale if deviation is significant AND it's been less than an hour
+              isRecentSale = deviation > 10 && existingCard.lastUpdated > oneHourAgo;
             }
           }
           
