@@ -158,9 +158,11 @@ export default function Landing() {
                     <Crown className="mr-2 h-4 w-4" />
                     <span>Premium Service</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => console.log("Favorites clicked")}>
-                    <Star className="mr-2 h-4 w-4" />
-                    <span>Favorites/Watchlist</span>
+                  <DropdownMenuItem 
+                    onClick={() => navigate("/favorites")}
+                    className="cursor-pointer"
+                  >
+                    Favorites/Watchlist
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {isAuthenticated && (
