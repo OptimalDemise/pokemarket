@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User, Settings, Crown, Star, LogOut } from "lucide-react";
+import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User, Settings, Crown, Heart, LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -160,18 +160,18 @@ export default function Landing() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/account-settings")} className="group">
-                    <Settings className="mr-2 h-4 w-4 group-hover:fill-current transition-all" />
+                    <Settings className="mr-2 h-4 w-4 transition-all" />
                     <span>Account Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/premium")} className="group">
-                    <Crown className="mr-2 h-4 w-4 group-hover:fill-current transition-all" />
+                    <Crown className="mr-2 h-4 w-4 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:fill-amber-500 dark:group-hover:fill-amber-400 transition-all" />
                     <span>Premium Service</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => navigate("/favorites")}
                     className="cursor-pointer group"
                   >
-                    <Star className="mr-2 h-4 w-4 group-hover:fill-current transition-all" />
+                    <Heart className="mr-2 h-4 w-4 group-hover:fill-red-500 group-hover:text-red-500 transition-all" />
                     <span>Favorites/Watchlist</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -435,7 +435,7 @@ export default function Landing() {
             <div className="flex items-center justify-center">
               <div className="text-center space-y-2">
                 <div className="h-10 w-10 bg-secondary/20 rounded-lg flex items-center justify-center mx-auto">
-                  <Star className="h-5 w-5 text-muted-foreground" />
+                  <Sparkles className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <p className="text-xs font-medium text-muted-foreground">Sponsored</p>
                 <h3 className="text-base font-semibold">Ad Space</h3>
