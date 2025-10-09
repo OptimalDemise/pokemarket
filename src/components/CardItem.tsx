@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Id } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
 import { useQuery, useMutation } from "convex/react";
@@ -31,6 +32,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [showUnfavoriteDialog, setShowUnfavoriteDialog] = useState(false);
   
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
@@ -44,10 +46,27 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent opening the dialog
+    
+    // If already favorited, show confirmation dialog
+    if (isFavorited) {
+      setShowUnfavoriteDialog(true);
+      return;
+    }
+    
+    // If not favorited, add to favorites immediately
     try {
       await toggleFavorite({ cardId: card._id });
     } catch (error) {
       console.error("Failed to toggle favorite:", error);
+    }
+  };
+
+  const handleConfirmUnfavorite = async () => {
+    try {
+      await toggleFavorite({ cardId: card._id });
+      setShowUnfavoriteDialog(false);
+    } catch (error) {
+      console.error("Failed to unfavorite:", error);
     }
   };
 
@@ -64,6 +83,27 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
 
   return (
     <>
+      {/* Unfavorite Confirmation Dialog */}
+      <AlertDialog open={showUnfavoriteDialog} onOpenChange={setShowUnfavoriteDialog}>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove from favorites?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove "{card.name}" from your favorites?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={(e) => {
+              e.stopPropagation();
+              handleConfirmUnfavorite();
+            }}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <motion.div
