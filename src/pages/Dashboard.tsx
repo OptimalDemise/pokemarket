@@ -115,10 +115,14 @@ export default function Dashboard() {
       // Multi-keyword search logic
       if (searchQuery.trim()) {
         const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
-        const cardText = `${card.name} ${card.setName}`.toLowerCase();
+        const cardNameWords = card.name.toLowerCase().split(/\s+/);
+        const setNameWords = card.setName.toLowerCase().split(/\s+/);
+        const allCardWords = [...cardNameWords, ...setNameWords];
         
-        // Check if ALL search words are present in the card text
-        const matchesSearch = searchWords.every(word => cardText.includes(word));
+        // Check if ALL search words match complete words in the card text
+        const matchesSearch = searchWords.every(searchWord => 
+          allCardWords.some(cardWord => cardWord === searchWord)
+        );
         
         if (!matchesSearch) return false;
       }
@@ -145,10 +149,14 @@ export default function Dashboard() {
       // Multi-keyword search logic
       if (searchQuery.trim()) {
         const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
-        const productText = `${product.name} ${product.setName}`.toLowerCase();
+        const productNameWords = product.name.toLowerCase().split(/\s+/);
+        const setNameWords = product.setName.toLowerCase().split(/\s+/);
+        const allProductWords = [...productNameWords, ...setNameWords];
         
-        // Check if ALL search words are present in the product text
-        const matchesSearch = searchWords.every(word => productText.includes(word));
+        // Check if ALL search words match complete words in the product text
+        const matchesSearch = searchWords.every(searchWord => 
+          allProductWords.some(productWord => productWord === searchWord)
+        );
         
         if (!matchesSearch) return false;
       }
