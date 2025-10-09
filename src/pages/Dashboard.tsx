@@ -19,13 +19,18 @@ import { useNavigate } from "react-router";
 type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price" | "lowest-price" | "no-change";
 
 const ITEMS_PER_PAGE = 30;
+const LIVE_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 minutes for basic plan
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  
+  // Fetch data with manual refresh control
+  const [refreshKey, setRefreshKey] = useState(0);
   const cards = useQuery(api.cards.getAllCards);
   const products = useQuery(api.products.getAllProducts);
   const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
   const bigMovers = useQuery(api.cards.getBigMovers, { hoursAgo: 1, minPercentChange: 3, limit: 20 });
+  
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("highest-price");
@@ -46,11 +51,12 @@ export default function Dashboard() {
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
 
-  // Auto-refresh every minute
+  // Auto-refresh every 10 minutes (basic plan)
   useEffect(() => {
     const interval = setInterval(() => {
       setLastUpdate(new Date());
-    }, 60000); // 1 minute
+      setRefreshKey(prev => prev + 1);
+    }, LIVE_UPDATE_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);
@@ -394,14 +400,16 @@ export default function Dashboard() {
     );
   }
 
-  // Only fetch live updates if sidebar is open
+  // Only fetch live updates if sidebar is open - with smooth rendering
   const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-  const liveUpdates = showLiveUpdates 
-    ? (cards || [])
-        .filter(card => card.lastUpdated > fiveMinutesAgo)
-        .sort((a, b) => b.lastUpdated - a.lastUpdated)
-        .slice(0, 50)
-    : [];
+  const liveUpdates = useMemo(() => {
+    if (!showLiveUpdates || !cards) return [];
+    
+    return cards
+      .filter(card => card.lastUpdated > fiveMinutesAgo)
+      .sort((a, b) => b.lastUpdated - a.lastUpdated)
+      .slice(0, 50);
+  }, [cards, showLiveUpdates, fiveMinutesAgo]);
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
