@@ -83,10 +83,13 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
       x: leftPadding + padding
     });
     
-    // Add intermediate labels based on data length
-    let numIntermediateLabels = 1;
-    if (data.length > 50) numIntermediateLabels = 3;
+    // Add intermediate labels based on data length - adjusted for better spacing
+    let numIntermediateLabels = 0;
+    if (data.length > 100) numIntermediateLabels = 4;
+    else if (data.length > 50) numIntermediateLabels = 3;
     else if (data.length > 20) numIntermediateLabels = 2;
+    else if (data.length > 5) numIntermediateLabels = 1;
+    // For very few data points (2-5), only show first and last to prevent overlap
     
     for (let i = 1; i <= numIntermediateLabels; i++) {
       const index = Math.floor((data.length - 1) * (i / (numIntermediateLabels + 1)));

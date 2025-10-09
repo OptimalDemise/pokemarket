@@ -286,12 +286,12 @@ export const upsertCard = internalMutation({
         const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
         const hasPriceChanged = priceChangePercent > 0.1;
         
-        // Check if it's been more than 30 minutes since last history entry (for chart data points)
-        const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
-        const shouldRecordHalfHourly = existingCard.lastUpdated < thirtyMinutesAgo;
+        // Check if it's been more than 10 minutes since last history entry (for chart data points)
+        const tenMinutesAgo = Date.now() - (10 * 60 * 1000);
+        const shouldRecordPeriodically = existingCard.lastUpdated < tenMinutesAgo;
 
-        // Always update lastUpdated for live updates display, but only record history every 30 min or on significant change
-        if (hasPriceChanged || shouldRecordHalfHourly) {
+        // Always update lastUpdated for live updates display, but only record history every 10 min or on significant change
+        if (hasPriceChanged || shouldRecordPeriodically) {
           // Calculate new percentage change with safety check
           let percentChange = 0;
           if (existingCard.currentPrice !== 0) {
