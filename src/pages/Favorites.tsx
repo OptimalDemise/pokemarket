@@ -40,7 +40,7 @@ export default function Favorites() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/")}
               className="cursor-pointer"
             >
               <ArrowLeft className="h-5 w-5" />

@@ -162,7 +162,8 @@ export default function Landing() {
                     onClick={() => navigate("/favorites")}
                     className="cursor-pointer"
                   >
-                    Favorites/Watchlist
+                    <Star className="mr-2 h-4 w-4" />
+                    <span>Favorites/Watchlist</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {isAuthenticated && (
