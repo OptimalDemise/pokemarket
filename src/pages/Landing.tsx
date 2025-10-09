@@ -111,7 +111,7 @@ export default function Landing() {
                 onClick={() => navigate("/premium")}
                 className="cursor-pointer gap-1 h-6 sm:h-8 px-2 sm:px-3 group"
               >
-                <Crown className="h-3 w-3 sm:h-4 sm:w-4 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors" />
+                <Crown className="h-3 w-3 sm:h-4 sm:w-4 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:fill-amber-500 dark:group-hover:fill-amber-400 transition-colors" />
                 <span className="hidden sm:inline text-xs sm:text-sm">Premium</span>
               </Button>
 
