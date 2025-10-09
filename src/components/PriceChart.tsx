@@ -351,9 +351,10 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             <>
               {/* Bar chart for weekly view */}
               {weeklyData.map((week, index) => {
-                const barWidth = (chartWidth - padding * 2) / weeklyData.length * 0.8;
-                const x = leftPadding + padding + ((index + 0.5) / weeklyData.length) * (chartWidth - padding * 2) - barWidth / 2;
-                const barHeight = ((week.price - minPrice) / priceRange) * (chartHeight - padding * 2);
+                const barWidth = Math.max(8, (chartWidth - padding * 2) / weeklyData.length * 0.7);
+                const spacing = (chartWidth - padding * 2) / weeklyData.length;
+                const x = leftPadding + padding + (index * spacing) + (spacing - barWidth) / 2;
+                const barHeight = Math.max(2, ((week.price - minPrice) / priceRange) * (chartHeight - padding * 2));
                 const y = chartHeight - barHeight - padding;
                 
                 const isHovered = hoveredPoint === week;
@@ -367,6 +368,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                     height={barHeight}
                     fill={isHovered ? (isPositive ? "#15803d" : "#b91c1c") : (isPositive ? "#16a34a" : "#dc2626")}
                     opacity={isHovered ? 1 : 0.8}
+                    rx={1}
                     initial={{ height: 0, y: chartHeight - padding }}
                     animate={{ height: barHeight, y: y }}
                     transition={{ duration: 0.5, delay: index * 0.05 }}
