@@ -191,29 +191,30 @@ export default function Landing() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
         </div>
         
-        {/* Animated Logo Background - Now on top */}
+        {/* Animated Logo Background - Optimized for mobile */}
         <motion.div
           initial={{ opacity: 0, x: -100, scale: 0.8 }}
           animate={{ opacity: 0.15, x: 0, scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[600px] md:h-[600px] z-20 pointer-events-none"
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[500px] md:h-[500px] z-20 pointer-events-none will-change-transform"
         >
           <motion.img
             src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a"
             alt="Logo Background"
             className="w-full h-full object-contain"
             animate={{ 
-              x: [0, 30, -20, 40, 0],
-              y: [0, -25, 15, -30, 0],
-              rotate: [0, 3, -2, 4, 0],
-              scale: [1, 1.05, 0.98, 1.03, 1]
+              x: [0, 20, -15, 20, 0],
+              y: [0, -15, 10, -15, 0],
+              rotate: [0, 2, -1.5, 2, 0],
+              scale: [1, 1.02, 0.99, 1.02, 1]
             }}
             transition={{ 
-              duration: 20,
+              duration: 25,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: "linear",
               times: [0, 0.25, 0.5, 0.75, 1]
             }}
+            style={{ willChange: 'transform' }}
           />
         </motion.div>
         
