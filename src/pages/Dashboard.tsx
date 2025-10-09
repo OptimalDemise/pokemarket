@@ -238,7 +238,7 @@ export default function Dashboard() {
       
       // Find similar words for each search term
       const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
-      const suggestions = new Map<string, number>();
+      const suggestions = new Map<string, { word: string; similarity: number; originalWord: string }>();
       
       searchWords.forEach(searchWord => {
         if (searchWord.length < 2) return;
@@ -248,23 +248,85 @@ export default function Dashboard() {
           
           // If similarity is high (70%+) and word is not already in search
           if (similarity >= 70 && similarity < 100 && !searchWords.includes(word)) {
-            const currentScore = suggestions.get(word) || 0;
-            suggestions.set(word, Math.max(currentScore, similarity));
+            const key = `${searchWord}-${word}`;
+            const currentScore = suggestions.get(key)?.similarity || 0;
+            if (similarity > currentScore) {
+              suggestions.set(key, { word, similarity, originalWord: searchWord });
+            }
           }
         });
       });
       
       // Sort by similarity and take top 5
-      const topSuggestions = Array.from(suggestions.entries())
-        .sort((a, b) => b[1] - a[1])
+      const topSuggestions = Array.from(suggestions.values())
+        .sort((a, b) => b.similarity - a.similarity)
         .slice(0, 5)
-        .map(([word]) => word);
+        .map(({ word }) => word);
       
       setSearchSuggestions(topSuggestions);
     } else {
       setSearchSuggestions([]);
     }
   }, [searchQuery, filteredAndSortedCards, filteredAndSortedProducts, cards, products]);
+
+  // Helper function to replace misspelled word in search query
+  const handleSuggestionClick = (suggestion: string) => {
+    if (!searchQuery.trim()) {
+      setSearchQuery(suggestion);
+      setSearchSuggestions([]);
+      return;
+    }
+
+    const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
+    const allWords = new Set<string>();
+    
+    // Collect all valid words from cards and products
+    if (cards) {
+      cards.forEach(card => {
+        card.name.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+        card.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+      });
+    }
+    
+    if (products) {
+      products.forEach(product => {
+        product.name.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+        product.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
+          if (word.length > 2) allWords.add(word);
+        });
+      });
+    }
+
+    // Find which word in the search query is most similar to the suggestion
+    let bestMatchIndex = -1;
+    let bestSimilarity = 0;
+
+    searchWords.forEach((searchWord, index) => {
+      const similarity = calculateSimilarity(searchWord, suggestion);
+      if (similarity > bestSimilarity && similarity < 100) {
+        bestSimilarity = similarity;
+        bestMatchIndex = index;
+      }
+    });
+
+    // Replace the misspelled word with the suggestion
+    if (bestMatchIndex !== -1) {
+      const originalWords = searchQuery.trim().split(/\s+/);
+      originalWords[bestMatchIndex] = suggestion;
+      setSearchQuery(originalWords.join(' '));
+    } else {
+      // If no good match found, just append the suggestion
+      setSearchQuery(searchQuery.trim() + ' ' + suggestion);
+    }
+    
+    setSearchSuggestions([]);
+  };
 
   // Reset to page 1 when search or sort changes
   useEffect(() => {
@@ -421,10 +483,7 @@ export default function Dashboard() {
                           key={suggestion}
                           variant="outline"
                           className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                          onClick={() => {
-                            setSearchQuery(suggestion);
-                            setSearchSuggestions([]);
-                          }}
+                          onClick={() => handleSuggestionClick(suggestion)}
                         >
                           {suggestion}
                         </Badge>
