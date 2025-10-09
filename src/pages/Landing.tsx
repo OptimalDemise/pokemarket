@@ -138,10 +138,10 @@ export default function Landing() {
               {/* Profile Avatar */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="cursor-pointer h-7 w-7 sm:h-10 sm:w-10 flex-shrink-0">
+                  <Avatar className="cursor-pointer h-9 w-9 sm:h-12 sm:w-12 flex-shrink-0">
                     <AvatarImage src="" alt="Profile" />
                     <AvatarFallback>
-                      <User className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+                      <User className="h-4 w-4 sm:h-6 sm:w-6" />
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
