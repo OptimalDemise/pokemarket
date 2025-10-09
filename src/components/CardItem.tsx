@@ -83,7 +83,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                 onClick={handleFavoriteClick}
                 className="absolute top-2 left-2 z-[5] p-1.5 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all touch-manipulation"
                 aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
-                style={{ minWidth: '44px', minHeight: '44px' }}
               >
                 <Heart
                   className={`h-4 w-4 transition-all ${
