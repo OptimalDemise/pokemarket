@@ -51,6 +51,22 @@ export default function Dashboard() {
   // Determine loading state first
   const isLoading = cards === undefined || products === undefined;
 
+  // Only fetch live updates if sidebar is open - with smooth rendering
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  const liveUpdates = useMemo(() => {
+    if (!showLiveUpdates || !cards) return [];
+    
+    return cards
+      .filter(card => card.lastUpdated > fiveMinutesAgo)
+      .sort((a, b) => b.lastUpdated - a.lastUpdated)
+      .slice(0, 50);
+  }, [cards, showLiveUpdates, fiveMinutesAgo]);
+
+  // Get the most recent update timestamp
+  const mostRecentUpdate = liveUpdates.length > 0 
+    ? Math.max(...liveUpdates.map(card => card.lastUpdated))
+    : null;
+
   // Auto-refresh every 10 minutes (basic plan)
   useEffect(() => {
     const interval = setInterval(() => {
@@ -399,22 +415,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  // Only fetch live updates if sidebar is open - with smooth rendering
-  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-  const liveUpdates = useMemo(() => {
-    if (!showLiveUpdates || !cards) return [];
-    
-    return cards
-      .filter(card => card.lastUpdated > fiveMinutesAgo)
-      .sort((a, b) => b.lastUpdated - a.lastUpdated)
-      .slice(0, 50);
-  }, [cards, showLiveUpdates, fiveMinutesAgo]);
-
-  // Get the most recent update timestamp
-  const mostRecentUpdate = liveUpdates.length > 0 
-    ? Math.max(...liveUpdates.map(card => card.lastUpdated))
-    : null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
