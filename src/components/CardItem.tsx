@@ -106,20 +106,46 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                     <div className="flex flex-col">
                       {card.isRecentSale && card.averagePrice ? (
                         <>
-                          <span className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground line-through`}>
+                          <motion.span 
+                            key={`avg-${card.averagePrice}`}
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground line-through`}
+                          >
                             Avg: ${card.averagePrice.toFixed(2)}
-                          </span>
-                          <span className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold text-primary`}>
+                          </motion.span>
+                          <motion.span 
+                            key={`price-${card.currentPrice}`}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3 }}
+                            className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold text-primary`}
+                          >
                             Recent: ${card.currentPrice.toFixed(2)}
-                          </span>
+                          </motion.span>
                         </>
                       ) : (
-                        <span className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold`}>${card.currentPrice.toFixed(2)}</span>
+                        <motion.span 
+                          key={`price-${card.currentPrice}`}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold`}
+                        >
+                          ${card.currentPrice.toFixed(2)}
+                        </motion.span>
                       )}
                     </div>
-                    <span className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium ${card.percentChange === 0 ? "text-muted-foreground" : card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                    <motion.span 
+                      key={`change-${card.percentChange}`}
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium ${card.percentChange === 0 ? "text-muted-foreground" : card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}
+                    >
                       {card.percentChange === 0 ? "—" : `${card.percentChange >= 0 ? "+" : ""}${card.percentChange.toFixed(2)}%`}
-                    </span>
+                    </motion.span>
                   </div>
                 </div>
               </div>

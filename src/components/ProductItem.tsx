@@ -100,20 +100,46 @@ export const ProductItem = memo(function ProductItem({ product }: ProductItemPro
                     <div className="flex flex-col">
                       {product.isRecentSale && product.averagePrice ? (
                         <>
-                          <span className="text-xs text-muted-foreground line-through">
+                          <motion.span 
+                            key={`avg-${product.averagePrice}`}
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-xs text-muted-foreground line-through"
+                          >
                             Avg: ${product.averagePrice.toFixed(2)}
-                          </span>
-                          <span className="text-lg font-bold text-primary">
+                          </motion.span>
+                          <motion.span 
+                            key={`price-${product.currentPrice}`}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-lg font-bold text-primary"
+                          >
                             Recent: ${product.currentPrice.toFixed(2)}
-                          </span>
+                          </motion.span>
                         </>
                       ) : (
-                        <span className="text-lg font-bold">${product.currentPrice.toFixed(2)}</span>
+                        <motion.span 
+                          key={`price-${product.currentPrice}`}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className="text-lg font-bold"
+                        >
+                          ${product.currentPrice.toFixed(2)}
+                        </motion.span>
                       )}
                     </div>
-                    <span className={`text-xs font-medium ${product.percentChange === 0 ? "text-muted-foreground" : product.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}>
+                    <motion.span 
+                      key={`change-${product.percentChange}`}
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`text-xs font-medium ${product.percentChange === 0 ? "text-muted-foreground" : product.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}
+                    >
                       {product.percentChange === 0 ? "—" : `${product.percentChange >= 0 ? "+" : ""}${product.percentChange.toFixed(2)}%`}
-                    </span>
+                    </motion.span>
                   </div>
                 </div>
               </div>
