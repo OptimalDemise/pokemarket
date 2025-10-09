@@ -138,7 +138,7 @@ export default function Landing() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="cursor-pointer h-9 w-9 sm:h-12 sm:w-12 flex-shrink-0">
-                    <AvatarImage src="" alt="Profile" />
+                    <AvatarImage src={user?.image || ""} alt="Profile" />
                     <AvatarFallback>
                       <User className="h-4 w-4 sm:h-6 sm:w-6" />
                     </AvatarFallback>
