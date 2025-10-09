@@ -159,19 +159,19 @@ export default function Landing() {
                     Welcome back, {user?.name || user?.email || "User"}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/account-settings")}>
-                    <Settings className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={() => navigate("/account-settings")} className="group">
+                    <Settings className="mr-2 h-4 w-4 group-hover:fill-current transition-all" />
                     <span>Account Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/premium")}>
-                    <Crown className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={() => navigate("/premium")} className="group">
+                    <Crown className="mr-2 h-4 w-4 group-hover:fill-current transition-all" />
                     <span>Premium Service</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => navigate("/favorites")}
-                    className="cursor-pointer"
+                    className="cursor-pointer group"
                   >
-                    <Star className="mr-2 h-4 w-4" />
+                    <Star className="mr-2 h-4 w-4 group-hover:fill-current transition-all" />
                     <span>Favorites/Watchlist</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
