@@ -793,35 +793,35 @@ export default function Dashboard() {
 
           <TabsContent value="movers" className="space-y-6">
             {/* Top Daily Movers */}
-            {topDailyChanges && topDailyChanges.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="p-6 border rounded-lg bg-card"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <h2 className="text-xl font-bold tracking-tight">Top Daily Movers</h2>
-                  <span className="text-sm text-muted-foreground ml-auto mr-2">Updates daily at midnight UTC</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowTopDailyMovers(!showTopDailyMovers)}
-                    className="cursor-pointer h-8 w-8"
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="p-6 border rounded-lg bg-card"
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-bold tracking-tight">Top Daily Movers</h2>
+                <span className="text-sm text-muted-foreground ml-auto mr-2">Updates daily at midnight UTC</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowTopDailyMovers(!showTopDailyMovers)}
+                  className="cursor-pointer h-8 w-8"
+                >
+                  {showTopDailyMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </div>
+              <AnimatePresence>
+                {showTopDailyMovers && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    style={{ overflow: "hidden" }}
                   >
-                    {showTopDailyMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                  </Button>
-                </div>
-                <AnimatePresence>
-                  {showTopDailyMovers && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                      style={{ overflow: "hidden" }}
-                    >
+                    {topDailyChanges && topDailyChanges.length > 0 ? (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                         {topDailyChanges.slice(0, 10).map((item: any) => (
                           <div key={item._id} className="space-y-2">
@@ -845,11 +845,16 @@ export default function Dashboard() {
                           </div>
                         ))}
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground text-sm">
+                        <p>No daily changes yet</p>
+                        <p className="mt-1 text-xs">Check back after midnight UTC</p>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
             {/* Big Movers - Past Hour */}
             <motion.div
