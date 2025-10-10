@@ -5,8 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe, Crown, LogOut } from "lucide-react";
+import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe, Crown, LogOut, Eye, EyeOff, Check, X as XIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState, useEffect, useRef } from "react";
@@ -24,12 +25,22 @@ export default function AccountSettings() {
   const [isSaving, setIsSaving] = useState(false);
   const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [hasPassword, setHasPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<"weak" | "medium" | "strong">("weak");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateProfile = useMutation(api.userProfile.updateProfile);
   const updateProfilePicture = useMutation(api.userProfile.updateProfilePicture);
   const generateUploadUrl = useMutation(api.userProfile.generateUploadUrl);
-  const { signOut } = useAuthActions();
+  const checkHasPassword = useMutation(api.userProfile.hasPassword);
+  const { signOut, signIn } = useAuthActions();
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -53,6 +64,41 @@ export default function AccountSettings() {
       setTheme(savedTheme);
     }
   }, []);
+
+  // Check if user has password
+  useEffect(() => {
+    const checkPassword = async () => {
+      try {
+        const result = await checkHasPassword();
+        setHasPassword(result.hasPassword);
+      } catch (error) {
+        console.error("Error checking password:", error);
+      }
+    };
+    if (user) {
+      checkPassword();
+    }
+  }, [user, checkHasPassword]);
+
+  // Calculate password strength
+  useEffect(() => {
+    if (newPassword.length === 0) {
+      setPasswordStrength("weak");
+      return;
+    }
+    
+    let strength = 0;
+    if (newPassword.length >= 8) strength++;
+    if (newPassword.length >= 12) strength++;
+    if (/[A-Z]/.test(newPassword)) strength++;
+    if (/[a-z]/.test(newPassword)) strength++;
+    if (/[0-9]/.test(newPassword)) strength++;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) strength++;
+    
+    if (strength <= 2) setPasswordStrength("weak");
+    else if (strength <= 4) setPasswordStrength("medium");
+    else setPasswordStrength("strong");
+  }, [newPassword]);
 
   // Toggle theme function
   const toggleTheme = (newTheme: "light" | "dark") => {
@@ -152,6 +198,73 @@ export default function AccountSettings() {
     }
   };
 
+  // Handle password set/change
+  const handlePasswordSubmit = async () => {
+    try {
+      // Validate passwords match
+      if (newPassword !== confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+
+      // Validate password requirements
+      if (newPassword.length < 8) {
+        toast.error("Password must be at least 8 characters long");
+        return;
+      }
+      if (!/[A-Z]/.test(newPassword)) {
+        toast.error("Password must contain at least one uppercase letter");
+        return;
+      }
+      if (!/[a-z]/.test(newPassword)) {
+        toast.error("Password must contain at least one lowercase letter");
+        return;
+      }
+      if (!/[0-9]/.test(newPassword)) {
+        toast.error("Password must contain at least one number");
+        return;
+      }
+      if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) {
+        toast.error("Password must contain at least one special character");
+        return;
+      }
+
+      setIsSaving(true);
+
+      const formData = new FormData();
+      formData.append("email", user?.email || "");
+      formData.append("password", newPassword);
+      formData.append("flow", hasPassword ? "reset-verification" : "signUp");
+
+      if (hasPassword) {
+        formData.append("currentPassword", currentPassword);
+      }
+
+      await signIn("password", formData);
+
+      toast.success(hasPassword ? "Password changed successfully!" : "Password set successfully!");
+      setShowPasswordDialog(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setHasPassword(true);
+    } catch (error) {
+      console.error("Error setting/changing password:", error);
+      toast.error(hasPassword ? "Failed to change password. Check your current password." : "Failed to set password");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Password requirement checks
+  const passwordRequirements = [
+    { label: "At least 8 characters", met: newPassword.length >= 8 },
+    { label: "One uppercase letter", met: /[A-Z]/.test(newPassword) },
+    { label: "One lowercase letter", met: /[a-z]/.test(newPassword) },
+    { label: "One number", met: /[0-9]/.test(newPassword) },
+    { label: "One special character", met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword) },
+  ];
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -162,6 +275,148 @@ export default function AccountSettings() {
 
   return (
     <>
+      {/* Password Management Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{hasPassword ? "Change Password" : "Set Password"}</DialogTitle>
+            <DialogDescription>
+              {hasPassword 
+                ? "Enter your current password and choose a new one" 
+                : "Create a password to enable password-based login"}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {hasPassword && (
+              <div className="space-y-2">
+                <Label htmlFor="current-password">Current Password</Label>
+                <div className="relative">
+                  <Input
+                    id="current-password"
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1 h-7 w-7"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <div className="relative">
+                <Input
+                  id="new-password"
+                  type={showNewPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1 h-7 w-7"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+              {newPassword && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Strength:</span>
+                  <span className={
+                    passwordStrength === "weak" ? "text-red-500" :
+                    passwordStrength === "medium" ? "text-yellow-500" :
+                    "text-green-500"
+                  }>
+                    {passwordStrength.charAt(0).toUpperCase() + passwordStrength.slice(1)}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <div className="relative">
+                <Input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1 h-7 w-7"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="space-y-2 pt-2">
+              <p className="text-sm font-medium">Password Requirements:</p>
+              <div className="space-y-1">
+                {passwordRequirements.map((req, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    {req.met ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <XIcon className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <span className={req.met ? "text-green-500" : "text-muted-foreground"}>
+                      {req.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowPasswordDialog(false);
+                setCurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+              }}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePasswordSubmit}
+              disabled={
+                isSaving ||
+                !newPassword ||
+                !confirmPassword ||
+                newPassword !== confirmPassword ||
+                (hasPassword && !currentPassword) ||
+                passwordRequirements.some(req => !req.met)
+              }
+            >
+              {isSaving ? "Saving..." : hasPassword ? "Change Password" : "Set Password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Sign Out Confirmation Dialog */}
       <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
         <AlertDialogContent>
@@ -424,14 +679,20 @@ export default function AccountSettings() {
                     <div className="flex items-center gap-2">
                       <Shield className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <p className="font-medium">Change Password</p>
+                        <p className="font-medium">{hasPassword ? "Change Password" : "Set Password"}</p>
                         <p className="text-sm text-muted-foreground">
-                          Update your account password
+                          {hasPassword 
+                            ? "Update your account password" 
+                            : "Create a password for password-based login"}
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" className="cursor-pointer">
-                      Change
+                    <Button 
+                      variant="outline" 
+                      className="cursor-pointer"
+                      onClick={() => setShowPasswordDialog(true)}
+                    >
+                      {hasPassword ? "Change" : "Set Password"}
                     </Button>
                   </div>
 

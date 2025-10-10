@@ -13,9 +13,10 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Loader2, Mail, UserX, X } from "lucide-react";
+import { ArrowRight, Loader2, Mail, Eye, EyeOff, X } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -30,6 +31,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authMethod, setAuthMethod] = useState<"email-otp" | "password">("email-otp");
+  const [passwordFlow, setPasswordFlow] = useState<"signIn" | "signUp">("signIn");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -37,6 +42,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       navigate(redirect);
     }
   }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
+
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
@@ -79,27 +85,71 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     }
   };
 
-  const handleGuestLogin = async () => {
+  const handlePasswordSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setIsLoading(true);
     setError(null);
+    
     try {
-      console.log("Attempting anonymous sign in...");
-      await signIn("anonymous");
-      console.log("Anonymous sign in successful");
+      const formData = new FormData(event.currentTarget);
+      const password = formData.get("password") as string;
+      const confirmPassword = formData.get("confirmPassword") as string;
+      
+      // Validate password confirmation for sign up
+      if (passwordFlow === "signUp" && password !== confirmPassword) {
+        setError("Passwords do not match");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Validate password strength for sign up
+      if (passwordFlow === "signUp") {
+        if (password.length < 8) {
+          setError("Password must be at least 8 characters long");
+          setIsLoading(false);
+          return;
+        }
+        if (!/[A-Z]/.test(password)) {
+          setError("Password must contain at least one uppercase letter");
+          setIsLoading(false);
+          return;
+        }
+        if (!/[a-z]/.test(password)) {
+          setError("Password must contain at least one lowercase letter");
+          setIsLoading(false);
+          return;
+        }
+        if (!/[0-9]/.test(password)) {
+          setError("Password must contain at least one number");
+          setIsLoading(false);
+          return;
+        }
+        if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+          setError("Password must contain at least one special character");
+          setIsLoading(false);
+          return;
+        }
+      }
+      
+      await signIn("password", formData);
+      
       const redirect = redirectAfterAuth || "/";
       navigate(redirect);
     } catch (error) {
-      console.error("Guest login error:", error);
-      console.error("Error details:", JSON.stringify(error, null, 2));
-      setError(`Failed to sign in as guest: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Password auth error:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : passwordFlow === "signIn" 
+            ? "Invalid email or password" 
+            : "Failed to create account. Please try again."
+      );
       setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-
-      
       {/* Auth Content */}
       <div className="flex-1 flex items-center justify-center">
         <div className="flex items-center justify-center h-full flex-col">
@@ -117,73 +167,181 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
           {step === "signIn" ? (
             <>
               <CardHeader className="text-center">
-              <div className="flex justify-center">
-                    <img
-                      src="https://harmless-tapir-303.convex.cloud/api/storage/3f3a450d-9cf0-49e2-9c25-860d9b84085b"
-                      alt="Lock Icon"
-                      width={64}
-                      height={64}
-                      className="rounded-lg mb-4 mt-4 cursor-pointer"
-                      onClick={() => navigate("/")}
-                    />
-                  </div>
+                <div className="flex justify-center">
+                  <img
+                    src="https://harmless-tapir-303.convex.cloud/api/storage/3f3a450d-9cf0-49e2-9c25-860d9b84085b"
+                    alt="Lock Icon"
+                    width={64}
+                    height={64}
+                    className="rounded-lg mb-4 mt-4 cursor-pointer"
+                    onClick={() => navigate("/")}
+                  />
+                </div>
                 <CardTitle className="text-xl">Get Started</CardTitle>
                 <CardDescription>
-                  Enter your email to log in or sign up
+                  Choose your preferred sign-in method
                 </CardDescription>
               </CardHeader>
-              <form onSubmit={handleEmailSubmit}>
-                <CardContent>
+              
+              <CardContent>
+                <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as "email-otp" | "password")}>
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="email-otp">Email Code</TabsTrigger>
+                    <TabsTrigger value="password">Password</TabsTrigger>
+                  </TabsList>
                   
-                  <div className="relative flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        name="email"
-                        placeholder="name@example.com"
-                        type="email"
-                        className="pl-9"
-                        disabled={isLoading}
-                        required
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      size="icon"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <ArrowRight className="h-4 w-4" />
+                  <TabsContent value="email-otp">
+                    <form onSubmit={handleEmailSubmit}>
+                      <div className="relative flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            name="email"
+                            placeholder="name@example.com"
+                            type="email"
+                            className="pl-9"
+                            disabled={isLoading}
+                            required
+                          />
+                        </div>
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          size="icon"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <ArrowRight className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                      {error && (
+                        <p className="mt-2 text-sm text-red-500">{error}</p>
                       )}
-                    </Button>
-                  </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-500">{error}</p>
-                  )}
+                    </form>
+                  </TabsContent>
                   
-                  <p className="mt-4 text-xs text-center text-muted-foreground">
-                    By signing in, you agree to our{" "}
-                    <button
-                      type="button"
-                      onClick={() => navigate("/terms")}
-                      className="underline hover:text-primary transition-colors"
-                    >
-                      Terms of Service
-                    </button>
-                    {" "}and{" "}
-                    <button
-                      type="button"
-                      onClick={() => navigate("/privacy")}
-                      className="underline hover:text-primary transition-colors"
-                    >
-                      Privacy Policy
-                    </button>
-                  </p>
-                </CardContent>
-              </form>
+                  <TabsContent value="password">
+                    <form onSubmit={handlePasswordSubmit} className="space-y-3">
+                      <input type="hidden" name="flow" value={passwordFlow} />
+                      
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          name="email"
+                          placeholder="name@example.com"
+                          type="email"
+                          className="pl-9"
+                          disabled={isLoading}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="relative">
+                        <Input
+                          name="password"
+                          placeholder="Password"
+                          type={showPassword ? "text" : "password"}
+                          disabled={isLoading}
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1 h-7 w-7"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                      
+                      {passwordFlow === "signUp" && (
+                        <div className="relative">
+                          <Input
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            type={showConfirmPassword ? "text" : "password"}
+                            disabled={isLoading}
+                            required
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1 h-7 w-7"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {error && (
+                        <p className="text-sm text-red-500">{error}</p>
+                      )}
+                      
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {passwordFlow === "signIn" ? "Signing in..." : "Creating account..."}
+                          </>
+                        ) : (
+                          passwordFlow === "signIn" ? "Sign In" : "Sign Up"
+                        )}
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="w-full"
+                        onClick={() => setPasswordFlow(passwordFlow === "signIn" ? "signUp" : "signIn")}
+                        disabled={isLoading}
+                      >
+                        {passwordFlow === "signIn" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+                      </Button>
+                      
+                      {passwordFlow === "signIn" && (
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="w-full text-xs"
+                          disabled
+                        >
+                          Forgot password? (Coming soon)
+                        </Button>
+                      )}
+                    </form>
+                  </TabsContent>
+                </Tabs>
+                
+                <p className="mt-4 text-xs text-center text-muted-foreground">
+                  By signing in, you agree to our{" "}
+                  <button
+                    type="button"
+                    onClick={() => navigate("/terms")}
+                    className="underline hover:text-primary transition-colors"
+                  >
+                    Terms of Service
+                  </button>
+                  {" "}and{" "}
+                  <button
+                    type="button"
+                    onClick={() => navigate("/privacy")}
+                    className="underline hover:text-primary transition-colors"
+                  >
+                    Privacy Policy
+                  </button>
+                </p>
+              </CardContent>
+              
               <CardFooter className="pb-4 pt-0">
                 <p className="text-xs text-center text-muted-foreground w-full">
                   Secured by PokéMarket
@@ -211,7 +369,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       disabled={isLoading}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && otp.length === 6 && !isLoading) {
-                          // Find the closest form and submit it
                           const form = (e.target as HTMLElement).closest("form");
                           if (form) {
                             form.requestSubmit();
@@ -273,7 +430,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               </form>
             </>
           )}
-
         </Card>
         </div>
       </div>
