@@ -456,7 +456,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 const barWidth = Math.max(8, Math.min(20, (chartWidth - padding * 2) / Math.max(1, weeklyData.length) * 0.6));
                 const spacing = (chartWidth - padding * 2) / Math.max(1, weeklyData.length);
                 const x = leftPadding + padding + (index * spacing) + (spacing - barWidth) / 2;
-                const barHeight = Math.max(2, ((week.price - minPrice) / priceRange) * (chartHeight - padding * 2));
+                const barHeight = Math.max(2, ((week.price - minPrice) / Math.max(0.01, priceRange)) * (chartHeight - padding * 2));
                 const y = chartHeight - barHeight - padding;
                 
                 const isHovered = hoveredPoint === week;
