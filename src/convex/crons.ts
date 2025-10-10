@@ -54,7 +54,7 @@ crons.monthly(
 
 crons.weekly(
   "cleanup redundant price history",
-  { dayOfWeek: "sunday", hourUTC: 3, minuteUTC: 0 },
+  { dayOfWeek: "sunday", hourUTC: 0, minuteUTC: 0 },
   internal.cleanupPriceHistoryAll.cleanupAllRedundantPriceHistory,
   {}
 );

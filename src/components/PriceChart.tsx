@@ -68,9 +68,12 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
         const date = new Date(point.timestamp);
         if (isNaN(date.getTime())) return; // Skip invalid dates
         
-        // Get the start of the week (Sunday)
+        // Get the start of the week (Monday)
         const weekStart = new Date(date);
-        weekStart.setDate(date.getDate() - date.getDay());
+        const dayOfWeek = date.getDay();
+        // Calculate days to subtract to get to Monday (0=Sunday, 1=Monday, etc.)
+        const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        weekStart.setDate(date.getDate() - daysToMonday);
         weekStart.setHours(0, 0, 0, 0);
         const weekKey = weekStart.toISOString();
 
@@ -134,7 +137,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
       
       if (viewMode === "weekly") {
         const weekEnd = new Date(date);
-        weekEnd.setDate(date.getDate() + 6);
+        weekEnd.setDate(date.getDate() + 6); // Monday to Sunday (6 days later)
         return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
       } else {
         if (validData.length < 2) return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
