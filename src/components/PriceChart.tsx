@@ -34,6 +34,29 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     );
   }, [data]);
 
+  // Filter data for daily view to show only the most recent 7 days
+  const dailyData = useMemo(() => {
+    if (!validData || validData.length === 0) return [];
+    
+    try {
+      // Sort by timestamp to ensure we get the most recent data
+      const sortedData = [...validData].sort((a, b) => b.timestamp - a.timestamp);
+      
+      // Get the most recent timestamp
+      const mostRecentTimestamp = sortedData[0].timestamp;
+      const sevenDaysAgo = mostRecentTimestamp - (7 * 24 * 60 * 60 * 1000);
+      
+      // Filter to only include data from the last 7 days
+      const recentData = sortedData.filter(point => point.timestamp >= sevenDaysAgo);
+      
+      // Sort back to ascending order for chart display
+      return recentData.sort((a, b) => a.timestamp - b.timestamp);
+    } catch (error) {
+      console.error("Error filtering daily data:", error);
+      return validData;
+    }
+  }, [validData]);
+
   // Aggregate data into weekly summaries with error handling
   const weeklyData = useMemo(() => {
     if (!validData || validData.length === 0) return [];
@@ -77,10 +100,14 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
     }
   }, [validData]);
 
-  const displayData = viewMode === "weekly" ? weeklyData : validData;
+  const displayData = viewMode === "weekly" ? weeklyData : dailyData;
 
   if (!validData || validData.length === 0) {
     return <div className="text-sm text-muted-foreground">No price history (Within recent 90 days)</div>;
+  }
+
+  if (viewMode === "daily" && dailyData.length === 0) {
+    return <div className="text-sm text-muted-foreground">No price history in the last 7 days</div>;
   }
 
   // Safe min/max calculations with fallbacks
