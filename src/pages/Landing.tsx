@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User, Settings, Crown, Heart, LogOut } from "lucide-react";
+import { ArrowRight, BarChart3, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User, Settings, Crown, Heart, LogOut, Package } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -422,7 +422,7 @@ export default function Landing() {
               className="space-y-4 p-8 border rounded-lg"
             >
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Package className="h-6 w-6 text-primary" />
+                <Sparkles className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-bold tracking-tight">Product Tracking</h3>
               <p className="text-muted-foreground">
