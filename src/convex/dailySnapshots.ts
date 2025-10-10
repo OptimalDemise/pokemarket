@@ -5,97 +5,119 @@ import { internalMutation, query } from "./_generated/server";
 export const createDailySnapshots = internalMutation({
   args: {},
   handler: async (ctx) => {
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const now = Date.now();
-
-    // Process cards in batches to avoid timeout
-    const BATCH_SIZE = 50;
-    let cardOffset = 0;
-    let processedCards = 0;
+    const today = new Date(now).toISOString().split('T')[0];
     
-    while (true) {
-      const cardBatch = await ctx.db
-        .query("cards")
-        .order("asc")
-        .paginate({ numItems: BATCH_SIZE, cursor: null });
+    try {
+      // Process cards in smaller batches to avoid timeout
+      const BATCH_SIZE = 100; // Reduced from 250
+      let cardsCursor = null;
+      let cardsProcessed = 0;
+      let cardsDone = false;
       
-      if (cardBatch.page.length === 0) break;
-      
-      for (const card of cardBatch.page) {
-        // Check if snapshot already exists for today
-        const existing = await ctx.db
-          .query("dailySnapshots")
-          .withIndex("by_item_and_date", (q) => 
-            q.eq("itemId", card._id).eq("snapshotDate", today)
-          )
-          .first();
-
-        if (!existing) {
-          await ctx.db.insert("dailySnapshots", {
-            itemId: card._id,
-            itemType: "card",
-            itemName: card.name,
-            price: card.currentPrice,
-            snapshotDate: today,
-            timestamp: now,
-          });
+      while (!cardsDone) {
+        const cardsResult = await ctx.db
+          .query("cards")
+          .paginate({ numItems: BATCH_SIZE, cursor: cardsCursor });
+        
+        for (const card of cardsResult.page) {
+          // Check if snapshot already exists for today
+          const existingSnapshot = await ctx.db
+            .query("dailySnapshots")
+            .withIndex("by_item_and_date", (q) =>
+              q.eq("itemId", card._id).eq("snapshotDate", today)
+            )
+            .first();
+          
+          if (!existingSnapshot) {
+            // Get yesterday's snapshot for comparison
+            const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            const yesterdaySnapshot = await ctx.db
+              .query("dailySnapshots")
+              .withIndex("by_item_and_date", (q) =>
+                q.eq("itemId", card._id).eq("snapshotDate", yesterday)
+              )
+              .first();
+            
+            const yesterdayPrice = yesterdaySnapshot?.price || card.currentPrice;
+            const dailyPercentChange = yesterdayPrice !== 0
+              ? ((card.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
+              : 0;
+            
+            await ctx.db.insert("dailySnapshots", {
+              itemId: card._id,
+              itemType: "card",
+              itemName: card.name,
+              snapshotDate: today,
+              price: card.currentPrice,
+              yesterdayPrice,
+              dailyPercentChange,
+              timestamp: now,
+            });
+          }
+          cardsProcessed++;
         }
-        processedCards++;
+        
+        cardsCursor = cardsResult.continueCursor;
+        cardsDone = cardsResult.isDone;
       }
       
-      if (cardBatch.isDone) break;
-      cardOffset += BATCH_SIZE;
+      // Process products in smaller batches
+      let productsCursor = null;
+      let productsProcessed = 0;
+      let productsDone = false;
       
-      // Limit total processing to prevent extreme timeouts
-      if (processedCards >= 500) break;
-    }
-
-    // Process products in batches
-    let productOffset = 0;
-    let processedProducts = 0;
-    
-    while (true) {
-      const productBatch = await ctx.db
-        .query("products")
-        .order("asc")
-        .paginate({ numItems: BATCH_SIZE, cursor: null });
-      
-      if (productBatch.page.length === 0) break;
-      
-      for (const product of productBatch.page) {
-        const existing = await ctx.db
-          .query("dailySnapshots")
-          .withIndex("by_item_and_date", (q) => 
-            q.eq("itemId", product._id).eq("snapshotDate", today)
-          )
-          .first();
-
-        if (!existing) {
-          await ctx.db.insert("dailySnapshots", {
-            itemId: product._id,
-            itemType: "product",
-            itemName: product.name,
-            price: product.currentPrice,
-            snapshotDate: today,
-            timestamp: now,
-          });
+      while (!productsDone) {
+        const productsResult = await ctx.db
+          .query("products")
+          .paginate({ numItems: BATCH_SIZE, cursor: productsCursor });
+        
+        for (const product of productsResult.page) {
+          const existingSnapshot = await ctx.db
+            .query("dailySnapshots")
+            .withIndex("by_item_and_date", (q) =>
+              q.eq("itemId", product._id).eq("snapshotDate", today)
+            )
+            .first();
+          
+          if (!existingSnapshot) {
+            const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            const yesterdaySnapshot = await ctx.db
+              .query("dailySnapshots")
+              .withIndex("by_item_and_date", (q) =>
+                q.eq("itemId", product._id).eq("snapshotDate", yesterday)
+              )
+              .first();
+            
+            const yesterdayPrice = yesterdaySnapshot?.price || product.currentPrice;
+            const dailyPercentChange = yesterdayPrice !== 0
+              ? ((product.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
+              : 0;
+            
+            await ctx.db.insert("dailySnapshots", {
+              itemId: product._id,
+              itemType: "product",
+              itemName: product.name,
+              snapshotDate: today,
+              price: product.currentPrice,
+              yesterdayPrice,
+              dailyPercentChange,
+              timestamp: now,
+            });
+          }
+          productsProcessed++;
         }
-        processedProducts++;
+        
+        productsCursor = productsResult.continueCursor;
+        productsDone = productsResult.isDone;
       }
       
-      if (productBatch.isDone) break;
-      productOffset += BATCH_SIZE;
-      
-      // Limit total processing
-      if (processedProducts >= 100) break;
+      console.log(`Created daily snapshots: ${cardsProcessed} cards, ${productsProcessed} products`);
+      return { cardsProcessed, productsProcessed };
+    } catch (error) {
+      console.error("Error creating daily snapshots:", error);
+      throw new Error(`Failed to create daily snapshots: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-
-    return { 
-      success: true, 
-      date: today, 
-      cardsProcessed: processedCards,
-      productsProcessed: processedProducts 
-    };
   },
 });
 

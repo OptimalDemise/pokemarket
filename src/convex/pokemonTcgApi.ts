@@ -229,21 +229,30 @@ export const updateAllCardsWithRealData = internalAction({
       minPrice: 3,
     });
     
-    // After fetching new cards, update existing cards with staggered price fluctuations
-    const allCards = await ctx.runQuery(internal.cards._getAllCards);
+    // Process cards in batches using pagination to avoid limits
+    const BATCH_SIZE = 15;
+    const DELAY_BETWEEN_CARDS_MS = 500;
+    const DELAY_BETWEEN_BATCHES_MS = 12000;
+    
     let fluctuationCount = 0;
+    let cursor = null;
+    let hasMore = true;
     
-    // Process cards in larger batches with longer delays to stagger updates more gradually
-    const BATCH_SIZE = 15; // Update 15 cards at a time (10-20 range)
-    const DELAY_BETWEEN_CARDS_MS = 500; // 500ms delay between individual cards
-    const DELAY_BETWEEN_BATCHES_MS = 12000; // 12 second delay between batches (10-15 second range)
-    
-    for (let i = 0; i < allCards.length; i += BATCH_SIZE) {
-      const batch = allCards.slice(i, i + BATCH_SIZE);
+    while (hasMore) {
+      // Fetch a batch of cards using pagination
+      const batch: { page: any[]; continueCursor: string | null; isDone: boolean } = await ctx.runQuery(internal.cards._getCardsBatch, {
+        cursor,
+        batchSize: BATCH_SIZE,
+      });
       
-      // Process batch with delays between individual cards
-      for (let j = 0; j < batch.length; j++) {
-        const card = batch[j];
+      if (!batch || batch.page.length === 0) {
+        hasMore = false;
+        break;
+      }
+      
+      // Process each card in the batch with delays
+      for (let j = 0; j < batch.page.length; j++) {
+        const card = batch.page[j];
         
         // Simulate realistic price fluctuations (±3%)
         const fluctuation = 0.97 + Math.random() * 0.06;
@@ -261,14 +270,18 @@ export const updateAllCardsWithRealData = internalAction({
         
         fluctuationCount++;
         
-        // Add delay between individual cards within the batch (except for the last card in the batch)
-        if (j < batch.length - 1) {
+        // Add delay between individual cards (except for the last card in the batch)
+        if (j < batch.page.length - 1) {
           await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
         }
       }
       
-      // Add delay between batches (except for the last batch)
-      if (i + BATCH_SIZE < allCards.length) {
+      // Update cursor for next batch
+      cursor = batch.continueCursor;
+      hasMore = !batch.isDone;
+      
+      // Add delay between batches
+      if (hasMore) {
         await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS));
       }
     }

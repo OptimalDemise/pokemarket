@@ -25,6 +25,29 @@ export const _getAllCards = internalQuery({
   },
 });
 
+// New: Paginated batch query for processing cards in chunks
+export const _getCardsBatch = internalQuery({
+  args: {
+    cursor: v.union(v.string(), v.null()),
+    batchSize: v.number(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const result = await ctx.db
+        .query("cards")
+        .paginate({
+          numItems: args.batchSize,
+          cursor: args.cursor,
+        });
+      
+      return result;
+    } catch (error) {
+      console.error("Error fetching cards batch:", error);
+      throw new Error("Failed to retrieve cards batch");
+    }
+  },
+});
+
 // Get big movers with hourly caching - optimized for high concurrency
 export const getBigMovers = query({
   args: { 

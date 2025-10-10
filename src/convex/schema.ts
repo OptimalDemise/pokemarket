@@ -90,6 +90,8 @@ const schema = defineSchema(
       itemType: v.string(), // "card" or "product"
       itemName: v.string(),
       price: v.number(),
+      yesterdayPrice: v.optional(v.number()),
+      dailyPercentChange: v.optional(v.number()),
       snapshotDate: v.string(), // YYYY-MM-DD format
       timestamp: v.number(),
     })
