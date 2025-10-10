@@ -5,8 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe, Crown } from "lucide-react";
+import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe, Crown, LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useMutation } from "convex/react";
@@ -26,6 +27,7 @@ export default function AccountSettings() {
   const updateProfile = useMutation(api.userProfile.updateProfile);
   const updateProfilePicture = useMutation(api.userProfile.updateProfilePicture);
   const generateUploadUrl = useMutation(api.userProfile.generateUploadUrl);
+  const { signOut } = useAuthActions();
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -133,6 +135,17 @@ export default function AccountSettings() {
       setProfileImage(user.image);
     }
     toast.info("Changes discarded");
+  };
+
+  // Handle sign out
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
+    }
   };
 
   if (isLoading) {
@@ -418,6 +431,35 @@ export default function AccountSettings() {
                     <p className="text-sm text-muted-foreground">
                       These features are coming soon. Contact support for immediate security concerns.
                     </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Actions</CardTitle>
+                  <CardDescription>
+                    Manage your account session
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-2">
+                      <LogOut className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium">Sign Out</p>
+                        <p className="text-sm text-muted-foreground">
+                          Sign out of your account on this device
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="cursor-pointer"
+                      onClick={handleSignOut}
+                    >
+                      Sign Out
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
