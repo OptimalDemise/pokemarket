@@ -1,5 +1,4 @@
 import { CardItem } from "@/components/CardItem";
-import { ProductItem } from "@/components/ProductItem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,7 +26,6 @@ export default function Dashboard() {
   // Fetch data with manual refresh control
   const [refreshKey, setRefreshKey] = useState(0);
   const cards = useQuery(api.cards.getAllCards);
-  const products = useQuery(api.products.getAllProducts);
   const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
   const bigMovers = useQuery(api.cards.getBigMovers, { hoursAgo: 1, minPercentChange: 3, limit: 20 });
   
@@ -36,7 +34,6 @@ export default function Dashboard() {
   const [sortOption, setSortOption] = useState<SortOption>("highest-price");
   const [hasError, setHasError] = useState(false);
   const [currentCardPage, setCurrentCardPage] = useState(1);
-  const [currentProductPage, setCurrentProductPage] = useState(1);
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
@@ -49,7 +46,7 @@ export default function Dashboard() {
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
 
   // Determine loading state first
-  const isLoading = cards === undefined || products === undefined;
+  const isLoading = cards === undefined;
 
   // Only fetch live updates if sidebar is open - with smooth rendering
   const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
@@ -79,12 +76,12 @@ export default function Dashboard() {
 
   // Check for data fetch errors
   useEffect(() => {
-    if (cards === undefined || products === undefined) {
+    if (cards === undefined) {
       setHasError(false);
-    } else if ((cards === null || products === null) && !isLoading) {
+    } else if (cards === null && !isLoading) {
       setHasError(true);
     }
-  }, [cards, products, isLoading]);
+  }, [cards, isLoading]);
 
   // Get unique sets from cards
   const availableSets = useMemo(() => {
@@ -172,45 +169,6 @@ export default function Dashboard() {
     return sortItems(filtered, sortOption);
   }, [cards, searchQuery, sortOption, minPrice, maxPrice, selectedRarity, selectedSet]);
 
-  // Filter and sort products with multi-keyword search
-  const filteredAndSortedProducts = useMemo(() => {
-    if (!products) return [];
-    
-    let filtered = products.filter(product => {
-      // Multi-keyword search logic
-      if (searchQuery.trim()) {
-        const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
-        const productNameWords = product.name.toLowerCase().split(/\s+/);
-        const setNameWords = product.setName.toLowerCase().split(/\s+/);
-        const allProductWords = [...productNameWords, ...setNameWords];
-        
-        // Check if ALL search words match complete words in the product text
-        // Also check singular/plural variations (add/remove 's')
-        const matchesSearch = searchWords.every(searchWord => 
-          allProductWords.some(productWord => {
-            // Exact match
-            if (productWord === searchWord) return true;
-            // Check if search word + 's' matches product word
-            if (productWord === searchWord + 's') return true;
-            // Check if product word + 's' matches search word
-            if (productWord + 's' === searchWord) return true;
-            return false;
-          })
-        );
-        
-        if (!matchesSearch) return false;
-      }
-      
-      const min = minPrice ? parseFloat(minPrice) : 0;
-      const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-      const matchesPrice = product.currentPrice >= min && product.currentPrice <= max;
-      
-      return matchesPrice;
-    });
-
-    return sortItems(filtered, sortOption);
-  }, [products, searchQuery, sortOption, minPrice, maxPrice]);
-
   // Paginate cards
   const totalCardPages = Math.ceil(filteredAndSortedCards.length / ITEMS_PER_PAGE);
   const paginatedCards = useMemo(() => {
@@ -219,22 +177,14 @@ export default function Dashboard() {
     return filteredAndSortedCards.slice(startIndex, endIndex);
   }, [filteredAndSortedCards, currentCardPage]);
 
-  // Paginate products
-  const totalProductPages = Math.ceil(filteredAndSortedProducts.length / ITEMS_PER_PAGE);
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentProductPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredAndSortedProducts.slice(startIndex, endIndex);
-  }, [filteredAndSortedProducts, currentProductPage]);
-
   // Generate search suggestions when no results found
   useEffect(() => {
-    if (!searchQuery.trim() || !cards || !products) {
+    if (!searchQuery.trim() || !cards) {
       setSearchSuggestions([]);
       return;
     }
 
-    const hasResults = filteredAndSortedCards.length > 0 || filteredAndSortedProducts.length > 0;
+    const hasResults = filteredAndSortedCards.length > 0;
     
     if (!hasResults) {
       // Extract all unique words from card and product names
@@ -245,15 +195,6 @@ export default function Dashboard() {
           if (word.length > 2) allWords.add(word);
         });
         card.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
-          if (word.length > 2) allWords.add(word);
-        });
-      });
-      
-      products.forEach(product => {
-        product.name.toLowerCase().split(/\s+/).forEach((word: string) => {
-          if (word.length > 2) allWords.add(word);
-        });
-        product.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
           if (word.length > 2) allWords.add(word);
         });
       });
@@ -289,7 +230,7 @@ export default function Dashboard() {
     } else {
       setSearchSuggestions([]);
     }
-  }, [searchQuery, filteredAndSortedCards, filteredAndSortedProducts, cards, products]);
+  }, [searchQuery, filteredAndSortedCards, cards]);
 
   // Helper function to replace misspelled word in search query
   const handleSuggestionClick = (suggestion: string) => {
@@ -309,17 +250,6 @@ export default function Dashboard() {
           if (word.length > 2) allWords.add(word);
         });
         card.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
-          if (word.length > 2) allWords.add(word);
-        });
-      });
-    }
-    
-    if (products) {
-      products.forEach(product => {
-        product.name.toLowerCase().split(/\s+/).forEach((word: string) => {
-          if (word.length > 2) allWords.add(word);
-        });
-        product.setName.toLowerCase().split(/\s+/).forEach((word: string) => {
           if (word.length > 2) allWords.add(word);
         });
       });
@@ -353,7 +283,6 @@ export default function Dashboard() {
   // Reset to page 1 when search or sort changes
   useEffect(() => {
     setCurrentCardPage(1);
-    setCurrentProductPage(1);
   }, [searchQuery, sortOption, minPrice, maxPrice, selectedRarity, selectedSet]);
 
   if (isLoading) {
@@ -690,15 +619,12 @@ export default function Dashboard() {
         </div>
 
         <Tabs defaultValue="cards" className="space-y-8">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="cards" className="cursor-pointer">
               Cards ({filteredAndSortedCards.length})
             </TabsTrigger>
             <TabsTrigger value="movers" className="cursor-pointer">
               Market Movers
-            </TabsTrigger>
-            <TabsTrigger value="products" className="cursor-pointer">
-              Products ({filteredAndSortedProducts.length})
             </TabsTrigger>
           </TabsList>
 
@@ -1148,9 +1074,4 @@ function sortItems<T extends { percentChange: number; currentPrice: number; _cre
 // Wrapper component for CardItem - memoized for performance
 const CardItemWrapper = memo(({ card }: { card: any }) => {
   return <CardItem card={card} />;
-});
-
-// Wrapper component for ProductItem - memoized for performance
-const ProductItemWrapper = memo(({ product }: { product: any }) => {
-  return <ProductItem product={product} />;
 });
