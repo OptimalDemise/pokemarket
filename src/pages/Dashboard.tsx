@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown, ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown, ChevronDown, ChevronUp, Maximize2, Minimize2, Filter, Heart } from "lucide-react";
 import { useEffect, useMemo, useState, memo } from "react";
 import { useNavigate } from "react-router";
 
@@ -44,21 +44,34 @@ export default function Dashboard() {
   const [showBigMovers, setShowBigMovers] = useState(true);
   const [showLiveUpdates, setShowLiveUpdates] = useState(true);
   const [isLiveUpdatesFullscreen, setIsLiveUpdatesFullscreen] = useState(false);
+  const [showOnlyFavoritesInLiveUpdates, setShowOnlyFavoritesInLiveUpdates] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
 
   // Determine loading state first
   const isLoading = cards === undefined;
+
+  // Fetch user favorites
+  const userFavorites = useQuery(api.favorites.getUserFavorites);
+  const favoriteCardIds = useMemo(() => {
+    return new Set(userFavorites?.map(fav => fav._id) || []);
+  }, [userFavorites]);
 
   // Only fetch live updates if sidebar is open - with smooth rendering
   const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
   const liveUpdates = useMemo(() => {
     if (!showLiveUpdates || !cards) return [];
     
-    return cards
-      .filter(card => card.lastUpdated > fiveMinutesAgo)
+    let filteredCards = cards.filter(card => card.lastUpdated > fiveMinutesAgo);
+    
+    // Apply favorites filter if enabled
+    if (showOnlyFavoritesInLiveUpdates) {
+      filteredCards = filteredCards.filter(card => favoriteCardIds.has(card._id));
+    }
+    
+    return filteredCards
       .sort((a, b) => b.lastUpdated - a.lastUpdated)
       .slice(0, 50);
-  }, [cards, showLiveUpdates, fiveMinutesAgo]);
+  }, [cards, showLiveUpdates, fiveMinutesAgo, showOnlyFavoritesInLiveUpdates, favoriteCardIds]);
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
@@ -913,15 +926,26 @@ export default function Dashboard() {
                   : 'Last 5 minutes'}
               </span>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsLiveUpdatesFullscreen(!isLiveUpdatesFullscreen)}
-              className="cursor-pointer h-8 w-8 ml-2"
-              title={isLiveUpdatesFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-            >
-              {isLiveUpdatesFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant={showOnlyFavoritesInLiveUpdates ? "default" : "ghost"}
+                size="icon"
+                onClick={() => setShowOnlyFavoritesInLiveUpdates(!showOnlyFavoritesInLiveUpdates)}
+                className="cursor-pointer h-8 w-8"
+                title={showOnlyFavoritesInLiveUpdates ? "Show All Updates" : "Show Only Favorites"}
+              >
+                <Heart className={`h-4 w-4 ${showOnlyFavoritesInLiveUpdates ? 'fill-current' : ''}`} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsLiveUpdatesFullscreen(!isLiveUpdatesFullscreen)}
+                className="cursor-pointer h-8 w-8"
+                title={isLiveUpdatesFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              >
+                {isLiveUpdatesFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
         </div>
         <div className={cn("p-3", isLiveUpdatesFullscreen && "p-6")}>
