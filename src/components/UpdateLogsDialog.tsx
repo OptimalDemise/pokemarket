@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Megaphone, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,14 +46,14 @@ export function UpdateLogsDialog() {
             className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all flex items-center justify-center group"
             aria-label="View update logs"
           >
-            <Megaphone className="h-5 w-5 group-hover:scale-110 transition-transform" />
+            <span className="text-2xl group-hover:scale-110 transition-transform">📢</span>
           </motion.button>
         </DialogTrigger>
 
         <DialogContent className="max-w-2xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl">
-              <Megaphone className="h-6 w-6 text-primary" />
+              <span className="text-2xl">📢</span>
               Update Logs
             </DialogTitle>
           </DialogHeader>
@@ -61,7 +61,7 @@ export function UpdateLogsDialog() {
           <ScrollArea className="h-[60vh] pr-4">
             {!updateLogs || updateLogs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Megaphone className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+                <span className="text-5xl mb-4 opacity-50">📢</span>
                 <p className="text-muted-foreground">No updates yet. Check back soon!</p>
               </div>
             ) : (
