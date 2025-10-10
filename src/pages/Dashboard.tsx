@@ -873,10 +873,10 @@ export default function Dashboard() {
             exit={{ x: "100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className={cn(
-              "bg-card/50 overflow-y-auto scroll-smooth flex-shrink-0 relative",
+              "overflow-y-auto scroll-smooth flex-shrink-0 relative",
               isLiveUpdatesFullscreen 
-                ? "fixed inset-0 z-50 w-full h-full" 
-                : "border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
+                ? "fixed inset-0 z-50 w-full h-full bg-background" 
+                : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
             )}
           >
             {/* Close button positioned at left edge, vertically centered - sticky */}
