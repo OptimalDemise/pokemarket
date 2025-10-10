@@ -57,7 +57,7 @@ export default function Landing() {
 
   const handleNavigateToDashboard = () => {
     setIsNavigating(true);
-    navigate("/dashboard");
+    navigate("/market");
   };
 
   if (isNavigating) {
@@ -138,7 +138,7 @@ export default function Landing() {
 
               {/* Sign In Button - Now visible on all screen sizes */}
               <Button
-                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                onClick={() => navigate(isAuthenticated ? "/market" : "/auth")}
                 variant="outline"
                 size="sm"
                 className="cursor-pointer h-6 sm:h-9 text-xs sm:text-sm px-2 sm:px-4"

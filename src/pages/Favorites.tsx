@@ -83,7 +83,7 @@ export default function Favorites() {
               Start building your watchlist by clicking the heart icon on any card you want to track.
             </p>
             <Button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/market")}
               className="cursor-pointer mt-4"
             >
               Browse Cards

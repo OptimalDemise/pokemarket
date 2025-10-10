@@ -53,8 +53,8 @@ createRoot(document.getElementById("root")!).render(
           <RouteSyncer />
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
+            <Route path="/market" element={<Dashboard />} />
+            <Route path="/auth" element={<AuthPage redirectAfterAuth="/market" />} />
             <Route path="/account-settings" element={<AccountSettings />} />
             <Route path="/premium" element={<PremiumService />} />
             <Route path="/favorites" element={<Favorites />} />
