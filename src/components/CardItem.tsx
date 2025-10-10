@@ -95,7 +95,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     if (typeof percent !== 'number' || isNaN(percent) || !isFinite(percent)) {
       return '0.00';
     }
-    return Math.abs(percent).toFixed(2);
+    return percent.toFixed(2);
   };
 
   return (
