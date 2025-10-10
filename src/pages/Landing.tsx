@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, Package, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User, Settings, Crown, Heart, LogOut } from "lucide-react";
+import { ArrowRight, BarChart3, Sparkles, TrendingUp, TrendingDown, Sun, Moon, User, Settings, Crown, Heart, LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -247,7 +247,7 @@ export default function Landing() {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Monitor prices and trends for hollow rare cards and booster products. 
+            Monitor prices and trends for valuable Pokemon cards. 
             Stay ahead of the market with live updates.
           </p>
 
@@ -381,7 +381,7 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -501,7 +501,7 @@ export default function Landing() {
             Start Tracking Today
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Get instant access to real-time market data for Pokemon cards and products
+            Get instant access to real-time market data for valuable Pokemon cards
           </p>
           <Button
             size="lg"
@@ -542,7 +542,7 @@ export default function Landing() {
               <AccordionItem value="item-2">
                 <AccordionTrigger>How often are prices updated?</AccordionTrigger>
                 <AccordionContent>
-                  Card prices are updated every 10 minutes with staggered updates to ensure smooth performance, while product prices refresh every minute. Price history for charts is recorded every 10 minutes or when significant price changes occur (greater than 0.1%), ensuring you have accurate trend data without unnecessary noise.
+                  Card prices are updated every 10 minutes with staggered updates to ensure smooth performance. Price history for charts is recorded every 10 minutes or when significant price changes occur (greater than 0.1%), ensuring you have accurate trend data without unnecessary noise.
                 </AccordionContent>
               </AccordionItem>
 
@@ -577,7 +577,7 @@ export default function Landing() {
               <AccordionItem value="item-7">
                 <AccordionTrigger>How far back does price history go?</AccordionTrigger>
                 <AccordionContent>
-                  We maintain price history data for up to 90 days for individual cards and products. Daily snapshots are kept for up to one year, allowing you to analyze both short-term fluctuations and long-term trends in the Pokemon card market.
+                  We maintain price history data for up to 90 days for individual cards. Daily snapshots are kept for up to one year, allowing you to analyze both short-term fluctuations and long-term trends in the Pokemon card market.
                 </AccordionContent>
               </AccordionItem>
 
