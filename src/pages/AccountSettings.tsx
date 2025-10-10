@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowLeft, User, Mail, Calendar, Shield, Bell, Globe, Crown, LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -22,6 +23,7 @@ export default function AccountSettings() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isSaving, setIsSaving] = useState(false);
   const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateProfile = useMutation(api.userProfile.updateProfile);
@@ -141,10 +143,12 @@ export default function AccountSettings() {
   const handleSignOut = async () => {
     try {
       await signOut();
+      setShowSignOutDialog(false);
       navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Failed to sign out");
+      setShowSignOutDialog(false);
     }
   };
 
@@ -157,6 +161,25 @@ export default function AccountSettings() {
   }
 
   return (
+    <>
+      {/* Sign Out Confirmation Dialog */}
+      <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign out of your account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to sign out? You'll need to sign in again to access your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSignOut}>
+              Sign Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
@@ -456,7 +479,7 @@ export default function AccountSettings() {
                     <Button 
                       variant="outline" 
                       className="cursor-pointer"
-                      onClick={handleSignOut}
+                      onClick={() => setShowSignOutDialog(true)}
                     >
                       Sign Out
                     </Button>
@@ -468,5 +491,6 @@ export default function AccountSettings() {
         </motion.div>
       </main>
     </div>
+    </>
   );
 }
