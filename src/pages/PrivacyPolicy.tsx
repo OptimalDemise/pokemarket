@@ -49,7 +49,10 @@ export default function PrivacyPolicy() {
             <p>We may collect the following information that you voluntarily provide:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Email address (for account creation and authentication)</li>
-              <li>Account credentials and authentication data</li>
+              <li>Account credentials and authentication data (email OTP codes or encrypted passwords)</li>
+              <li>Profile information (username, profile picture)</li>
+              <li>User preferences (theme settings, notification preferences)</li>
+              <li>Favorite cards and watchlist data</li>
               <li>Communication preferences</li>
               <li>Any information you provide when contacting our support team</li>
             </ul>
@@ -66,7 +69,7 @@ export default function PrivacyPolicy() {
 
             <h3 className="text-lg font-semibold mt-4">2.3 Third-Party Data</h3>
             <p>
-              We collect Pokemon card pricing and market data from third-party APIs (such as the Pokemon TCG API and TCGPlayer) to provide our service. This data is publicly available market information and does not contain personal user data.
+              We collect Pokemon card pricing and market data from third-party APIs (Pokemon TCG API and TCGPlayer) to provide our service. This includes card images, set information, rarity data, and market prices. This data is publicly available market information and does not contain personal user data. We track cards with market values above $3 from vintage to modern sets, with price updates every 10 minutes.
             </p>
           </section>
 
@@ -75,8 +78,10 @@ export default function PrivacyPolicy() {
             <p>We use the collected information for the following purposes:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>To provide, maintain, and improve our service</li>
-              <li>To create and manage your user account</li>
-              <li>To authenticate users and prevent fraud</li>
+              <li>To create and manage your user account and profile</li>
+              <li>To authenticate users via email OTP or password and prevent fraud</li>
+              <li>To store and manage your favorite cards and watchlist</li>
+              <li>To remember your preferences (theme, notification settings)</li>
               <li>To send you updates, notifications, and service-related communications</li>
               <li>To analyze usage patterns and optimize user experience</li>
               <li>To respond to your inquiries and provide customer support</li>
@@ -153,13 +158,14 @@ export default function PrivacyPolicy() {
               We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this Privacy Policy. We will retain and use your information to:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Maintain your account</li>
+              <li>Maintain your account and user preferences</li>
+              <li>Store your favorite cards and watchlist data</li>
               <li>Comply with legal obligations</li>
               <li>Resolve disputes</li>
               <li>Enforce our agreements</li>
             </ul>
             <p>
-              When your information is no longer needed, we will securely delete or anonymize it.
+              Price history data is retained for up to 90 days for individual cards, with daily snapshots kept for up to one year. Redundant price history entries are automatically cleaned up weekly to optimize storage. When your personal information is no longer needed, we will securely delete or anonymize it.
             </p>
           </section>
 

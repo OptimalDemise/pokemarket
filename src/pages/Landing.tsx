@@ -535,14 +535,14 @@ export default function Landing() {
               <AccordionItem value="item-1">
                 <AccordionTrigger>What cards does PokéMarket track?</AccordionTrigger>
                 <AccordionContent>
-                  PokéMarket focuses exclusively on valuable Pokemon cards, including Rare Holo, Ultra Rare, Secret Rare, Hyper Rare, Illustration Rare, Special Illustration Rare, and many other premium rarities. We track cards from vintage to modern sets, prioritizing those with market values above $5 to ensure you're monitoring the most valuable collectibles.
+                  PokéMarket focuses exclusively on valuable Pokemon cards, including Rare Holo, Rare Holo EX, Rare Holo GX, Rare Holo V, Rare Holo VMAX, Rare Holo VSTAR, Ultra Rare, Secret Rare, Hyper Rare, Illustration Rare, Special Illustration Rare, Amazing Rare, Radiant Rare, Shiny Rare, Promo, and many other premium rarities. We track cards from vintage to modern sets (prioritizing newer releases), focusing on those with market values above $3 to ensure you're monitoring the most valuable collectibles.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-2">
                 <AccordionTrigger>How often are prices updated?</AccordionTrigger>
                 <AccordionContent>
-                  Card prices are updated every 10 minutes with staggered updates to ensure smooth performance. Price history for charts is recorded every 10 minutes or when significant price changes occur (greater than 0.1%), ensuring you have accurate trend data without unnecessary noise.
+                  Card prices are updated every 10 minutes from the backend with staggered batch processing (15 cards at a time with 500ms delays between cards and 12-second delays between batches) to ensure smooth performance and prevent lag. Price history for charts is recorded every 10 minutes or when significant price changes occur (greater than 0.1%), ensuring you have accurate trend data without unnecessary noise.
                 </AccordionContent>
               </AccordionItem>
 
@@ -584,7 +584,7 @@ export default function Landing() {
               <AccordionItem value="item-8">
                 <AccordionTrigger>Do I need to create an account?</AccordionTrigger>
                 <AccordionContent>
-                  Yes, you need to sign in to access the market dashboard and track prices. We use a secure email OTP (one-time password) authentication system to protect your account. Simply enter your email, receive a verification code, and you're ready to start tracking the Pokemon card market.
+                  Yes, you need to sign in to access the market dashboard and track prices. We offer two secure authentication methods: email OTP (one-time password) or password-based login. For email OTP, simply enter your email and receive a verification code. For password authentication, you can create an account with a secure password that meets our security requirements. Both methods ensure your account is protected.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

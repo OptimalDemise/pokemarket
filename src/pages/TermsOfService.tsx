@@ -43,7 +43,7 @@ export default function TermsOfService() {
           <section className="space-y-3">
             <h2 className="text-2xl font-bold tracking-tight">2. Description of Service</h2>
             <p>
-              PokéMarket provides real-time market tracking for Pokemon trading cards and sealed products. The Service displays price information, historical trends, and market data sourced from third-party APIs and public marketplaces.
+              PokéMarket provides real-time market tracking for valuable Pokemon trading cards. The Service displays price information, historical trends, and market data sourced from third-party APIs (Pokemon TCG API and TCGPlayer). We focus exclusively on premium rarity cards with market values above $3, tracking cards from vintage to modern sets with updates every 10 minutes using staggered batch processing.
             </p>
           </section>
 
@@ -67,7 +67,7 @@ export default function TermsOfService() {
           <section className="space-y-3">
             <h2 className="text-2xl font-bold tracking-tight">5. User Accounts</h2>
             <p>
-              Users may create accounts to access the Service. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.
+              Users must create accounts to access the Service. We offer two authentication methods: email OTP (one-time password) and password-based authentication. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account. For password-based accounts, you must create a secure password meeting our security requirements (minimum length, uppercase, lowercase, number, and special character).
             </p>
           </section>
 
