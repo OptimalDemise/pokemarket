@@ -76,8 +76,8 @@ export default function PremiumService() {
   const plans = [
     {
       name: "Pro",
-      price: "$14.99",
-      originalPrice: "$29.99",
+      price: "$7.99",
+      originalPrice: "$15.99",
       period: "/month",
       description: "For serious collectors and investors",
       features: [
@@ -96,8 +96,8 @@ export default function PremiumService() {
     },
     {
       name: "Enterprise",
-      price: "$24.99",
-      originalPrice: "$49.99",
+      price: "$14.99",
+      originalPrice: "$29.99",
       period: "/month",
       description: "For professional traders and stores",
       features: [
