@@ -304,7 +304,11 @@ export default function Landing() {
                 Top % Changes Today
               </h3>
               <div className="space-y-3">
-                {topPercentageChanges.length > 0 ? (
+                {dailyChanges === undefined ? (
+                  <div className="p-8 border rounded-lg text-center text-muted-foreground">
+                    Loading market data...
+                  </div>
+                ) : topPercentageChanges.length > 0 ? (
                   topPercentageChanges.map((item, index) => (
                     <motion.div
                       key={item._id}
@@ -317,8 +321,9 @@ export default function Landing() {
                     </motion.div>
                   ))
                 ) : (
-                  <div className="p-8 border rounded-lg text-center text-muted-foreground">
-                    Loading market data...
+                  <div className="p-8 border rounded-lg text-center text-muted-foreground space-y-2">
+                    <p className="font-medium">No daily changes yet</p>
+                    <p className="text-sm">Check back after midnight UTC</p>
                   </div>
                 )}
               </div>
