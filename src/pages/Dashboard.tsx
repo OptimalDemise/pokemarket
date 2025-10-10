@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, RefreshCw, Search, X, TrendingUp, TrendingDown, ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useMemo, useState, memo } from "react";
 import { useNavigate } from "react-router";
 
@@ -43,6 +43,7 @@ export default function Dashboard() {
   const [showTopDailyMovers, setShowTopDailyMovers] = useState(true);
   const [showBigMovers, setShowBigMovers] = useState(true);
   const [showLiveUpdates, setShowLiveUpdates] = useState(true);
+  const [isLiveUpdatesFullscreen, setIsLiveUpdatesFullscreen] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
 
   // Determine loading state first
@@ -871,7 +872,12 @@ export default function Dashboard() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l bg-card/50 lg:sticky lg:top-0 lg:h-screen overflow-y-auto scroll-smooth flex-shrink-0 order-1 lg:order-2 max-h-[300px] lg:max-h-none relative"
+            className={cn(
+              "border-t lg:border-t-0 lg:border-l bg-card/50 overflow-y-auto scroll-smooth flex-shrink-0 relative",
+              isLiveUpdatesFullscreen 
+                ? "fixed inset-0 z-50 w-full h-full" 
+                : "w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
+            )}
           >
             {/* Close button positioned at left edge, vertically centered - sticky */}
             <div className="lg:sticky top-1/2 -translate-y-1/2 absolute left-0 z-20">
@@ -904,14 +910,28 @@ export default function Dashboard() {
                   : 'Last 5 minutes'}
               </span>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsLiveUpdatesFullscreen(!isLiveUpdatesFullscreen)}
+              className="cursor-pointer h-8 w-8 ml-2"
+              title={isLiveUpdatesFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
+              {isLiveUpdatesFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
           </div>
         </div>
-        <div className="p-3">
+        <div className={cn("p-3", isLiveUpdatesFullscreen && "p-6")}>
           {liveUpdates.length > 0 ? (
-            <div className="grid grid-cols-2 gap-2">
+            <div className={cn(
+              "grid gap-2",
+              isLiveUpdatesFullscreen 
+                ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" 
+                : "grid-cols-2"
+            )}>
               {liveUpdates.map((card) => (
                 <div key={card._id}>
-                  <CardItem card={card} size="compact" />
+                  <CardItem card={card} size={isLiveUpdatesFullscreen ? "default" : "compact"} />
                 </div>
               ))}
             </div>
