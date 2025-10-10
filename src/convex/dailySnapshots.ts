@@ -1,61 +1,101 @@
 import { v } from "convex/values";
 import { internalMutation, query } from "./_generated/server";
 
-// Create daily snapshots for all cards and products
+// Create daily snapshots for all cards and products (optimized with batching)
 export const createDailySnapshots = internalMutation({
   args: {},
   handler: async (ctx) => {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const now = Date.now();
 
-    // Get all cards
-    const cards = await ctx.db.query("cards").collect();
+    // Process cards in batches to avoid timeout
+    const BATCH_SIZE = 50;
+    let cardOffset = 0;
+    let processedCards = 0;
     
-    for (const card of cards) {
-      // Check if snapshot already exists for today
-      const existing = await ctx.db
-        .query("dailySnapshots")
-        .withIndex("by_item_and_date", (q) => 
-          q.eq("itemId", card._id).eq("snapshotDate", today)
-        )
-        .first();
+    while (true) {
+      const cardBatch = await ctx.db
+        .query("cards")
+        .order("asc")
+        .paginate({ numItems: BATCH_SIZE, cursor: null });
+      
+      if (cardBatch.page.length === 0) break;
+      
+      for (const card of cardBatch.page) {
+        // Check if snapshot already exists for today
+        const existing = await ctx.db
+          .query("dailySnapshots")
+          .withIndex("by_item_and_date", (q) => 
+            q.eq("itemId", card._id).eq("snapshotDate", today)
+          )
+          .first();
 
-      if (!existing) {
-        await ctx.db.insert("dailySnapshots", {
-          itemId: card._id,
-          itemType: "card",
-          itemName: card.name,
-          price: card.currentPrice,
-          snapshotDate: today,
-          timestamp: now,
-        });
+        if (!existing) {
+          await ctx.db.insert("dailySnapshots", {
+            itemId: card._id,
+            itemType: "card",
+            itemName: card.name,
+            price: card.currentPrice,
+            snapshotDate: today,
+            timestamp: now,
+          });
+        }
+        processedCards++;
       }
+      
+      if (cardBatch.isDone) break;
+      cardOffset += BATCH_SIZE;
+      
+      // Limit total processing to prevent extreme timeouts
+      if (processedCards >= 500) break;
     }
 
-    // Get all products
-    const products = await ctx.db.query("products").collect();
+    // Process products in batches
+    let productOffset = 0;
+    let processedProducts = 0;
     
-    for (const product of products) {
-      const existing = await ctx.db
-        .query("dailySnapshots")
-        .withIndex("by_item_and_date", (q) => 
-          q.eq("itemId", product._id).eq("snapshotDate", today)
-        )
-        .first();
+    while (true) {
+      const productBatch = await ctx.db
+        .query("products")
+        .order("asc")
+        .paginate({ numItems: BATCH_SIZE, cursor: null });
+      
+      if (productBatch.page.length === 0) break;
+      
+      for (const product of productBatch.page) {
+        const existing = await ctx.db
+          .query("dailySnapshots")
+          .withIndex("by_item_and_date", (q) => 
+            q.eq("itemId", product._id).eq("snapshotDate", today)
+          )
+          .first();
 
-      if (!existing) {
-        await ctx.db.insert("dailySnapshots", {
-          itemId: product._id,
-          itemType: "product",
-          itemName: product.name,
-          price: product.currentPrice,
-          snapshotDate: today,
-          timestamp: now,
-        });
+        if (!existing) {
+          await ctx.db.insert("dailySnapshots", {
+            itemId: product._id,
+            itemType: "product",
+            itemName: product.name,
+            price: product.currentPrice,
+            snapshotDate: today,
+            timestamp: now,
+          });
+        }
+        processedProducts++;
       }
+      
+      if (productBatch.isDone) break;
+      productOffset += BATCH_SIZE;
+      
+      // Limit total processing
+      if (processedProducts >= 100) break;
     }
 
-    return { success: true, date: today };
+    return { 
+      success: true, 
+      date: today, 
+      cardsProcessed: processedCards,
+      productsProcessed: processedProducts 
+    };
   },
 });
 
