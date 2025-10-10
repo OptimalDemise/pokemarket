@@ -40,7 +40,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     isOpen ? { cardId: card._id } : "skip"
   );
 
-  // Favorites functionality
+  // Favorites functionality with null safety
   const isFavorited = useQuery(api.favorites.isFavorited, { cardId: card._id }) ?? false;
   const toggleFavorite = useMutation(api.favorites.toggleFavorite);
 
@@ -66,19 +66,37 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
       })
       .catch((error) => {
         console.error("Failed to unfavorite:", error);
+        setShowUnfavoriteDialog(false);
       });
   };
 
   const isCompact = size === "compact";
   
-  // Check if card was updated in the last 5 minutes
+  // Safe timestamp calculations with validation
   const now = Date.now();
   const fiveMinutesAgo = now - 5 * 60 * 1000;
-  const isRecentlyUpdated = card.lastUpdated > fiveMinutesAgo;
-  
-  // Check if card was updated in the last minute (for "JUST UPDATED" badge)
   const oneMinuteAgo = now - 60 * 1000;
-  const isJustUpdated = card.lastUpdated > oneMinuteAgo;
+  
+  // Validate lastUpdated timestamp
+  const validLastUpdated = typeof card.lastUpdated === 'number' && card.lastUpdated > 0 ? card.lastUpdated : now;
+  const isRecentlyUpdated = validLastUpdated > fiveMinutesAgo;
+  const isJustUpdated = validLastUpdated > oneMinuteAgo;
+
+  // Safe price formatting with validation
+  const formatPrice = (price: number | undefined): string => {
+    if (typeof price !== 'number' || isNaN(price) || !isFinite(price)) {
+      return '0.00';
+    }
+    return price.toFixed(2);
+  };
+
+  // Safe percentage formatting
+  const formatPercentage = (percent: number | undefined): string => {
+    if (typeof percent !== 'number' || isNaN(percent) || !isFinite(percent)) {
+      return '0.00';
+    }
+    return Math.abs(percent).toFixed(2);
+  };
 
   return (
     <>
@@ -88,7 +106,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
           <AlertDialogHeader>
             <AlertDialogTitle>Remove from favorites?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove "{card.name}" from your favorites?
+              Are you sure you want to remove "{card.name || 'this card'}" from your favorites?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -152,7 +170,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                     )}
                     <img
                       src={card.imageUrl}
-                      alt={card.name}
+                      alt={card.name || 'Card image'}
                       className="w-full h-full object-contain"
                       decoding="async"
                       onLoad={() => setImageLoading(false)}
@@ -168,9 +186,9 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                 <div className={isCompact ? 'space-y-0.5' : 'space-y-2'}>
                   <div className="flex items-center gap-1">
                     <Sparkles className={`${isCompact ? 'h-2.5 w-2.5' : 'h-3.5 w-3.5'} text-primary flex-shrink-0`} />
-                    <h3 className={`font-bold tracking-tight ${isCompact ? 'text-[10px]' : 'text-sm'} truncate`}>{card.name}</h3>
+                    <h3 className={`font-bold tracking-tight ${isCompact ? 'text-[10px]' : 'text-sm'} truncate`}>{card.name || 'Unknown Card'}</h3>
                   </div>
-                  <p className={`${isCompact ? 'text-[8px]' : 'text-xs'} text-muted-foreground truncate`}>{card.setName}</p>
+                  <p className={`${isCompact ? 'text-[8px]' : 'text-xs'} text-muted-foreground truncate`}>{card.setName || 'Unknown Set'}</p>
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       {card.isRecentSale && card.averagePrice ? (
@@ -182,7 +200,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                             transition={{ duration: 0.3 }}
                             className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground line-through`}
                           >
-                            Avg: ${card.averagePrice.toFixed(2)}
+                            Avg: ${formatPrice(card.averagePrice)}
                           </motion.span>
                           <motion.span 
                             key={`price-${card.currentPrice}`}
@@ -191,7 +209,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                             transition={{ duration: 0.3 }}
                             className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold text-primary`}
                           >
-                            Recent: ${card.currentPrice.toFixed(2)}
+                            Recent: ${formatPrice(card.currentPrice)}
                           </motion.span>
                         </>
                       ) : (
@@ -202,7 +220,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                           transition={{ duration: 0.3 }}
                           className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold`}
                         >
-                          ${card.currentPrice.toFixed(2)}
+                          ${formatPrice(card.currentPrice)}
                         </motion.span>
                       )}
                     </div>
@@ -213,7 +231,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                       transition={{ duration: 0.3 }}
                       className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium ${card.percentChange === 0 ? "text-muted-foreground" : card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}
                     >
-                      {card.percentChange === 0 ? "—" : `${card.percentChange >= 0 ? "+" : ""}${card.percentChange.toFixed(2)}%`}
+                      {card.percentChange === 0 ? "—" : `${card.percentChange >= 0 ? "+" : ""}${formatPercentage(card.percentChange)}%`}
                     </motion.span>
                   </div>
                 </div>
@@ -226,7 +244,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              {card.name}
+              {card.name || 'Unknown Card'}
             </DialogTitle>
           </DialogHeader>
           
@@ -241,7 +259,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                   >
                     <img
                       src={card.imageUrl}
-                      alt={card.name}
+                      alt={card.name || 'Card image'}
                       className="w-full h-full object-contain"
                       loading="lazy"
                       decoding="async"
@@ -260,15 +278,15 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
               <div className="space-y-4">
                 <div>
                   <h4 className="text-sm font-medium text-muted-foreground mb-1">Set</h4>
-                  <p className="text-lg">{card.setName}</p>
+                  <p className="text-lg">{card.setName || 'Unknown Set'}</p>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-muted-foreground mb-1">Rarity</h4>
-                  <span className="text-sm bg-secondary px-3 py-1.5 rounded inline-block">{card.rarity}</span>
+                  <span className="text-sm bg-secondary px-3 py-1.5 rounded inline-block">{card.rarity || 'Unknown'}</span>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-muted-foreground mb-1">Card Number</h4>
-                  <p className="text-lg">#{card.cardNumber}</p>
+                  <p className="text-lg">#{card.cardNumber || 'N/A'}</p>
                 </div>
                 {card.tcgplayerUrl && (
                   <div>
@@ -296,15 +314,15 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
               ) : (
                 <>
                   <PriceChart
-                    data={priceHistory}
+                    data={priceHistory || []}
                     currentPrice={card.currentPrice}
                     percentChange={card.percentChange}
                   />
-                  {card.overallPercentChange !== undefined && priceHistory.length > 1 && (
+                  {card.overallPercentChange !== undefined && priceHistory && priceHistory.length > 1 && (
                     <div className="mt-4 p-3 bg-secondary/30 rounded-lg">
                       <h5 className="text-sm font-medium text-muted-foreground mb-1">Overall Trend</h5>
                       <div className={`text-lg font-bold ${card.overallPercentChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {card.overallPercentChange >= 0 ? '+' : ''}{card.overallPercentChange.toFixed(2)}%
+                        {card.overallPercentChange >= 0 ? '+' : ''}{formatPercentage(card.overallPercentChange)}%
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         Since first recorded price
@@ -325,7 +343,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
             {card.imageUrl && (
               <img
                 src={card.imageUrl}
-                alt={card.name}
+                alt={card.name || 'Card image'}
                 className="max-w-full max-h-[90vh] object-contain rounded-lg"
                 loading="eager"
                 decoding="async"
