@@ -283,14 +283,9 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Ad Space 1: Subtle Banner */}
+      {/* Ad Space 1: Subtle Banner - Hidden */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
-          <div className="text-center text-muted-foreground">
-            <p className="text-xs font-medium">Advertisement</p>
-            <p className="text-[10px] mt-1">Sponsored Content</p>
-          </div>
-        </div>
+        <div className="max-w-xl mx-auto min-h-[80px]" />
       </section>
 
       {/* Market Activity Section */}
@@ -450,27 +445,14 @@ export default function Landing() {
             </motion.div>
           </div>
 
-          {/* Ad Space 2: Native Ad below Features */}
+          {/* Ad Space 2: Native Ad below Features - Hidden */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: false }}
-            className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/5 min-h-[80px]"
-          >
-            <div className="flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <div className="h-10 w-10 bg-secondary/20 rounded-lg flex items-center justify-center mx-auto">
-                  <Sparkles className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <p className="text-xs font-medium text-muted-foreground">Sponsored</p>
-                <h3 className="text-base font-semibold">Ad Space</h3>
-                <p className="text-xs text-muted-foreground">
-                  Partner with us to reach collectors
-                </p>
-              </div>
-            </div>
-          </motion.div>
+            className="max-w-xl mx-auto min-h-[80px]"
+          />
         </motion.div>
       </section>
 
@@ -611,14 +593,9 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Ad Space 3: Footer Banner */}
+      {/* Ad Space 3: Footer Banner - Hidden */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="max-w-xl mx-auto p-3 border rounded-lg bg-secondary/10 flex items-center justify-center min-h-[80px]">
-          <div className="text-center text-muted-foreground">
-            <p className="text-xs font-medium">Advertisement</p>
-            <p className="text-[10px] mt-1">Footer Banner Space</p>
-          </div>
-        </div>
+        <div className="max-w-xl mx-auto min-h-[80px]" />
       </section>
 
       {/* Footer */}
