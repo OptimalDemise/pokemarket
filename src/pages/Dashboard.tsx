@@ -19,6 +19,7 @@ type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price
 
 const ITEMS_PER_PAGE = 30;
 const LIVE_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 minutes for basic plan
+const LIVE_UPDATES_LIMIT = 30; // Reduced from 50 for better performance
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export default function Dashboard() {
     
     return filteredCards
       .sort((a, b) => b.lastUpdated - a.lastUpdated)
-      .slice(0, 50);
+      .slice(0, LIVE_UPDATES_LIMIT);
   }, [cards, showLiveUpdates, fiveMinutesAgo, showOnlyFavoritesInLiveUpdates, favoriteCardIds]);
 
   // Get the most recent update timestamp

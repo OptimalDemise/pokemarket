@@ -240,10 +240,11 @@ export const updateAllCardsWithRealData = internalAction({
       minPrice: 3,
     });
     
-    // Process cards in batches using pagination to avoid limits
-    const BATCH_SIZE = 15;
-    const DELAY_BETWEEN_CARDS_MS = 500;
-    const DELAY_BETWEEN_BATCHES_MS = 12000;
+      // Process cards in batches using pagination to avoid limits
+    // Optimized for smoother updates: smaller batches with longer delays
+    const BATCH_SIZE = 10;
+    const DELAY_BETWEEN_CARDS_MS = 800;
+    const DELAY_BETWEEN_BATCHES_MS = 15000;
     
     let fluctuationCount = 0;
     let cursor = null;
