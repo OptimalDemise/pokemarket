@@ -564,6 +564,24 @@ export default function AccountSettings() {
                       <span className="text-muted-foreground">Current plan:</span>
                       <span className="font-medium">{user?.plan || "Basic"} {user?.plan === "Basic" || !user?.plan ? "(Free)" : ""}</span>
                     </div>
+                    {user?.plan && user?.plan !== "Basic" && user?.planExpiresAt && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-muted-foreground">Plan expires:</span>
+                        <span className="font-medium">
+                          {new Date(user.planExpiresAt).toLocaleDateString()}
+                          {" "}
+                          ({Math.ceil((user.planExpiresAt - Date.now()) / (1000 * 60 * 60 * 24))} days remaining)
+                        </span>
+                      </div>
+                    )}
+                    {user?.plan && user?.plan !== "Basic" && !user?.planExpiresAt && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-muted-foreground">Plan expires:</span>
+                        <span className="font-medium text-green-600 dark:text-green-400">Lifetime Access</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-3 pt-4">
