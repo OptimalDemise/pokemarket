@@ -72,7 +72,7 @@ export default function Dashboard() {
     return filteredCards
       .sort((a, b) => b.lastUpdated - a.lastUpdated)
       .slice(0, LIVE_UPDATES_LIMIT);
-  }, [cards, showLiveUpdates, fiveMinutesAgo, showOnlyFavoritesInLiveUpdates, favoriteCardIds]);
+  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds]);
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
