@@ -10,6 +10,7 @@ import { Sparkles, Loader2, Maximize2, Heart, DollarSign, RefreshCw, ChevronDown
 import { Checkbox } from "@/components/ui/checkbox";
 import { PriceChart } from "./PriceChart";
 import { useState, memo, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 interface CardItemProps {
   card: {
@@ -39,6 +40,7 @@ interface ExchangeRates {
 }
 
 export const CardItem = memo(function CardItem({ card, size = "default" }: CardItemProps) {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -48,6 +50,9 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   const [ratesLoading, setRatesLoading] = useState(false);
   const [ratesError, setRatesError] = useState<string | null>(null);
   const [selectedCurrencies, setSelectedCurrencies] = useState<Set<string>>(new Set(['GBP', 'EUR', 'CNY']));
+  
+  // Get user's preferred currency (default to USD)
+  const preferredCurrency = user?.preferredCurrency || "USD";
   
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
@@ -126,6 +131,38 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     return card.currentPrice * exchangeRates[currency];
   };
 
+  // Get display price based on user's preferred currency
+  const getDisplayPrice = (usdPrice: number): number => {
+    if (!exchangeRates || preferredCurrency === "USD") return usdPrice;
+    
+    const currencyKey = preferredCurrency as keyof Omit<ExchangeRates, 'timestamp'>;
+    if (exchangeRates[currencyKey]) {
+      return usdPrice * exchangeRates[currencyKey];
+    }
+    return usdPrice;
+  };
+
+  // Get currency symbol based on preferred currency
+  const getCurrencySymbol = (): string => {
+    switch (preferredCurrency) {
+      case "GBP": return "£";
+      case "EUR": return "€";
+      case "CNY": return "¥";
+      default: return "$";
+    }
+  };
+
+  // Get USD price from display price
+  const getUSDFromDisplay = (displayPrice: number): number => {
+    if (!exchangeRates || preferredCurrency === "USD") return displayPrice;
+    
+    const currencyKey = preferredCurrency as keyof Omit<ExchangeRates, 'timestamp'>;
+    if (exchangeRates[currencyKey]) {
+      return displayPrice / exchangeRates[currencyKey];
+    }
+    return displayPrice;
+  };
+
   const getLastUpdatedTime = (): string => {
     if (!exchangeRates) return '';
     const minutes = Math.floor((Date.now() - exchangeRates.timestamp) / 60000);
@@ -188,6 +225,11 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     }
     return percent.toFixed(2);
   };
+
+  // Calculate display prices
+  const displayPrice = getDisplayPrice(card.currentPrice);
+  const displayAveragePrice = card.averagePrice ? getDisplayPrice(card.averagePrice) : undefined;
+  const currencySymbol = getCurrencySymbol();
 
   return (
     <>
@@ -282,36 +324,36 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                   <p className={`${isCompact ? 'text-[8px]' : 'text-xs'} text-muted-foreground truncate`}>{card.setName || 'Unknown Set'}</p>
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                      {card.isRecentSale && card.averagePrice ? (
+                      {card.isRecentSale && displayAveragePrice ? (
                         <>
                           <motion.span 
-                            key={`avg-${card.averagePrice}`}
+                            key={`avg-${displayAveragePrice}`}
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
                             className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground line-through`}
                           >
-                            Avg: ${formatPrice(card.averagePrice)}
+                            Avg: {currencySymbol}{formatPrice(displayAveragePrice)}
                           </motion.span>
                           <motion.span 
-                            key={`price-${card.currentPrice}`}
+                            key={`price-${displayPrice}`}
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.3 }}
                             className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold text-primary`}
                           >
-                            Recent: ${formatPrice(card.currentPrice)}
+                            Recent: {currencySymbol}{formatPrice(displayPrice)}
                           </motion.span>
                         </>
                       ) : (
                         <motion.span 
-                          key={`price-${card.currentPrice}`}
+                          key={`price-${displayPrice}`}
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.3 }}
                           className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold`}
                         >
-                          ${formatPrice(card.currentPrice)}
+                          {currencySymbol}{formatPrice(displayPrice)}
                         </motion.span>
                       )}
                     </div>
@@ -431,53 +473,77 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                         <>
                           {/* Currency Selection */}
                           <div className="flex flex-wrap gap-4 pb-3 border-b">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <Checkbox
-                                checked={selectedCurrencies.has('GBP')}
-                                onCheckedChange={(checked) => {
-                                  const newSet = new Set(selectedCurrencies);
-                                  if (checked) {
-                                    newSet.add('GBP');
-                                  } else {
-                                    newSet.delete('GBP');
-                                  }
-                                  setSelectedCurrencies(newSet);
-                                }}
-                              />
-                              <span className="text-sm font-medium">British Pound (£)</span>
-                            </label>
+                            {preferredCurrency !== "USD" && (
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <Checkbox
+                                  checked={selectedCurrencies.has('USD')}
+                                  onCheckedChange={(checked) => {
+                                    const newSet = new Set(selectedCurrencies);
+                                    if (checked) {
+                                      newSet.add('USD');
+                                    } else {
+                                      newSet.delete('USD');
+                                    }
+                                    setSelectedCurrencies(newSet);
+                                  }}
+                                />
+                                <span className="text-sm font-medium">US Dollar ($)</span>
+                              </label>
+                            )}
                             
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <Checkbox
-                                checked={selectedCurrencies.has('EUR')}
-                                onCheckedChange={(checked) => {
-                                  const newSet = new Set(selectedCurrencies);
-                                  if (checked) {
-                                    newSet.add('EUR');
-                                  } else {
-                                    newSet.delete('EUR');
-                                  }
-                                  setSelectedCurrencies(newSet);
-                                }}
-                              />
-                              <span className="text-sm font-medium">Euro (€)</span>
-                            </label>
+                            {preferredCurrency !== "GBP" && (
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <Checkbox
+                                  checked={selectedCurrencies.has('GBP')}
+                                  onCheckedChange={(checked) => {
+                                    const newSet = new Set(selectedCurrencies);
+                                    if (checked) {
+                                      newSet.add('GBP');
+                                    } else {
+                                      newSet.delete('GBP');
+                                    }
+                                    setSelectedCurrencies(newSet);
+                                  }}
+                                />
+                                <span className="text-sm font-medium">British Pound (£)</span>
+                              </label>
+                            )}
                             
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <Checkbox
-                                checked={selectedCurrencies.has('CNY')}
-                                onCheckedChange={(checked) => {
-                                  const newSet = new Set(selectedCurrencies);
-                                  if (checked) {
-                                    newSet.add('CNY');
-                                  } else {
-                                    newSet.delete('CNY');
-                                  }
-                                  setSelectedCurrencies(newSet);
-                                }}
-                              />
-                              <span className="text-sm font-medium">Chinese Yuan (¥)</span>
-                            </label>
+                            {preferredCurrency !== "EUR" && (
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <Checkbox
+                                  checked={selectedCurrencies.has('EUR')}
+                                  onCheckedChange={(checked) => {
+                                    const newSet = new Set(selectedCurrencies);
+                                    if (checked) {
+                                      newSet.add('EUR');
+                                    } else {
+                                      newSet.delete('EUR');
+                                    }
+                                    setSelectedCurrencies(newSet);
+                                  }}
+                                />
+                                <span className="text-sm font-medium">Euro (€)</span>
+                              </label>
+                            )}
+                            
+                            {preferredCurrency !== "CNY" && (
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <Checkbox
+                                  checked={selectedCurrencies.has('CNY')}
+                                  onCheckedChange={(checked) => {
+                                    const newSet = new Set(selectedCurrencies);
+                                    if (checked) {
+                                      newSet.add('CNY');
+                                    } else {
+                                      newSet.delete('CNY');
+                                    }
+                                    setSelectedCurrencies(newSet);
+                                  }}
+                                />
+                                <span className="text-sm font-medium">Chinese Yuan (¥)</span>
+                              </label>
+                            )}
                           </div>
                           
                           {/* Currency Display */}
@@ -487,7 +553,15 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                               selectedCurrencies.size === 2 ? 'grid-cols-1 sm:grid-cols-2' : 
                               'grid-cols-1 sm:grid-cols-3'
                             }`}>
-                              {selectedCurrencies.has('GBP') && (
+                              {preferredCurrency !== "USD" && selectedCurrencies.has('USD') && (
+                                <div className="bg-secondary/30 rounded-lg p-3">
+                                  <div className="text-xs text-muted-foreground mb-1">US Dollar</div>
+                                  <div className="text-lg font-bold">${formatCurrency(card.currentPrice)}</div>
+                                  <div className="text-xs text-muted-foreground mt-1">USD</div>
+                                </div>
+                              )}
+                              
+                              {preferredCurrency !== "GBP" && selectedCurrencies.has('GBP') && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">British Pound</div>
                                   <div className="text-lg font-bold">£{formatCurrency(getConvertedPrice('GBP'))}</div>
@@ -495,7 +569,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                 </div>
                               )}
                               
-                              {selectedCurrencies.has('EUR') && (
+                              {preferredCurrency !== "EUR" && selectedCurrencies.has('EUR') && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">Euro</div>
                                   <div className="text-lg font-bold">€{formatCurrency(getConvertedPrice('EUR'))}</div>
@@ -503,7 +577,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                 </div>
                               )}
                               
-                              {selectedCurrencies.has('CNY') && (
+                              {preferredCurrency !== "CNY" && selectedCurrencies.has('CNY') && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">Chinese Yuan</div>
                                   <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('CNY'))}</div>
