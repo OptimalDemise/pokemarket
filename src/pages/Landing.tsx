@@ -115,7 +115,7 @@ export default function Landing() {
                 <img 
                   src="https://harmless-tapir-303.convex.cloud/api/storage/3df4976e-8476-4727-879c-1dcc105c41d0" 
                   alt="Premium" 
-                  className="h-3 w-3 sm:h-4 sm:w-4"
+                  className="h-4 w-4 sm:h-5 sm:w-5"
                 />
                 <span className="hidden sm:inline text-xs sm:text-sm">Premium</span>
               </Button>
@@ -184,7 +184,7 @@ export default function Landing() {
                     <img 
                       src="https://harmless-tapir-303.convex.cloud/api/storage/3df4976e-8476-4727-879c-1dcc105c41d0" 
                       alt="Premium" 
-                      className="mr-2 h-4 w-4"
+                      className="mr-2 h-5 w-5"
                     />
                     <span>Premium Service</span>
                   </DropdownMenuItem>
