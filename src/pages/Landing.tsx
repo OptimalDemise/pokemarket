@@ -110,9 +110,13 @@ export default function Landing() {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate("/premium")}
-                className="cursor-pointer gap-1 h-6 sm:h-8 px-2 sm:px-3 group"
+                className="cursor-pointer gap-1 h-6 sm:h-8 px-2 sm:px-3"
               >
-                <Crown className="h-3 w-3 sm:h-4 sm:w-4 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:fill-amber-500 dark:group-hover:fill-amber-400 transition-colors" />
+                <img 
+                  src="https://harmless-tapir-303.convex.cloud/api/storage/3df4976e-8476-4727-879c-1dcc105c41d0" 
+                  alt="Premium" 
+                  className="h-3 w-3 sm:h-4 sm:w-4"
+                />
                 <span className="hidden sm:inline text-xs sm:text-sm">Premium</span>
               </Button>
 
@@ -176,8 +180,12 @@ export default function Landing() {
                     </div>
                     <span>Account Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/premium")} className="group">
-                    <Crown className="mr-2 h-4 w-4 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:fill-amber-500 dark:group-hover:fill-amber-400 transition-all" />
+                  <DropdownMenuItem onClick={() => navigate("/premium")}>
+                    <img 
+                      src="https://harmless-tapir-303.convex.cloud/api/storage/3df4976e-8476-4727-879c-1dcc105c41d0" 
+                      alt="Premium" 
+                      className="mr-2 h-4 w-4"
+                    />
                     <span>Premium Service</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem 
