@@ -927,7 +927,7 @@ export default function Dashboard() {
 
             <div className={cn(
               "p-4 bg-background/95 backdrop-blur z-10 h-[73px]",
-              isLiveUpdatesFullscreen ? "sticky top-0" : "lg:sticky lg:top-0 border-b"
+              isLiveUpdatesFullscreen ? "sticky top-0 bg-background border-b-0" : "lg:sticky lg:top-0 border-b"
             )}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
