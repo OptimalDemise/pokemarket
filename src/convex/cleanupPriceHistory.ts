@@ -9,7 +9,7 @@ export const cleanupRedundantPriceHistory = internalMutation({
     cursor: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const TEN_MINUTES = 10 * 60 * 1000;
+    const FIFTEEN_MINUTES = 15 * 60 * 1000;
     const BATCH_SIZE = args.batchSize || 10; // Process 10 cards at a time to avoid read limits
     let totalDeleted = 0;
 
@@ -31,14 +31,14 @@ export const cleanupRedundantPriceHistory = internalMutation({
         continue;
       }
 
-      // Keep first entry, then only keep entries that are at least 10 minutes apart
+      // Keep first entry, then only keep entries that are at least 15 minutes apart
       let lastKeptTimestamp = history[0].timestamp;
 
       for (let i = 1; i < history.length - 1; i++) {
         const entry = history[i];
         const timeDiff = entry.timestamp - lastKeptTimestamp;
 
-        if (timeDiff >= TEN_MINUTES) {
+        if (timeDiff >= FIFTEEN_MINUTES) {
           lastKeptTimestamp = entry.timestamp;
         } else {
           // Delete this redundant entry
