@@ -98,9 +98,9 @@ export default function PremiumService() {
     },
     {
       name: "Enterprise",
-      price: "$14.99",
-      originalPrice: "$29.99",
-      period: "/month",
+      price: "Coming Soon",
+      originalPrice: undefined,
+      period: "",
       description: "For professional traders and stores",
       features: [
         "Everything in Pro",
@@ -112,7 +112,7 @@ export default function PremiumService() {
       ],
       icon: Building,
       popular: false,
-      freeTrial: true,
+      freeTrial: false,
       trialDays: 3
     },
     {
