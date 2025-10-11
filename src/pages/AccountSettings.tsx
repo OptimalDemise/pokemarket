@@ -562,7 +562,7 @@ export default function AccountSettings() {
                     <div className="flex items-center gap-2 text-sm">
                       <Crown className="h-4 w-4 text-muted-foreground" />
                       <span className="text-muted-foreground">Current plan:</span>
-                      <span className="font-medium">Basic (Free)</span>
+                      <span className="font-medium">{user?.plan || "Basic"} {user?.plan === "Basic" || !user?.plan ? "(Free)" : ""}</span>
                     </div>
                   </div>
 
