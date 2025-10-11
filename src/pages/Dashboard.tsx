@@ -467,13 +467,8 @@ export default function Dashboard() {
 
         {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Ad Zone 1: Top Banner */}
-        <div className="mb-6 p-4 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[90px] sm:min-h-[120px]">
-          <div className="text-center text-muted-foreground">
-            <p className="text-xs sm:text-sm font-medium">Advertisement</p>
-            <p className="text-[10px] sm:text-xs mt-1">Banner Ad Space</p>
-          </div>
-        </div>
+        {/* Ad Zone 1: Top Banner - Hidden */}
+        <div className="mb-6 min-h-[90px] sm:min-h-[120px]" />
 
         {/* Rarity and Set Filters */}
         <div className="flex flex-col gap-4 mb-6">
@@ -657,12 +652,9 @@ export default function Dashboard() {
                 {paginatedCards.map((card, index) => (
                   <>
                     <CardItemWrapper key={card._id} card={card} />
-                    {/* Native Ad Card - Every 10th position */}
+                    {/* Native Ad Card - Every 10th position - Empty space */}
                     {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
-                      <div key={`ad-${card._id}`} className="p-3 sm:p-4 border rounded-lg bg-secondary/10 flex flex-col items-center justify-center min-h-[150px] sm:min-h-[200px] hover:border-primary/50 transition-colors">
-                        <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1 sm:mb-2">Sponsored</p>
-                        <p className="text-[10px] sm:text-xs text-center text-muted-foreground">Ad Space</p>
-                      </div>
+                      <div key={`ad-${card._id}`} />
                     )}
                   </>
                 ))}
@@ -673,14 +665,9 @@ export default function Dashboard() {
                 </div>
               )}
               
-              {/* Ad Zone 3: Above Pagination */}
+              {/* Ad Zone 3: Above Pagination - Hidden */}
               {filteredAndSortedCards.length > 0 && (
-                <div className="mt-6 mb-4 p-2 sm:p-3 border rounded-lg bg-secondary/20 flex items-center justify-center min-h-[60px] sm:min-h-[90px]">
-                  <div className="text-center text-muted-foreground">
-                    <p className="text-[10px] sm:text-xs font-medium">Advertisement</p>
-                    <p className="text-[8px] sm:text-[10px] mt-1">Leaderboard Ad Space</p>
-                  </div>
-                </div>
+                <div className="mt-6 mb-4 min-h-[60px] sm:min-h-[90px]" />
               )}
 
               {/* Pagination Controls for Cards */}
