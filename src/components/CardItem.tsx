@@ -64,7 +64,14 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   const isFavorited = useQuery(api.favorites.isFavorited, { cardId: card._id }) ?? false;
   const toggleFavorite = useMutation(api.favorites.toggleFavorite);
 
-  // Fetch exchange rates when dialog opens
+  // Fetch exchange rates on mount if user has a non-USD preferred currency
+  useEffect(() => {
+    if (preferredCurrency !== "USD" && !exchangeRates) {
+      fetchExchangeRates();
+    }
+  }, [preferredCurrency]);
+
+  // Also fetch when dialog opens if not already fetched
   useEffect(() => {
     if (isOpen && !exchangeRates) {
       fetchExchangeRates();
