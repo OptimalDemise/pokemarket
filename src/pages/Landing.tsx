@@ -162,7 +162,18 @@ export default function Landing() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/account-settings")} className="group">
-                    <Settings className="mr-2 h-4 w-4 transition-all" />
+                    <div className="mr-2 h-4 w-4 relative flex-shrink-0">
+                      <img 
+                        src="https://harmless-tapir-303.convex.cloud/api/storage/686a9009-1468-4c8c-982d-ddc3e4112cdd" 
+                        alt="Settings" 
+                        className="absolute inset-0 h-4 w-4 transition-opacity group-hover:opacity-0"
+                      />
+                      <img 
+                        src="https://harmless-tapir-303.convex.cloud/api/storage/f7c7bd8f-3d79-4b8d-b098-c584a8eaa614" 
+                        alt="Settings Hover" 
+                        className="absolute inset-0 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+                      />
+                    </div>
                     <span>Account Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/premium")} className="group">
