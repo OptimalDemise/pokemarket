@@ -903,10 +903,9 @@ export default function Dashboard() {
             className={cn(
               "flex-shrink-0 relative",
               isLiveUpdatesFullscreen 
-                ? "fixed inset-0 z-50 w-full h-full bg-background overflow-y-auto" 
-                : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none overflow-y-auto"
+                ? "fixed inset-0 z-50 w-full h-full bg-background" 
+                : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
             )}
-            style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
           >
             {/* Close button positioned at left edge, vertically centered - sticky */}
             <div className="lg:sticky top-1/2 -translate-y-1/2 absolute left-0 z-20">
@@ -964,7 +963,12 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <div className={cn("p-3", isLiveUpdatesFullscreen && "p-6")}>
+        <div className={cn(
+          "p-3 overflow-y-auto",
+          isLiveUpdatesFullscreen && "p-6 h-[calc(100vh-73px)]"
+        )}
+        style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
+        >
           {liveUpdates.length > 0 ? (
             <div className={cn(
               "grid gap-2",
