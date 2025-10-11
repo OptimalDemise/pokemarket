@@ -17,13 +17,6 @@ crons.interval(
   internal.pokemonTcgApi.updateAllCardsWithRealData
 );
 
-// Update product prices every minute
-crons.interval(
-  "update product prices",
-  { minutes: 1 },
-  internal.updateProducts.updateProductPrices
-);
-
 // Update big movers cache every 5 minutes
 crons.interval(
   "update big movers cache",
@@ -40,9 +33,10 @@ crons.weekly(
 );
 
 crons.weekly(
-  "cleanup old product price history",
-  { hourUTC: 2, minuteUTC: 15, dayOfWeek: "sunday" },
-  internal.products.cleanupOldProductPriceHistory
+  "cleanup redundant price history",
+  { dayOfWeek: "monday", hourUTC: 0, minuteUTC: 0 },
+  internal.cleanupPriceHistoryAll.cleanupAllRedundantPriceHistory,
+  {}
 );
 
 // Cleanup old daily snapshots monthly (1st of month at 3 AM UTC)
@@ -50,13 +44,6 @@ crons.monthly(
   "cleanup old daily snapshots",
   { hourUTC: 3, minuteUTC: 0, day: 1 },
   internal.dailySnapshots.cleanupOldSnapshots
-);
-
-crons.weekly(
-  "cleanup redundant price history",
-  { dayOfWeek: "monday", hourUTC: 0, minuteUTC: 0 },
-  internal.cleanupPriceHistoryAll.cleanupAllRedundantPriceHistory,
-  {}
 );
 
 export default crons;

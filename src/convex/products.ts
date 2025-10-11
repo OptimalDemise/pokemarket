@@ -35,13 +35,8 @@ export const getAllProducts = query({
 export const getProductPriceHistory = query({
   args: { productId: v.id("products") },
   handler: async (ctx, args) => {
-    const history = await ctx.db
-      .query("productPriceHistory")
-      .withIndex("by_product", (q) => q.eq("productId", args.productId))
-      .order("desc")
-      .collect();
-
-    return history.reverse();
+    // Products are no longer tracked - return empty array
+    return [];
   },
 });
 
@@ -55,62 +50,8 @@ export const upsertProduct = mutation({
     currentPrice: v.number(),
   },
   handler: async (ctx, args) => {
-    // Check if product exists
-    const existingProducts = await ctx.db
-      .query("products")
-      .withIndex("by_type", (q) => q.eq("productType", args.productType))
-      .collect();
-
-    const existingProduct = existingProducts.find(
-      (p) => p.name === args.name && p.setName === args.setName
-    );
-
-    const now = Date.now();
-
-    if (existingProduct) {
-      // Update existing product
-      await ctx.db.patch(existingProduct._id, {
-        currentPrice: args.currentPrice,
-        lastUpdated: now,
-      });
-
-      // Add price history entry with slight variation to show change
-      const priceVariation = args.currentPrice * (0.98 + Math.random() * 0.04);
-      await ctx.db.insert("productPriceHistory", {
-        productId: existingProduct._id,
-        price: priceVariation,
-        timestamp: now,
-      });
-
-      return existingProduct._id;
-    } else {
-      // Create new product
-      const productId = await ctx.db.insert("products", {
-        name: args.name,
-        productType: args.productType,
-        setName: args.setName,
-        imageUrl: args.imageUrl,
-        currentPrice: args.currentPrice,
-        lastUpdated: now,
-      });
-
-      // Add initial price history entries to show change
-      // Add a historical entry (1 hour ago with slight variation)
-      await ctx.db.insert("productPriceHistory", {
-        productId,
-        price: args.currentPrice * (0.92 + Math.random() * 0.16),
-        timestamp: now - 3600000,
-      });
-      
-      // Add current price entry
-      await ctx.db.insert("productPriceHistory", {
-        productId,
-        price: args.currentPrice,
-        timestamp: now,
-      });
-
-      return productId;
-    }
+    // Products are no longer tracked - return null
+    return null;
   },
 });
 
@@ -118,20 +59,8 @@ export const upsertProduct = mutation({
 export const _getAllProducts = internalQuery({
   args: {},
   handler: async (ctx) => {
-    try {
-      const products = await ctx.db.query("products").collect();
-      
-      // Return products with stored calculated values
-      return products.map(product => ({
-        ...product,
-        percentChange: product.percentChange || 0,
-        averagePrice: product.averagePrice || product.currentPrice,
-        isRecentSale: product.isRecentSale || false,
-      }));
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      throw new Error("Failed to retrieve product data");
-    }
+    // Products are no longer tracked - return empty array
+    return [];
   },
 });
 
@@ -145,112 +74,8 @@ export const _upsertProduct = internalMutation({
     currentPrice: v.number(),
   },
   handler: async (ctx, args) => {
-    try {
-      // Validate input
-      if (args.currentPrice < 0) {
-        console.error(`Invalid price for product ${args.name}: ${args.currentPrice}`);
-        return null;
-      }
-
-      // Check if product exists
-      const existingProducts = await ctx.db
-        .query("products")
-        .withIndex("by_type", (q) => q.eq("productType", args.productType))
-        .collect();
-
-      const existingProduct = existingProducts.find(
-        (p) => p.name === args.name && p.setName === args.setName
-      );
-
-      const now = Date.now();
-
-      if (existingProduct) {
-        // Validate existing product data
-        if (!existingProduct.currentPrice || existingProduct.currentPrice <= 0) {
-          console.warn(`Invalid existing price for product ${args.name}, resetting`);
-          existingProduct.currentPrice = args.currentPrice;
-        }
-
-        // Check if price has actually changed (more than 0.1% difference)
-        const priceChangePercent = Math.abs((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
-        const hasPriceChanged = priceChangePercent > 0.1;
-
-        if (hasPriceChanged) {
-          // Calculate new percentage change with safety check
-          let percentChange = 0;
-          if (existingProduct.currentPrice !== 0) {
-            percentChange = ((args.currentPrice - existingProduct.currentPrice) / existingProduct.currentPrice) * 100;
-          }
-          
-          // Fetch limited history for calculations
-          const recentHistory = await ctx.db
-            .query("productPriceHistory")
-            .withIndex("by_product", (q) => q.eq("productId", existingProduct._id))
-            .order("desc")
-            .take(6);
-          
-          let averagePrice = existingProduct.currentPrice;
-          let isRecentSale = false;
-          
-          // Calculate average from last 5 entries (excluding current)
-          if (recentHistory.length >= 2) {
-            const historicalPrices = recentHistory.slice(0, Math.min(5, recentHistory.length));
-            const sum = historicalPrices.reduce((sum, h) => sum + h.price, 0);
-            averagePrice = sum / historicalPrices.length;
-            
-            // Check if current price deviates significantly from average (>15%)
-            if (averagePrice !== 0) {
-              const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
-              isRecentSale = deviation > 15;
-            }
-          }
-          
-          // Update existing product with calculated values (only when price changed >0.1%)
-          await ctx.db.patch(existingProduct._id, {
-            currentPrice: args.currentPrice,
-            lastUpdated: now,
-            percentChange,
-            averagePrice,
-            isRecentSale,
-          });
-
-          // Add price history entry (only for significant changes >0.1%)
-          await ctx.db.insert("productPriceHistory", {
-            productId: existingProduct._id,
-            price: args.currentPrice,
-            timestamp: now,
-          });
-        }
-        // If price hasn't changed significantly, don't update lastUpdated or add history
-
-        return existingProduct._id;
-      } else {
-        // Create new product
-        const productId = await ctx.db.insert("products", {
-          name: args.name,
-          productType: args.productType,
-          setName: args.setName,
-          imageUrl: args.imageUrl,
-          currentPrice: args.currentPrice,
-          lastUpdated: now,
-          percentChange: 0,
-          averagePrice: args.currentPrice,
-          isRecentSale: false,
-        });
-
-        // Add initial price history entry
-        await ctx.db.insert("productPriceHistory", {
-          productId,
-          price: args.currentPrice,
-          timestamp: now,
-        });
-
-        return productId;
-      }
-    } catch (error) {
-      console.error(`Error upserting product ${args.name}:`, error);
-      throw new Error(`Failed to upsert product: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+    // Products are no longer tracked - return null
+    return null;
   },
 });
 
@@ -258,17 +83,7 @@ export const _upsertProduct = internalMutation({
 export const cleanupOldProductPriceHistory = internalMutation({
   args: {},
   handler: async (ctx) => {
-    const ninetyDaysAgo = Date.now() - (90 * 24 * 60 * 60 * 1000);
-    
-    const oldEntries = await ctx.db
-      .query("productPriceHistory")
-      .filter((q) => q.lt(q.field("timestamp"), ninetyDaysAgo))
-      .collect();
-    
-    for (const entry of oldEntries) {
-      await ctx.db.delete(entry._id);
-    }
-    
-    return { deleted: oldEntries.length };
+    // Products are no longer tracked - return 0 deleted
+    return { deleted: 0 };
   },
 });

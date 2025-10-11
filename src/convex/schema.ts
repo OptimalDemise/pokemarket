@@ -77,13 +77,6 @@ const schema = defineSchema(
       .index("by_type", ["productType"])
       .index("by_set", ["setName"]),
 
-    // Price history for products
-    productPriceHistory: defineTable({
-      productId: v.id("products"),
-      price: v.number(),
-      timestamp: v.number(),
-    }).index("by_product", ["productId"]),
-
     // Daily snapshots for tracking day-over-day changes
     dailySnapshots: defineTable({
       itemId: v.string(), // card or product ID

@@ -185,24 +185,8 @@ export const seedInitialData = internalMutation({
 
     const now = Date.now();
 
-    for (const product of products) {
-      const productId = await ctx.db.insert("products", {
-        ...product,
-        lastUpdated: now,
-      });
-
-      await ctx.db.insert("productPriceHistory", {
-        productId,
-        price: product.currentPrice,
-        timestamp: now,
-      });
-
-      await ctx.db.insert("productPriceHistory", {
-        productId,
-        price: product.currentPrice * (0.92 + Math.random() * 0.16),
-        timestamp: now - 3600000,
-      });
-    }
+    // Products are no longer tracked - skip product seeding
+    console.log("Skipping product seeding - products are no longer tracked");
 
     return { success: true, message: "Data seeding initiated with real API data" };
   },
@@ -222,15 +206,8 @@ export const clearAllData = internalMutation({
       await ctx.db.delete(history._id);
     }
 
-    const existingProducts = await ctx.db.query("products").collect();
-    for (const product of existingProducts) {
-      await ctx.db.delete(product._id);
-    }
-    
-    const existingProductHistory = await ctx.db.query("productPriceHistory").collect();
-    for (const history of existingProductHistory) {
-      await ctx.db.delete(history._id);
-    }
+    // Products are no longer tracked - skip product cleanup
+    console.log("Skipping product cleanup - products are no longer tracked");
 
     return { success: true, message: "All data cleared" };
   },

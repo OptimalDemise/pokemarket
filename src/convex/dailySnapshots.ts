@@ -51,47 +51,8 @@ export const createDailySnapshots = internalMutation({
         }
       }
       
-      // Collect all products
-      const allProducts = await ctx.db.query("products").collect();
-      let productsProcessed = 0;
-      
-      for (const product of allProducts) {
-        const existingSnapshot = await ctx.db
-          .query("dailySnapshots")
-          .withIndex("by_item_and_date", (q) =>
-            q.eq("itemId", product._id).eq("snapshotDate", today)
-          )
-          .first();
-        
-        if (!existingSnapshot) {
-          const yesterdaySnapshot = await ctx.db
-            .query("dailySnapshots")
-            .withIndex("by_item_and_date", (q) =>
-              q.eq("itemId", product._id).eq("snapshotDate", yesterday)
-            )
-            .first();
-          
-          const yesterdayPrice = yesterdaySnapshot?.price || product.currentPrice;
-          const dailyPercentChange = yesterdayPrice !== 0
-            ? ((product.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
-            : 0;
-          
-          await ctx.db.insert("dailySnapshots", {
-            itemId: product._id,
-            itemType: "product",
-            itemName: product.name,
-            snapshotDate: today,
-            price: product.currentPrice,
-            yesterdayPrice,
-            dailyPercentChange,
-            timestamp: now,
-          });
-          productsProcessed++;
-        }
-      }
-      
-      console.log(`Created daily snapshots: ${cardsProcessed} cards, ${productsProcessed} products`);
-      return { cardsProcessed, productsProcessed };
+      console.log(`Created daily snapshots: ${cardsProcessed} cards`);
+      return { cardsProcessed };
     } catch (error) {
       console.error("Error creating daily snapshots:", error);
       throw new Error(`Failed to create daily snapshots: ${error instanceof Error ? error.message : 'Unknown error'}`);
