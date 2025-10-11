@@ -127,10 +127,13 @@ export const getTopDailyChanges = query({
   handler: async (ctx, args) => {
     // Validate and sanitize limit
     const limit = Math.max(1, Math.min(100, args.limit || 10));
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const now = Date.now();
+    const today = new Date(now).toISOString().split('T')[0];
+    const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     try {
+      console.log(`[getTopDailyChanges] Fetching snapshots for today: ${today}, yesterday: ${yesterday}`);
+      
       // Fetch both snapshots in parallel for better performance
       const [todaySnapshots, yesterdaySnapshots] = await Promise.all([
         ctx.db
@@ -142,6 +145,14 @@ export const getTopDailyChanges = query({
           .withIndex("by_date", (q) => q.eq("snapshotDate", yesterday))
           .collect()
       ]);
+
+      console.log(`[getTopDailyChanges] Found ${todaySnapshots.length} today snapshots, ${yesterdaySnapshots.length} yesterday snapshots`);
+
+      // If no today snapshots exist yet, return empty array
+      if (todaySnapshots.length === 0) {
+        console.log("[getTopDailyChanges] No snapshots for today yet");
+        return [];
+      }
 
       // Create a map of yesterday's prices for O(1) lookup
       const yesterdayPrices = new Map(
@@ -162,21 +173,28 @@ export const getTopDailyChanges = query({
         
         const yesterdayPrice = yesterdayPrices.get(todaySnapshot.itemId);
         
+        // If no yesterday price, use today's price as baseline (0% change)
+        const basePrice = yesterdayPrice || todaySnapshot.price;
+        
         // Validate prices to prevent division by zero
-        if (yesterdayPrice && yesterdayPrice > 0 && todaySnapshot.price >= 0) {
-          const percentChange = ((todaySnapshot.price - yesterdayPrice) / yesterdayPrice) * 100;
+        if (basePrice > 0 && todaySnapshot.price >= 0) {
+          const percentChange = yesterdayPrice 
+            ? ((todaySnapshot.price - yesterdayPrice) / yesterdayPrice) * 100
+            : 0; // No change if no yesterday data
           
-          // Only include if there's an actual change
+          // Only include if there's an actual change or if we want to show 0% changes
           if (!isNaN(percentChange) && isFinite(percentChange)) {
             cardChanges.push({
               itemId: todaySnapshot.itemId,
               percentChange,
               todayPrice: todaySnapshot.price,
-              yesterdayPrice,
+              yesterdayPrice: basePrice,
             });
           }
         }
       }
+
+      console.log(`[getTopDailyChanges] Calculated ${cardChanges.length} card changes`);
 
       // Sort by absolute percentage change
       cardChanges.sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange));
@@ -205,6 +223,7 @@ export const getTopDailyChanges = query({
         })
         .filter((item): item is NonNullable<typeof item> => item !== null);
 
+      console.log(`[getTopDailyChanges] Returning ${results.length} results`);
       return results;
     } catch (error) {
       console.error("Error fetching daily changes:", error);
