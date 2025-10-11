@@ -964,8 +964,8 @@ export default function Dashboard() {
           </div>
         </div>
         <div className={cn(
-          "p-3 overflow-y-auto",
-          isLiveUpdatesFullscreen && "p-6 h-[calc(100vh-73px)]"
+          "p-3",
+          isLiveUpdatesFullscreen ? "p-6 h-[calc(100vh-73px)] overflow-y-auto" : "overflow-y-auto"
         )}
         style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
         >
