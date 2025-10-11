@@ -109,7 +109,6 @@ export default function PremiumService() {
         "Team collaboration tools"
       ],
       icon: Building,
-      iconImage: "https://harmless-tapir-303.convex.cloud/api/storage/2d6ae1bf-0003-450a-bf73-7c1f3637056e",
       popular: false,
       freeTrial: true,
       trialDays: 3
@@ -234,21 +233,13 @@ export default function PremiumService() {
                         ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' 
                         : 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20'
                     }`}>
-                      {plan.iconImage ? (
-                        <img 
-                          src={plan.iconImage} 
-                          alt={`${plan.name} icon`} 
-                          className="h-5 w-5 sm:h-6 sm:w-6"
-                        />
-                      ) : (
-                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${
-                          plan.name === 'Enterprise' 
-                            ? 'text-amber-600 dark:text-amber-400' 
-                            : plan.popular 
-                            ? 'text-purple-600 dark:text-purple-400' 
-                            : 'text-blue-600 dark:text-cyan-400'
-                        }`} />
-                      )}
+                      <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                        plan.name === 'Enterprise' 
+                          ? 'text-amber-600 dark:text-amber-400' 
+                          : plan.popular 
+                          ? 'text-purple-600 dark:text-purple-400' 
+                          : 'text-blue-600 dark:text-cyan-400'
+                      }`} />
                     </div>
                   </div>
                   <CardTitle className="text-xl sm:text-2xl">{plan.name}</CardTitle>
