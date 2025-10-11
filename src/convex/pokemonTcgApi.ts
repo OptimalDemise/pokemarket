@@ -121,10 +121,12 @@ export const fetchAllCardsAbovePrice = internalAction({
       let successCount = 0;
       const errors: string[] = [];
       let totalProcessed = 0;
+      let page = 1;
+      let hasMorePages = true;
 
-      // Fetch multiple pages to get more cards from all eras (increased to 25 pages for broader coverage)
+      // Fetch pages until no more data is available (no hard limit)
       // Order by release date descending to prioritize newer sets
-      for (let page = 1; page <= 25; page++) {
+      while (hasMorePages) {
         const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&orderBy=-set.releaseDate&page=${page}&pageSize=250`;
         
         console.log(`Fetching page ${page}...`);
@@ -132,13 +134,15 @@ export const fetchAllCardsAbovePrice = internalAction({
         
         if (!response.ok) {
           console.error(`API request failed for page ${page} with status ${response.status}`);
-          continue;
+          // Stop if we get an error
+          break;
         }
 
         const data = await response.json();
         
         if (!data.data || data.data.length === 0) {
           console.log(`No more cards on page ${page}, stopping.`);
+          hasMorePages = false;
           break;
         }
 
@@ -179,6 +183,13 @@ export const fetchAllCardsAbovePrice = internalAction({
         }
         
         console.log(`Page ${page} complete. Total cards added so far: ${successCount}`);
+        page++;
+        
+        // Safety limit to prevent infinite loops (set very high)
+        if (page > 100) {
+          console.log(`Reached safety limit of 100 pages (25,000 cards). Stopping.`);
+          hasMorePages = false;
+        }
       }
 
       console.log(`Fetch complete. Total processed: ${totalProcessed}, Successfully added: ${successCount}`);
