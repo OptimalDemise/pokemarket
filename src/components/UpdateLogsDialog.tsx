@@ -46,14 +46,22 @@ export function UpdateLogsDialog() {
             className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all flex items-center justify-center group"
             aria-label="View update logs"
           >
-            <span className="text-2xl group-hover:scale-110 transition-transform">📢</span>
+            <img 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/cc549287-3f3f-46ba-924f-52d0f4f9abdd" 
+              alt="Announcements" 
+              className="h-6 w-6 group-hover:scale-110 transition-transform"
+            />
           </motion.button>
         </DialogTrigger>
 
         <DialogContent className="max-w-2xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl">
-              <span className="text-2xl">📢</span>
+              <img 
+                src="https://harmless-tapir-303.convex.cloud/api/storage/cc549287-3f3f-46ba-924f-52d0f4f9abdd" 
+                alt="Announcements" 
+                className="h-6 w-6"
+              />
               Update Logs
             </DialogTitle>
           </DialogHeader>
@@ -61,7 +69,11 @@ export function UpdateLogsDialog() {
           <ScrollArea className="h-[60vh] pr-4">
             {!updateLogs || updateLogs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <span className="text-5xl mb-4 opacity-50">📢</span>
+                <img 
+                  src="https://harmless-tapir-303.convex.cloud/api/storage/cc549287-3f3f-46ba-924f-52d0f4f9abdd" 
+                  alt="Announcements" 
+                  className="h-16 w-16 mb-4 opacity-50"
+                />
                 <p className="text-muted-foreground">No updates yet. Check back soon!</p>
               </div>
             ) : (
