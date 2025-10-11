@@ -3,7 +3,7 @@ import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 
-// Create daily snapshots at midnight UTC
+// Create daily snapshots at midnight UTC - now using action for batching
 crons.daily(
   "create daily snapshots",
   { hourUTC: 0, minuteUTC: 0 },

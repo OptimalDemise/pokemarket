@@ -1,8 +1,64 @@
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, internalAction, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 
-// Create daily snapshots for all cards and products (optimized with batching)
-export const createDailySnapshots = internalMutation({
+// Internal mutation to create snapshots for a batch of cards
+export const createDailySnapshotsBatch = internalMutation({
+  args: {
+    cardIds: v.array(v.id("cards")),
+    today: v.string(),
+    yesterday: v.string(),
+    now: v.number(),
+  },
+  handler: async (ctx, args) => {
+    let processed = 0;
+    
+    for (const cardId of args.cardIds) {
+      const card = await ctx.db.get(cardId);
+      if (!card) continue;
+      
+      // Check if snapshot already exists for today
+      const existingSnapshot = await ctx.db
+        .query("dailySnapshots")
+        .withIndex("by_item_and_date", (q) =>
+          q.eq("itemId", cardId).eq("snapshotDate", args.today)
+        )
+        .first();
+      
+      if (!existingSnapshot) {
+        // Get yesterday's snapshot for comparison
+        const yesterdaySnapshot = await ctx.db
+          .query("dailySnapshots")
+          .withIndex("by_item_and_date", (q) =>
+            q.eq("itemId", cardId).eq("snapshotDate", args.yesterday)
+          )
+          .first();
+        
+        const yesterdayPrice = yesterdaySnapshot?.price || card.currentPrice;
+        const dailyPercentChange = yesterdayPrice !== 0
+          ? ((card.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
+          : 0;
+        
+        await ctx.db.insert("dailySnapshots", {
+          itemId: cardId,
+          itemType: "card",
+          itemName: card.name,
+          snapshotDate: args.today,
+          price: card.currentPrice,
+          yesterdayPrice,
+          dailyPercentChange,
+          timestamp: args.now,
+        });
+        processed++;
+      }
+    }
+    
+    return { processed };
+  },
+});
+
+// Action to orchestrate batched snapshot creation
+export const createDailySnapshots = internalAction({
   args: {},
   handler: async (ctx) => {
     const now = Date.now();
@@ -10,49 +66,30 @@ export const createDailySnapshots = internalMutation({
     const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     
     try {
-      // Collect all cards first (no pagination in mutations)
-      const allCards = await ctx.db.query("cards").collect();
-      let cardsProcessed = 0;
+      // Get all card IDs
+      const allCards = await ctx.runQuery(internal.cards._getAllCards);
+      const cardIds = allCards.map(card => card._id);
       
-      for (const card of allCards) {
-        // Check if snapshot already exists for today
-        const existingSnapshot = await ctx.db
-          .query("dailySnapshots")
-          .withIndex("by_item_and_date", (q) =>
-            q.eq("itemId", card._id).eq("snapshotDate", today)
-          )
-          .first();
-        
-        if (!existingSnapshot) {
-          // Get yesterday's snapshot for comparison
-          const yesterdaySnapshot = await ctx.db
-            .query("dailySnapshots")
-            .withIndex("by_item_and_date", (q) =>
-              q.eq("itemId", card._id).eq("snapshotDate", yesterday)
-            )
-            .first();
-          
-          const yesterdayPrice = yesterdaySnapshot?.price || card.currentPrice;
-          const dailyPercentChange = yesterdayPrice !== 0
-            ? ((card.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
-            : 0;
-          
-          await ctx.db.insert("dailySnapshots", {
-            itemId: card._id,
-            itemType: "card",
-            itemName: card.name,
-            snapshotDate: today,
-            price: card.currentPrice,
-            yesterdayPrice,
-            dailyPercentChange,
-            timestamp: now,
-          });
-          cardsProcessed++;
-        }
+      console.log(`Processing ${cardIds.length} cards in batches...`);
+      
+      // Process in batches of 50
+      const batchSize = 50;
+      let totalProcessed = 0;
+      
+      for (let i = 0; i < cardIds.length; i += batchSize) {
+        const batch = cardIds.slice(i, i + batchSize);
+        const result = await ctx.runMutation(internal.dailySnapshots.createDailySnapshotsBatch, {
+          cardIds: batch,
+          today,
+          yesterday,
+          now,
+        });
+        totalProcessed += result.processed;
+        console.log(`Processed batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(cardIds.length / batchSize)}: ${result.processed} snapshots created`);
       }
       
-      console.log(`Created daily snapshots: ${cardsProcessed} cards`);
-      return { cardsProcessed };
+      console.log(`Created daily snapshots: ${totalProcessed} cards`);
+      return { cardsProcessed: totalProcessed };
     } catch (error) {
       console.error("Error creating daily snapshots:", error);
       throw new Error(`Failed to create daily snapshots: ${error instanceof Error ? error.message : 'Unknown error'}`);
