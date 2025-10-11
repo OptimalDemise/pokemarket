@@ -1,13 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Id } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
 import { useQuery, useMutation } from "convex/react";
-import { motion } from "framer-motion";
-import { Sparkles, Loader2, Maximize2, Heart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Loader2, Maximize2, Heart, DollarSign, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import { PriceChart } from "./PriceChart";
-import { useState, memo } from "react";
+import { useState, memo, useEffect } from "react";
 
 interface CardItemProps {
   card: {
@@ -28,11 +29,23 @@ interface CardItemProps {
   size?: "default" | "compact";
 }
 
+// Exchange rate interface
+interface ExchangeRates {
+  GBP: number;
+  EUR: number;
+  CNY: number;
+  timestamp: number;
+}
+
 export const CardItem = memo(function CardItem({ card, size = "default" }: CardItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [showUnfavoriteDialog, setShowUnfavoriteDialog] = useState(false);
+  const [showCurrencyConverter, setShowCurrencyConverter] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
+  const [ratesLoading, setRatesLoading] = useState(false);
+  const [ratesError, setRatesError] = useState<string | null>(null);
   
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
@@ -43,6 +56,82 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   // Favorites functionality with null safety
   const isFavorited = useQuery(api.favorites.isFavorited, { cardId: card._id }) ?? false;
   const toggleFavorite = useMutation(api.favorites.toggleFavorite);
+
+  // Fetch exchange rates when dialog opens
+  useEffect(() => {
+    if (isOpen && !exchangeRates) {
+      fetchExchangeRates();
+    }
+  }, [isOpen]);
+
+  const fetchExchangeRates = async () => {
+    setRatesLoading(true);
+    setRatesError(null);
+    
+    try {
+      // Check if we have cached rates (less than 1 hour old)
+      const cachedRates = localStorage.getItem('exchangeRates');
+      if (cachedRates) {
+        const parsed = JSON.parse(cachedRates);
+        const oneHourAgo = Date.now() - 60 * 60 * 1000;
+        if (parsed.timestamp > oneHourAgo) {
+          setExchangeRates(parsed);
+          setRatesLoading(false);
+          return;
+        }
+      }
+
+      // Fetch fresh rates from API
+      const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      if (!response.ok) throw new Error('Failed to fetch exchange rates');
+      
+      const data = await response.json();
+      const rates: ExchangeRates = {
+        GBP: data.rates.GBP,
+        EUR: data.rates.EUR,
+        CNY: data.rates.CNY,
+        timestamp: Date.now()
+      };
+      
+      setExchangeRates(rates);
+      localStorage.setItem('exchangeRates', JSON.stringify(rates));
+    } catch (error) {
+      console.error('Error fetching exchange rates:', error);
+      setRatesError('Unable to fetch exchange rates');
+      
+      // Use fallback rates if API fails
+      const fallbackRates: ExchangeRates = {
+        GBP: 0.79,
+        EUR: 0.92,
+        CNY: 7.24,
+        timestamp: Date.now()
+      };
+      setExchangeRates(fallbackRates);
+    } finally {
+      setRatesLoading(false);
+    }
+  };
+
+  const formatCurrency = (amount: number, decimals: number = 2): string => {
+    if (typeof amount !== 'number' || isNaN(amount) || !isFinite(amount)) {
+      return '0.00';
+    }
+    return amount.toFixed(decimals);
+  };
+
+  const getConvertedPrice = (currency: keyof Omit<ExchangeRates, 'timestamp'>): number => {
+    if (!exchangeRates) return 0;
+    return card.currentPrice * exchangeRates[currency];
+  };
+
+  const getLastUpdatedTime = (): string => {
+    if (!exchangeRates) return '';
+    const minutes = Math.floor((Date.now() - exchangeRates.timestamp) / 60000);
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    return `${hours}h ago`;
+  };
 
   const handleFavoriteClick = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
@@ -302,6 +391,90 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                   </div>
                 )}
               </div>
+            </div>
+            
+            {/* Currency Converter Section */}
+            <div className="border rounded-lg overflow-hidden">
+              <button
+                onClick={() => setShowCurrencyConverter(!showCurrencyConverter)}
+                className="w-full flex items-center justify-between p-4 hover:bg-secondary/50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-primary" />
+                  <span className="font-semibold">Currency Converter</span>
+                </div>
+                {showCurrencyConverter ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {showCurrencyConverter && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 pt-0 space-y-3">
+                      {ratesLoading ? (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                          <span className="ml-2 text-sm text-muted-foreground">Loading exchange rates...</span>
+                        </div>
+                      ) : exchangeRates ? (
+                        <>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {/* GBP */}
+                            <div className="bg-secondary/30 rounded-lg p-3">
+                              <div className="text-xs text-muted-foreground mb-1">British Pound</div>
+                              <div className="text-lg font-bold">£{formatCurrency(getConvertedPrice('GBP'))}</div>
+                              <div className="text-xs text-muted-foreground mt-1">GBP</div>
+                            </div>
+                            
+                            {/* EUR */}
+                            <div className="bg-secondary/30 rounded-lg p-3">
+                              <div className="text-xs text-muted-foreground mb-1">Euro</div>
+                              <div className="text-lg font-bold">€{formatCurrency(getConvertedPrice('EUR'))}</div>
+                              <div className="text-xs text-muted-foreground mt-1">EUR</div>
+                            </div>
+                            
+                            {/* CNY */}
+                            <div className="bg-secondary/30 rounded-lg p-3">
+                              <div className="text-xs text-muted-foreground mb-1">Chinese Yuan</div>
+                              <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('CNY'))}</div>
+                              <div className="text-xs text-muted-foreground mt-1">CNY</div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between pt-2 border-t">
+                            <span className="text-xs text-muted-foreground">
+                              {ratesError ? (
+                                <span className="text-amber-600">Using fallback rates</span>
+                              ) : (
+                                `Updated ${getLastUpdatedTime()}`
+                              )}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={fetchExchangeRates}
+                              disabled={ratesLoading}
+                              className="h-7 px-2"
+                            >
+                              <RefreshCw className={`h-3 w-3 ${ratesLoading ? 'animate-spin' : ''}`} />
+                              <span className="ml-1 text-xs">Refresh</span>
+                            </Button>
+                          </div>
+                        </>
+                      ) : null}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             
             {/* Price Chart */}
