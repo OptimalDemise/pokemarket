@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { useQuery, useMutation } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, Maximize2, Heart, DollarSign, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { PriceChart } from "./PriceChart";
 import { useState, memo, useEffect } from "react";
 
@@ -46,6 +47,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
   const [ratesLoading, setRatesLoading] = useState(false);
   const [ratesError, setRatesError] = useState<string | null>(null);
+  const [selectedCurrencies, setSelectedCurrencies] = useState<Set<string>>(new Set(['GBP', 'EUR', 'CNY']));
   
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
@@ -427,28 +429,93 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                         </div>
                       ) : exchangeRates ? (
                         <>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            {/* GBP */}
-                            <div className="bg-secondary/30 rounded-lg p-3">
-                              <div className="text-xs text-muted-foreground mb-1">British Pound</div>
-                              <div className="text-lg font-bold">£{formatCurrency(getConvertedPrice('GBP'))}</div>
-                              <div className="text-xs text-muted-foreground mt-1">GBP</div>
-                            </div>
+                          {/* Currency Selection */}
+                          <div className="flex flex-wrap gap-4 pb-3 border-b">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <Checkbox
+                                checked={selectedCurrencies.has('GBP')}
+                                onCheckedChange={(checked) => {
+                                  const newSet = new Set(selectedCurrencies);
+                                  if (checked) {
+                                    newSet.add('GBP');
+                                  } else {
+                                    newSet.delete('GBP');
+                                  }
+                                  setSelectedCurrencies(newSet);
+                                }}
+                              />
+                              <span className="text-sm font-medium">British Pound (£)</span>
+                            </label>
                             
-                            {/* EUR */}
-                            <div className="bg-secondary/30 rounded-lg p-3">
-                              <div className="text-xs text-muted-foreground mb-1">Euro</div>
-                              <div className="text-lg font-bold">€{formatCurrency(getConvertedPrice('EUR'))}</div>
-                              <div className="text-xs text-muted-foreground mt-1">EUR</div>
-                            </div>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <Checkbox
+                                checked={selectedCurrencies.has('EUR')}
+                                onCheckedChange={(checked) => {
+                                  const newSet = new Set(selectedCurrencies);
+                                  if (checked) {
+                                    newSet.add('EUR');
+                                  } else {
+                                    newSet.delete('EUR');
+                                  }
+                                  setSelectedCurrencies(newSet);
+                                }}
+                              />
+                              <span className="text-sm font-medium">Euro (€)</span>
+                            </label>
                             
-                            {/* CNY */}
-                            <div className="bg-secondary/30 rounded-lg p-3">
-                              <div className="text-xs text-muted-foreground mb-1">Chinese Yuan</div>
-                              <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('CNY'))}</div>
-                              <div className="text-xs text-muted-foreground mt-1">CNY</div>
-                            </div>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <Checkbox
+                                checked={selectedCurrencies.has('CNY')}
+                                onCheckedChange={(checked) => {
+                                  const newSet = new Set(selectedCurrencies);
+                                  if (checked) {
+                                    newSet.add('CNY');
+                                  } else {
+                                    newSet.delete('CNY');
+                                  }
+                                  setSelectedCurrencies(newSet);
+                                }}
+                              />
+                              <span className="text-sm font-medium">Chinese Yuan (¥)</span>
+                            </label>
                           </div>
+                          
+                          {/* Currency Display */}
+                          {selectedCurrencies.size > 0 ? (
+                            <div className={`grid gap-3 ${
+                              selectedCurrencies.size === 1 ? 'grid-cols-1' : 
+                              selectedCurrencies.size === 2 ? 'grid-cols-1 sm:grid-cols-2' : 
+                              'grid-cols-1 sm:grid-cols-3'
+                            }`}>
+                              {selectedCurrencies.has('GBP') && (
+                                <div className="bg-secondary/30 rounded-lg p-3">
+                                  <div className="text-xs text-muted-foreground mb-1">British Pound</div>
+                                  <div className="text-lg font-bold">£{formatCurrency(getConvertedPrice('GBP'))}</div>
+                                  <div className="text-xs text-muted-foreground mt-1">GBP</div>
+                                </div>
+                              )}
+                              
+                              {selectedCurrencies.has('EUR') && (
+                                <div className="bg-secondary/30 rounded-lg p-3">
+                                  <div className="text-xs text-muted-foreground mb-1">Euro</div>
+                                  <div className="text-lg font-bold">€{formatCurrency(getConvertedPrice('EUR'))}</div>
+                                  <div className="text-xs text-muted-foreground mt-1">EUR</div>
+                                </div>
+                              )}
+                              
+                              {selectedCurrencies.has('CNY') && (
+                                <div className="bg-secondary/30 rounded-lg p-3">
+                                  <div className="text-xs text-muted-foreground mb-1">Chinese Yuan</div>
+                                  <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('CNY'))}</div>
+                                  <div className="text-xs text-muted-foreground mt-1">CNY</div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="text-center py-4 text-sm text-muted-foreground">
+                              Select at least one currency to display conversions
+                            </div>
+                          )}
                           
                           <div className="flex items-center justify-between pt-2 border-t">
                             <span className="text-xs text-muted-foreground">
