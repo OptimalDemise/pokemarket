@@ -22,6 +22,7 @@ export default function AccountSettings() {
   const [username, setUsername] = useState("");
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [preferredCurrency, setPreferredCurrency] = useState<string>("USD");
   const [isSaving, setIsSaving] = useState(false);
   const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
@@ -54,6 +55,7 @@ export default function AccountSettings() {
     if (user) {
       setUsername(user.name || "");
       setProfileImage(user.image);
+      setPreferredCurrency(user.preferredCurrency || "USD");
     }
   }, [user]);
 
@@ -165,12 +167,13 @@ export default function AccountSettings() {
       
       await updateProfile({
         name: username || undefined,
+        preferredCurrency: preferredCurrency !== "USD" ? preferredCurrency : undefined,
       });
 
       toast.success("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error("Failed to update profile");
+      toast.error(error instanceof Error ? error.message : "Failed to update profile");
     } finally {
       setIsSaving(false);
     }
@@ -181,6 +184,7 @@ export default function AccountSettings() {
     if (user) {
       setUsername(user.name || "");
       setProfileImage(user.image);
+      setPreferredCurrency(user.preferredCurrency || "USD");
     }
     toast.info("Changes discarded");
   };
@@ -611,6 +615,62 @@ export default function AccountSettings() {
                         Dark
                       </Button>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Display Currency</CardTitle>
+                  <CardDescription>
+                    Choose your preferred currency for displaying prices {user?.plan !== "Pro" && user?.plan !== "Enterprise" && "(Pro Feature)"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currency">Preferred Currency</Label>
+                    <div className="flex items-center gap-2">
+                      <select
+                        id="currency"
+                        value={preferredCurrency}
+                        onChange={(e) => setPreferredCurrency(e.target.value)}
+                        disabled={user?.plan !== "Pro" && user?.plan !== "Enterprise"}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value="USD">USD ($) - US Dollar</option>
+                        <option value="GBP">GBP (£) - British Pound</option>
+                        <option value="EUR">EUR (€) - Euro</option>
+                        <option value="CNY">CNY (¥) - Chinese Yuan</option>
+                      </select>
+                    </div>
+                    {user?.plan !== "Pro" && user?.plan !== "Enterprise" && (
+                      <p className="text-xs text-muted-foreground">
+                        Upgrade to Pro to change your display currency.{" "}
+                        <button
+                          onClick={() => navigate("/premium")}
+                          className="text-primary hover:underline"
+                        >
+                          View Plans
+                        </button>
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button 
+                      className="cursor-pointer" 
+                      onClick={handleSaveChanges}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="cursor-pointer"
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                    >
+                      Cancel
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

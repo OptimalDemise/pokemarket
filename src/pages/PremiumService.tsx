@@ -65,6 +65,7 @@ export default function PremiumService() {
     "Priority support": "Get faster response times for your questions and issues",
     "Export data to CSV": "Download your tracking data to spreadsheet files",
     "Custom watchlists (unlimited)": "Create unlimited lists to organize cards you're watching",
+    "Multi-currency display": "View prices in your preferred currency (USD, GBP, EUR, CNY)",
     "Everything in Pro": "Includes all features from the Pro plan",
     "API access": "Connect PokéMarket data to your own software programmatically",
     "Bulk import/export": "Upload or download large amounts of card data at once",
@@ -87,7 +88,8 @@ export default function PremiumService() {
         "Market trend analysis",
         "Priority support",
         "Export data to CSV",
-        "Custom watchlists (unlimited)"
+        "Custom watchlists (unlimited)",
+        "Multi-currency display"
       ],
       icon: Crown,
       popular: true,

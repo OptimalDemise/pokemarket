@@ -8,12 +8,15 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 export const updateProfile = mutation({
   args: {
     name: v.optional(v.string()),
+    preferredCurrency: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Not authenticated");
     }
+
+    const updateData: any = {};
 
     // Validate name if provided
     if (args.name !== undefined) {
@@ -27,14 +30,26 @@ export const updateProfile = mutation({
       // Sanitize: remove any potentially harmful characters
       const sanitizedName = trimmedName.replace(/[<>]/g, '');
       
-      await ctx.db.patch(userId, {
-        name: sanitizedName || undefined,
-      });
-    } else {
-      await ctx.db.patch(userId, {
-        name: undefined,
-      });
+      updateData.name = sanitizedName || undefined;
     }
+
+    // Validate and update preferred currency if provided
+    if (args.preferredCurrency !== undefined) {
+      const validCurrencies = ["USD", "GBP", "EUR", "CNY"];
+      if (!validCurrencies.includes(args.preferredCurrency)) {
+        throw new Error("Invalid currency. Must be USD, GBP, EUR, or CNY");
+      }
+      
+      // Check if user has Pro or Enterprise plan
+      const user = await ctx.db.get(userId);
+      if (!user || (user.plan !== "Pro" && user.plan !== "Enterprise")) {
+        throw new Error("Preferred currency is a Pro feature. Please upgrade your plan.");
+      }
+      
+      updateData.preferredCurrency = args.preferredCurrency;
+    }
+
+    await ctx.db.patch(userId, updateData);
 
     return { success: true };
   },
