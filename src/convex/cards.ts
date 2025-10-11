@@ -118,11 +118,12 @@ export const updateBigMoversCache = internalMutation({
     const oneHourAgo = now - (60 * 60 * 1000);
     
     try {
-      // Get all cards updated in the last hour with significant changes
+      // Get cards updated in the last hour with significant changes
+      // Use take() instead of collect() to limit processing
       const recentCards = await ctx.db
         .query("cards")
         .withIndex("by_last_updated", (q) => q.gt("lastUpdated", oneHourAgo))
-        .collect();
+        .take(500); // Limit to 500 most recent to prevent timeout
       
       // Filter for cards with >3% change
       const significantMovers = recentCards
