@@ -901,11 +901,12 @@ export default function Dashboard() {
             exit={{ x: "100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className={cn(
-              "overflow-y-auto scroll-smooth flex-shrink-0 relative",
+              "flex-shrink-0 relative",
               isLiveUpdatesFullscreen 
-                ? "fixed inset-0 z-50 w-full h-full bg-background" 
-                : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
+                ? "fixed inset-0 z-50 w-full h-full bg-background overflow-y-auto" 
+                : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none overflow-y-auto"
             )}
+            style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
           >
             {/* Close button positioned at left edge, vertically centered - sticky */}
             <div className="lg:sticky top-1/2 -translate-y-1/2 absolute left-0 z-20">
