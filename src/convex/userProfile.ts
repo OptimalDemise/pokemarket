@@ -20,8 +20,8 @@ export const updateProfile = mutation({
       const trimmedName = args.name.trim();
       
       // Check length constraints
-      if (trimmedName.length > 0 && trimmedName.length > 100) {
-        throw new Error("Name must be 100 characters or less");
+      if (trimmedName.length > 0 && trimmedName.length > 50) {
+        throw new Error("Name must be 50 characters or less");
       }
       
       // Sanitize: remove any potentially harmful characters
