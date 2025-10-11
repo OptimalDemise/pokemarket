@@ -183,8 +183,12 @@ export default function PremiumService() {
         </div>
         <div className="text-center space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm">
-            <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-            <span className="font-medium bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">Premium Features</span>
+            <img 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/3df4976e-8476-4727-879c-1dcc105c41d0" 
+              alt="Premium" 
+              className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0"
+            />
+            <span className="font-medium text-purple-600 dark:text-purple-400">Premium Features</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight px-4">
             Upgrade Your Market Tracking
