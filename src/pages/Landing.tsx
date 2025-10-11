@@ -441,11 +441,11 @@ export default function Landing() {
               className="space-y-4 p-8 border rounded-lg"
             >
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Sparkles className="h-6 w-6 text-primary" />
+                <Heart className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-bold tracking-tight">Product Tracking</h3>
+              <h3 className="text-xl font-bold tracking-tight">Favorites & Watchlist</h3>
               <p className="text-muted-foreground">
-                Monitor booster boxes, bundles, and elite trainer boxes across all sets.
+                Save your favorite cards and track them across sessions. Build your personal watchlist.
               </p>
             </motion.div>
           </div>
