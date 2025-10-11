@@ -637,7 +637,6 @@ export default function Landing() {
                       <h3 class="text-lg font-semibold mb-4">Icon Credits</h3>
                       <div class="space-y-3 text-sm text-muted-foreground">
                         <p><strong>Icons:</strong> Lucide Icons</p>
-                        <p><strong>Company animated icons:</strong> Created by Freepik - Flaticon</p>
                         <p><strong>Premium quality icons:</strong> Created by denimao - Flaticon</p>
                         <p><strong>Announcement icons:</strong> Created by Slidicon - Flaticon</p>
                         <p><strong>System icons:</strong> Created by Freepik - Flaticon</p>
