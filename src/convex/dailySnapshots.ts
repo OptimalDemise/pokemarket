@@ -7,109 +7,87 @@ export const createDailySnapshots = internalMutation({
   handler: async (ctx) => {
     const now = Date.now();
     const today = new Date(now).toISOString().split('T')[0];
+    const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     
     try {
-      // Process cards in smaller batches to avoid timeout
-      const BATCH_SIZE = 100; // Reduced from 250
-      let cardsCursor = null;
+      // Collect all cards first (no pagination in mutations)
+      const allCards = await ctx.db.query("cards").collect();
       let cardsProcessed = 0;
-      let cardsDone = false;
       
-      while (!cardsDone) {
-        const cardsResult = await ctx.db
-          .query("cards")
-          .paginate({ numItems: BATCH_SIZE, cursor: cardsCursor });
+      for (const card of allCards) {
+        // Check if snapshot already exists for today
+        const existingSnapshot = await ctx.db
+          .query("dailySnapshots")
+          .withIndex("by_item_and_date", (q) =>
+            q.eq("itemId", card._id).eq("snapshotDate", today)
+          )
+          .first();
         
-        for (const card of cardsResult.page) {
-          // Check if snapshot already exists for today
-          const existingSnapshot = await ctx.db
+        if (!existingSnapshot) {
+          // Get yesterday's snapshot for comparison
+          const yesterdaySnapshot = await ctx.db
             .query("dailySnapshots")
             .withIndex("by_item_and_date", (q) =>
-              q.eq("itemId", card._id).eq("snapshotDate", today)
+              q.eq("itemId", card._id).eq("snapshotDate", yesterday)
             )
             .first();
           
-          if (!existingSnapshot) {
-            // Get yesterday's snapshot for comparison
-            const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            const yesterdaySnapshot = await ctx.db
-              .query("dailySnapshots")
-              .withIndex("by_item_and_date", (q) =>
-                q.eq("itemId", card._id).eq("snapshotDate", yesterday)
-              )
-              .first();
-            
-            const yesterdayPrice = yesterdaySnapshot?.price || card.currentPrice;
-            const dailyPercentChange = yesterdayPrice !== 0
-              ? ((card.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
-              : 0;
-            
-            await ctx.db.insert("dailySnapshots", {
-              itemId: card._id,
-              itemType: "card",
-              itemName: card.name,
-              snapshotDate: today,
-              price: card.currentPrice,
-              yesterdayPrice,
-              dailyPercentChange,
-              timestamp: now,
-            });
-          }
+          const yesterdayPrice = yesterdaySnapshot?.price || card.currentPrice;
+          const dailyPercentChange = yesterdayPrice !== 0
+            ? ((card.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
+            : 0;
+          
+          await ctx.db.insert("dailySnapshots", {
+            itemId: card._id,
+            itemType: "card",
+            itemName: card.name,
+            snapshotDate: today,
+            price: card.currentPrice,
+            yesterdayPrice,
+            dailyPercentChange,
+            timestamp: now,
+          });
           cardsProcessed++;
         }
-        
-        cardsCursor = cardsResult.continueCursor;
-        cardsDone = cardsResult.isDone;
       }
       
-      // Process products in smaller batches
-      let productsCursor = null;
+      // Collect all products
+      const allProducts = await ctx.db.query("products").collect();
       let productsProcessed = 0;
-      let productsDone = false;
       
-      while (!productsDone) {
-        const productsResult = await ctx.db
-          .query("products")
-          .paginate({ numItems: BATCH_SIZE, cursor: productsCursor });
+      for (const product of allProducts) {
+        const existingSnapshot = await ctx.db
+          .query("dailySnapshots")
+          .withIndex("by_item_and_date", (q) =>
+            q.eq("itemId", product._id).eq("snapshotDate", today)
+          )
+          .first();
         
-        for (const product of productsResult.page) {
-          const existingSnapshot = await ctx.db
+        if (!existingSnapshot) {
+          const yesterdaySnapshot = await ctx.db
             .query("dailySnapshots")
             .withIndex("by_item_and_date", (q) =>
-              q.eq("itemId", product._id).eq("snapshotDate", today)
+              q.eq("itemId", product._id).eq("snapshotDate", yesterday)
             )
             .first();
           
-          if (!existingSnapshot) {
-            const yesterday = new Date(now - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            const yesterdaySnapshot = await ctx.db
-              .query("dailySnapshots")
-              .withIndex("by_item_and_date", (q) =>
-                q.eq("itemId", product._id).eq("snapshotDate", yesterday)
-              )
-              .first();
-            
-            const yesterdayPrice = yesterdaySnapshot?.price || product.currentPrice;
-            const dailyPercentChange = yesterdayPrice !== 0
-              ? ((product.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
-              : 0;
-            
-            await ctx.db.insert("dailySnapshots", {
-              itemId: product._id,
-              itemType: "product",
-              itemName: product.name,
-              snapshotDate: today,
-              price: product.currentPrice,
-              yesterdayPrice,
-              dailyPercentChange,
-              timestamp: now,
-            });
-          }
+          const yesterdayPrice = yesterdaySnapshot?.price || product.currentPrice;
+          const dailyPercentChange = yesterdayPrice !== 0
+            ? ((product.currentPrice - yesterdayPrice) / yesterdayPrice) * 100
+            : 0;
+          
+          await ctx.db.insert("dailySnapshots", {
+            itemId: product._id,
+            itemType: "product",
+            itemName: product.name,
+            snapshotDate: today,
+            price: product.currentPrice,
+            yesterdayPrice,
+            dailyPercentChange,
+            timestamp: now,
+          });
           productsProcessed++;
         }
-        
-        productsCursor = productsResult.continueCursor;
-        productsDone = productsResult.isDone;
       }
       
       console.log(`Created daily snapshots: ${cardsProcessed} cards, ${productsProcessed} products`);
