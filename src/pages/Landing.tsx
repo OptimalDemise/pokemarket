@@ -624,7 +624,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="py-8">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground space-y-2">
-          <p>© 2024 PokéMarket. Built for collectors and investors.</p>
+          <p>© 2025 PokéMarket. Built for collectors and investors.</p>
           <div className="flex items-center justify-center gap-4">
             <button
               onClick={() => navigate("/terms")}

@@ -210,7 +210,7 @@ export default function ContactUs() {
       {/* Footer */}
       <footer className="border-t py-8 mt-12">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground">
-          <p>© 2024 PokéMarket. Built for collectors and investors.</p>
+          <p>© 2025 PokéMarket. Built for collectors and investors.</p>
         </div>
       </footer>
     </div>
