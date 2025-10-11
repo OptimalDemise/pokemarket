@@ -47,6 +47,7 @@ export default function Dashboard() {
   const [isLiveUpdatesFullscreen, setIsLiveUpdatesFullscreen] = useState(false);
   const [showOnlyFavoritesInLiveUpdates, setShowOnlyFavoritesInLiveUpdates] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  const [openDialogCardIds, setOpenDialogCardIds] = useState<Set<string>>(new Set());
 
   // Determine loading state first
   const isLoading = cards === undefined;
@@ -69,15 +70,24 @@ export default function Dashboard() {
       filteredCards = filteredCards.filter(card => favoriteCardIds.has(card._id));
     }
     
-    return filteredCards
+    // Get the top cards based on filters
+    const topCards = filteredCards
       .sort((a, b) => b.lastUpdated - a.lastUpdated)
-      .slice(0, LIVE_UPDATES_LIMIT)
-      .map(card => ({
-        ...card,
-        // Add a stable key to prevent remounting
-        _stableKey: card._id
-      }));
-  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds, fiveMinutesAgo]);
+      .slice(0, LIVE_UPDATES_LIMIT);
+    
+    // Add any cards with open dialogs that aren't in the top list
+    const topCardIds = new Set(topCards.map(c => c._id));
+    const cardsWithOpenDialogs = cards.filter(card => 
+      openDialogCardIds.has(card._id) && !topCardIds.has(card._id)
+    );
+    
+    // Combine top cards with cards that have open dialogs
+    return [...topCards, ...cardsWithOpenDialogs].map(card => ({
+      ...card,
+      // Add a stable key to prevent remounting
+      _stableKey: card._id
+    }));
+  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds, fiveMinutesAgo, openDialogCardIds]);
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
@@ -963,7 +973,21 @@ export default function Dashboard() {
             )}>
               {liveUpdates.map((card) => (
                 <div key={`live-update-${card._id}`}>
-                  <CardItem card={card} size={isLiveUpdatesFullscreen ? "default" : "compact"} />
+                  <CardItem 
+                    card={card} 
+                    size={isLiveUpdatesFullscreen ? "default" : "compact"}
+                    onDialogOpenChange={(cardId, isOpen) => {
+                      setOpenDialogCardIds(prev => {
+                        const newSet = new Set(prev);
+                        if (isOpen) {
+                          newSet.add(cardId);
+                        } else {
+                          newSet.delete(cardId);
+                        }
+                        return newSet;
+                      });
+                    }}
+                  />
                 </div>
               ))}
             </div>

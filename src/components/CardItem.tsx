@@ -26,10 +26,18 @@ interface CardItemProps {
     lastUpdated: number;
   };
   size?: "default" | "compact";
+  onDialogOpenChange?: (cardId: string, isOpen: boolean) => void;
 }
 
-export const CardItem = memo(function CardItem({ card, size = "default" }: CardItemProps) {
+export const CardItem = memo(function CardItem({ card, size = "default", onDialogOpenChange }: CardItemProps) {
   const [isOpen, setIsOpen] = useState(false);
+  
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (onDialogOpenChange) {
+      onDialogOpenChange(card._id, open);
+    }
+  };
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [showUnfavoriteDialog, setShowUnfavoriteDialog] = useState(false);
@@ -121,7 +129,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
         <DialogTrigger asChild>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
