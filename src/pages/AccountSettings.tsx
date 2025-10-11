@@ -520,7 +520,11 @@ export default function AccountSettings() {
                       placeholder="Enter your username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                      maxLength={100}
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Maximum 100 characters ({username.length}/100)
+                    </p>
                   </div>
 
                   {/* Email (Read-only) */}
