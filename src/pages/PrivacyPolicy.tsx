@@ -60,11 +60,10 @@ export default function PrivacyPolicy() {
             <h3 className="text-lg font-semibold mt-4">2.2 Automatically Collected Information</h3>
             <p>When you use our service, we automatically collect certain information, including:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Device information (browser type, operating system, device identifiers)</li>
+              <li>Device information (browser type, operating system)</li>
               <li>Usage data (pages viewed, features accessed, time spent on the service)</li>
-              <li>IP address and general location information</li>
-              <li>Cookies and similar tracking technologies</li>
-              <li>Log data and analytics information</li>
+              <li>Cookies and similar tracking technologies for authentication and preferences</li>
+              <li>Basic analytics information to improve our service</li>
             </ul>
 
             <h3 className="text-lg font-semibold mt-4">2.3 Third-Party Data</h3>
@@ -290,7 +289,7 @@ export default function PrivacyPolicy() {
       {/* Footer */}
       <footer className="border-t py-8 mt-12">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground">
-          <p>© 2024 PokéMarket. Built for collectors and investors.</p>
+          <p>© 2025 PokéMarket. Built for collectors and investors.</p>
         </div>
       </footer>
     </div>
