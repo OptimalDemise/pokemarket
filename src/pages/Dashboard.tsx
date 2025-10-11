@@ -19,7 +19,7 @@ type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price
 
 const ITEMS_PER_PAGE = 30;
 const LIVE_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 minutes for basic plan
-const LIVE_UPDATES_LIMIT = 30; // Reduced from 50 for better performance
+const LIVE_UPDATES_LIMIT = 12; // Further reduced for better visibility of updates
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -58,11 +58,11 @@ export default function Dashboard() {
   }, [userFavorites]);
 
   // Only fetch live updates if sidebar is open - with smooth rendering
-  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  const threeMinutesAgo = Date.now() - 3 * 60 * 1000; // Reduced from 5 to 3 minutes for more recent updates
   const liveUpdates = useMemo(() => {
     if (!showLiveUpdates || !cards) return [];
     
-    let filteredCards = cards.filter(card => card.lastUpdated > fiveMinutesAgo);
+    let filteredCards = cards.filter(card => card.lastUpdated > threeMinutesAgo);
     
     // Apply favorites filter if enabled
     if (showOnlyFavoritesInLiveUpdates) {
@@ -77,7 +77,7 @@ export default function Dashboard() {
         // Add a stable key to prevent remounting
         _stableKey: card._id
       }));
-  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds, fiveMinutesAgo]);
+  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds, threeMinutesAgo]);
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
