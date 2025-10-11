@@ -399,16 +399,16 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
             <div className="border rounded-lg overflow-hidden">
               <button
                 onClick={() => setShowCurrencyConverter(!showCurrencyConverter)}
-                className="w-full flex items-center justify-between p-4 hover:bg-secondary/50 transition-colors"
+                className="w-full flex items-center justify-between p-2 hover:bg-secondary/50 transition-colors"
               >
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                  <span className="font-semibold">Currency Converter</span>
+                <div className="flex items-center gap-1.5">
+                  <DollarSign className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Currency Converter</span>
                 </div>
                 {showCurrencyConverter ? (
-                  <ChevronUp className="h-4 w-4" />
+                  <ChevronUp className="h-3.5 w-3.5" />
                 ) : (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-3.5 w-3.5" />
                 )}
               </button>
               
