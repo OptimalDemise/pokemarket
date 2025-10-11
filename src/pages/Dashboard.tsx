@@ -19,7 +19,7 @@ type SortOption = "newest" | "highest-change" | "lowest-change" | "highest-price
 
 const ITEMS_PER_PAGE = 30;
 const LIVE_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 minutes for basic plan
-const LIVE_UPDATES_LIMIT = 12; // Further reduced for better visibility of updates
+const LIVE_UPDATES_LIMIT = 18; // Balanced limit for visibility of updates
 
 export default function Dashboard() {
   const navigate = useNavigate();
