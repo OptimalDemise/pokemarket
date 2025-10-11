@@ -620,7 +620,10 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
             
             {/* Price Chart */}
             <div className="space-y-3">
-              <h4 className="text-lg font-bold tracking-tight">Price History</h4>
+              <div className="flex items-center gap-2">
+                <h4 className="text-lg font-bold tracking-tight">Price History</h4>
+                <span className="text-sm text-muted-foreground">(in USD)</span>
+              </div>
               {!priceHistory ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
