@@ -600,7 +600,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="py-8">
-        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground space-y-2">
+        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground space-y-3">
           <p>© 2025 PokéMarket. Built for collectors and investors.</p>
           <div className="flex items-center justify-center gap-4">
             <button
@@ -623,6 +623,9 @@ export default function Landing() {
             >
               Contact Us
             </button>
+          </div>
+          <div className="text-xs text-muted-foreground/70 pt-2">
+            <p>Icons by Lucide • Data from Pokemon TCG API & TCGPlayer</p>
           </div>
         </div>
       </footer>
