@@ -71,8 +71,13 @@ export default function Dashboard() {
     
     return filteredCards
       .sort((a, b) => b.lastUpdated - a.lastUpdated)
-      .slice(0, LIVE_UPDATES_LIMIT);
-  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds]);
+      .slice(0, LIVE_UPDATES_LIMIT)
+      .map(card => ({
+        ...card,
+        // Add a stable key to prevent remounting
+        _stableKey: card._id
+      }));
+  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds, fiveMinutesAgo]);
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
@@ -957,7 +962,7 @@ export default function Dashboard() {
                 : "grid-cols-2"
             )}>
               {liveUpdates.map((card) => (
-                <div key={card._id}>
+                <div key={`live-update-${card._id}`}>
                   <CardItem card={card} size={isLiveUpdatesFullscreen ? "default" : "compact"} />
                 </div>
               ))}
