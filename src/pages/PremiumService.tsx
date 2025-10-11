@@ -87,7 +87,6 @@ export default function PremiumService() {
         "Portfolio tracking",
         "Market trend analysis",
         "Priority support",
-        "Export data to CSV",
         "Custom watchlists (unlimited)",
         "Multi-currency display"
       ],
@@ -104,6 +103,7 @@ export default function PremiumService() {
       description: "For professional traders and stores",
       features: [
         "Everything in Pro",
+        "Export data to CSV",
         "API access",
         "Bulk import/export",
         "Advanced analytics dashboard",
