@@ -140,31 +140,30 @@ export default function Dashboard() {
     return maxLength === 0 ? 100 : ((maxLength - distance) / maxLength) * 100;
   };
 
-  // Filter and sort cards with multi-keyword search
+  // Filter and sort cards with partial matching search
   const filteredAndSortedCards = useMemo(() => {
     if (!cards) return [];
     
     let filtered = cards.filter(card => {
-      // Multi-keyword search logic
+      // Partial matching search logic
       if (searchQuery.trim()) {
         const searchWords = searchQuery.toLowerCase().trim().split(/\s+/);
-        const cardNameWords = card.name.toLowerCase().split(/\s+/);
-        const setNameWords = card.setName.toLowerCase().split(/\s+/);
-        const allCardWords = [...cardNameWords, ...setNameWords];
+        const cardName = card.name.toLowerCase();
+        const setName = card.setName.toLowerCase();
+        const combinedText = `${cardName} ${setName}`;
         
-        // Check if ALL search words match complete words in the card text
-        // Also check singular/plural variations (add/remove 's')
-        const matchesSearch = searchWords.every(searchWord => 
-          allCardWords.some(cardWord => {
-            // Exact match
-            if (cardWord === searchWord) return true;
-            // Check if search word + 's' matches card word
-            if (cardWord === searchWord + 's') return true;
-            // Check if card word + 's' matches search word
-            if (cardWord + 's' === searchWord) return true;
-            return false;
-          })
-        );
+        // Check if ALL search words are found in the card text
+        const matchesSearch = searchWords.every(searchWord => {
+          // Special case: "mew" must be exact match (not "mewtwo")
+          if (searchWord === 'mew') {
+            // Check if "mew" appears as a standalone word
+            const regex = /\bmew\b/;
+            return regex.test(cardName) || regex.test(setName);
+          }
+          
+          // For all other searches, use partial matching (substring)
+          return combinedText.includes(searchWord);
+        });
         
         if (!matchesSearch) return false;
       }
