@@ -47,7 +47,6 @@ export default function Dashboard() {
   const [isLiveUpdatesFullscreen, setIsLiveUpdatesFullscreen] = useState(false);
   const [showOnlyFavoritesInLiveUpdates, setShowOnlyFavoritesInLiveUpdates] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
-  const [openDialogCardIds, setOpenDialogCardIds] = useState<Set<string>>(new Set());
 
   // Determine loading state first
   const isLoading = cards === undefined;
@@ -70,24 +69,15 @@ export default function Dashboard() {
       filteredCards = filteredCards.filter(card => favoriteCardIds.has(card._id));
     }
     
-    // Get the top cards based on filters
-    const topCards = filteredCards
+    return filteredCards
       .sort((a, b) => b.lastUpdated - a.lastUpdated)
-      .slice(0, LIVE_UPDATES_LIMIT);
-    
-    // Add any cards with open dialogs that aren't in the top list
-    const topCardIds = new Set(topCards.map(c => c._id));
-    const cardsWithOpenDialogs = cards.filter(card => 
-      openDialogCardIds.has(card._id) && !topCardIds.has(card._id)
-    );
-    
-    // Combine top cards with cards that have open dialogs
-    return [...topCards, ...cardsWithOpenDialogs].map(card => ({
-      ...card,
-      // Add a stable key to prevent remounting
-      _stableKey: card._id
-    }));
-  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds, fiveMinutesAgo, openDialogCardIds]);
+      .slice(0, LIVE_UPDATES_LIMIT)
+      .map(card => ({
+        ...card,
+        // Add a stable key to prevent remounting
+        _stableKey: card._id
+      }));
+  }, [cards, showLiveUpdates, showOnlyFavoritesInLiveUpdates, favoriteCardIds, fiveMinutesAgo]);
 
   // Get the most recent update timestamp
   const mostRecentUpdate = liveUpdates.length > 0 
@@ -901,7 +891,7 @@ export default function Dashboard() {
             exit={{ x: "100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className={cn(
-              "flex-shrink-0 relative",
+              "overflow-y-auto scroll-smooth flex-shrink-0 relative",
               isLiveUpdatesFullscreen 
                 ? "fixed inset-0 z-50 w-full h-full bg-background" 
                 : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
@@ -927,7 +917,7 @@ export default function Dashboard() {
 
             <div className={cn(
               "p-4 bg-background/95 backdrop-blur z-10 h-[73px]",
-              isLiveUpdatesFullscreen ? "sticky top-0 bg-background border-b-0" : "lg:sticky lg:top-0 border-b"
+              isLiveUpdatesFullscreen ? "sticky top-0" : "lg:sticky lg:top-0 border-b"
             )}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
@@ -963,12 +953,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <div className={cn(
-          "p-3",
-          isLiveUpdatesFullscreen ? "p-6 h-[calc(100vh-73px)] overflow-y-auto" : "overflow-y-auto"
-        )}
-        style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
-        >
+        <div className={cn("p-3", isLiveUpdatesFullscreen && "p-6")}>
           {liveUpdates.length > 0 ? (
             <div className={cn(
               "grid gap-2",
@@ -978,21 +963,7 @@ export default function Dashboard() {
             )}>
               {liveUpdates.map((card) => (
                 <div key={`live-update-${card._id}`}>
-                  <CardItem 
-                    card={card} 
-                    size={isLiveUpdatesFullscreen ? "default" : "compact"}
-                    onDialogOpenChange={(cardId, isOpen) => {
-                      setOpenDialogCardIds(prev => {
-                        const newSet = new Set(prev);
-                        if (isOpen) {
-                          newSet.add(cardId);
-                        } else {
-                          newSet.delete(cardId);
-                        }
-                        return newSet;
-                      });
-                    }}
-                  />
+                  <CardItem card={card} size={isLiveUpdatesFullscreen ? "default" : "compact"} />
                 </div>
               ))}
             </div>
