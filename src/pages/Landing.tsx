@@ -634,12 +634,9 @@ export default function Landing() {
                 creditsDialog.innerHTML = `
                   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onclick="this.remove()">
                     <div class="bg-background border rounded-lg p-6 max-w-md mx-4" onclick="event.stopPropagation()">
-                      <h3 class="text-lg font-semibold mb-4">Credits & Attributions</h3>
+                      <h3 class="text-lg font-semibold mb-4">Icon Credits</h3>
                       <div class="space-y-3 text-sm text-muted-foreground">
                         <p><strong>Icons:</strong> Lucide Icons</p>
-                        <p><strong>Data Sources:</strong> Pokemon TCG API & TCGPlayer</p>
-                        <p><strong>UI Components:</strong> shadcn/ui</p>
-                        <p><strong>Framework:</strong> React, Vite, Convex</p>
                       </div>
                       <button onclick="this.closest('.fixed').remove()" class="mt-6 w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
                         Close
