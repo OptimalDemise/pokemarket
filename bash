@@ -1,1 +1,1 @@
-npx convex run adminActions:updateUserPlan '{"email": "darkenedsunlights@gmail.com", "plan": "Pro", "expiresInDays": 30}'
+npx convex run adminActions:updateUserPlan '{"email": "user@example.com", "plan": "Enterprise"}'
