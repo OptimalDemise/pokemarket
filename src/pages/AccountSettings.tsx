@@ -659,7 +659,6 @@ export default function AccountSettings() {
                         <option value="GBP">GBP (£) - British Pound</option>
                         <option value="EUR">EUR (€) - Euro</option>
                         <option value="CNY">CNY (¥) - Chinese Yuan</option>
-                        <option value="JPY">JPY (¥) - Japanese Yen</option>
                       </select>
                     </div>
                     {user?.plan !== "Pro" && user?.plan !== "Enterprise" && (

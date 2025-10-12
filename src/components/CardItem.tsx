@@ -36,7 +36,6 @@ interface ExchangeRates {
   GBP: number;
   EUR: number;
   CNY: number;
-  JPY: number;
   timestamp: number;
 }
 
@@ -59,7 +58,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   
   const [selectedCurrencies, setSelectedCurrencies] = useState<Set<string>>(() => {
     // If preferred currency is not USD, include USD in the default selections
-    const defaultCurrencies = new Set(['GBP', 'EUR', 'CNY', 'JPY']);
+    const defaultCurrencies = new Set(['GBP', 'EUR', 'CNY']);
     if (preferredCurrency !== "USD") {
       defaultCurrencies.add('USD');
     }
@@ -131,7 +130,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         GBP: data.rates.GBP,
         EUR: data.rates.EUR,
         CNY: data.rates.CNY,
-        JPY: data.rates.JPY,
         timestamp: Date.now()
       };
       
@@ -146,7 +144,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         GBP: 0.79,
         EUR: 0.92,
         CNY: 7.24,
-        JPY: 149.50,
         timestamp: Date.now()
       };
       setExchangeRates(fallbackRates);
@@ -188,7 +185,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
       case "GBP": return "£";
       case "EUR": return "€";
       case "CNY": return "¥";
-      case "JPY": return "¥";
       default: return "$";
     }
   };
@@ -277,29 +273,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         : getDisplayPrice(card.averagePrice))
     : undefined;
   const currencySymbol = getCurrencySymbol();
-
-  // Additional debug for JPY conversion
-  if (preferredCurrency === "JPY" && exchangeRates) {
-    console.log("=== JPY Conversion Check ===");
-    console.log("Input USD Price:", card.currentPrice);
-    console.log("JPY Rate from exchangeRates:", exchangeRates.JPY);
-    console.log("Direct calculation:", card.currentPrice * exchangeRates.JPY);
-    console.log("getDisplayPrice result:", getDisplayPrice(card.currentPrice));
-    console.log("Final displayPrice:", displayPrice);
-  }
-
-  // Debug logging to check exchange rates and conversion
-  if (preferredCurrency === "JPY") {
-    console.log("=== JPY Debug Info ===");
-    console.log("Exchange Rates Loaded:", !!exchangeRates);
-    if (exchangeRates) {
-      console.log("JPY Exchange Rate:", exchangeRates.JPY);
-      console.log("Card Current Price (USD):", card.currentPrice);
-      console.log("Calculated JPY Price:", card.currentPrice * exchangeRates.JPY);
-      console.log("Display Price (JPY):", displayPrice);
-      console.log("Currency Symbol:", currencySymbol);
-    }
-  }
 
   return (
     <>
@@ -671,14 +644,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                   <div className="text-xs text-muted-foreground mb-1">Chinese Yuan</div>
                                   <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('CNY'))}</div>
                                   <div className="text-xs text-muted-foreground mt-1">CNY</div>
-                                </div>
-                              )}
-                              
-                              {preferredCurrency !== "JPY" && selectedCurrencies.has('JPY') && exchangeRates && (
-                                <div className="bg-secondary/30 rounded-lg p-3">
-                                  <div className="text-xs text-muted-foreground mb-1">Japanese Yen</div>
-                                  <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('JPY'), 0)}</div>
-                                  <div className="text-xs text-muted-foreground mt-1">JPY</div>
                                 </div>
                               )}
                             </div>
