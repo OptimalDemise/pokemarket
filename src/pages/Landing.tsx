@@ -379,6 +379,206 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* Why Us Section */}
+      <section className="max-w-7xl mx-auto px-6 py-24 bg-secondary/20">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: false }}
+          className="space-y-12"
+        >
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl font-bold tracking-tight">Why Choose PokéMarket?</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              See how we compare to other card tracking platforms
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {/* PokéMarket Column */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: false }}
+              className="space-y-4 p-6 border-2 border-primary rounded-lg bg-background relative"
+            >
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
+                PokéMarket
+              </div>
+              <div className="pt-4 space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Valuable Cards Only</p>
+                    <p className="text-sm text-muted-foreground">Focus on cards worth $3+</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Fast Updates</p>
+                    <p className="text-sm text-muted-foreground">Every 10 minutes</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Live Market Activity</p>
+                    <p className="text-sm text-muted-foreground">Real-time price movements</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Clean Interface</p>
+                    <p className="text-sm text-muted-foreground">No clutter, just data</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Free to Use</p>
+                    <p className="text-sm text-muted-foreground">Core features at no cost</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Other Sites Column 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: false }}
+              className="space-y-4 p-6 border rounded-lg bg-background/50"
+            >
+              <div className="text-center font-bold text-muted-foreground pb-2">
+                Other Sites
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-red-500 text-xs">✗</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">All Cards</p>
+                    <p className="text-sm text-muted-foreground">Including low-value commons</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-amber-500 text-xs">~</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">Slower Updates</p>
+                    <p className="text-sm text-muted-foreground">Daily or weekly refreshes</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-red-500 text-xs">✗</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">Static Data</p>
+                    <p className="text-sm text-muted-foreground">No live activity tracking</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-amber-500 text-xs">~</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">Cluttered UI</p>
+                    <p className="text-sm text-muted-foreground">Ads and distractions</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-amber-500 text-xs">~</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">Paid Features</p>
+                    <p className="text-sm text-muted-foreground">Paywalls for basic data</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Other Sites Column 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: false }}
+              className="space-y-4 p-6 border rounded-lg bg-background/50"
+            >
+              <div className="text-center font-bold text-muted-foreground pb-2">
+                Marketplaces
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-amber-500 text-xs">~</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">Selling Focus</p>
+                    <p className="text-sm text-muted-foreground">Not designed for tracking</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-red-500 text-xs">✗</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">No Trends</p>
+                    <p className="text-sm text-muted-foreground">Current prices only</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-red-500 text-xs">✗</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">No Alerts</p>
+                    <p className="text-sm text-muted-foreground">Manual checking required</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-red-500 text-xs">✗</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">Complex Navigation</p>
+                    <p className="text-sm text-muted-foreground">Hard to find specific cards</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-amber-500 text-xs">~</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">Seller Fees</p>
+                    <p className="text-sm text-muted-foreground">Costs to list and sell</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
       {/* Features Section */}
       <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
