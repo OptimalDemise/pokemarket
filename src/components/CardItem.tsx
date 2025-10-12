@@ -609,7 +609,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                               selectedCurrencies.size === 2 ? 'grid-cols-1 sm:grid-cols-2' : 
                               'grid-cols-1 sm:grid-cols-3'
                             }`}>
-                              {preferredCurrency !== "USD" && selectedCurrencies.has('USD') && (
+                              {preferredCurrency !== "USD" && selectedCurrencies.has('USD') && exchangeRates && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">US Dollar</div>
                                   <div className="text-lg font-bold">${formatCurrency(card.currentPrice)}</div>
@@ -617,7 +617,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                 </div>
                               )}
                               
-                              {preferredCurrency !== "GBP" && selectedCurrencies.has('GBP') && (
+                              {preferredCurrency !== "GBP" && selectedCurrencies.has('GBP') && exchangeRates && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">British Pound</div>
                                   <div className="text-lg font-bold">£{formatCurrency(getConvertedPrice('GBP'))}</div>
@@ -625,7 +625,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                 </div>
                               )}
                               
-                              {preferredCurrency !== "EUR" && selectedCurrencies.has('EUR') && (
+                              {preferredCurrency !== "EUR" && selectedCurrencies.has('EUR') && exchangeRates && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">Euro</div>
                                   <div className="text-lg font-bold">€{formatCurrency(getConvertedPrice('EUR'))}</div>
@@ -633,7 +633,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                 </div>
                               )}
                               
-                              {preferredCurrency !== "CNY" && selectedCurrencies.has('CNY') && (
+                              {preferredCurrency !== "CNY" && selectedCurrencies.has('CNY') && exchangeRates && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">Chinese Yuan</div>
                                   <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('CNY'))}</div>
@@ -641,7 +641,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                 </div>
                               )}
                               
-                              {preferredCurrency !== "JPY" && selectedCurrencies.has('JPY') && (
+                              {preferredCurrency !== "JPY" && selectedCurrencies.has('JPY') && exchangeRates && (
                                 <div className="bg-secondary/30 rounded-lg p-3">
                                   <div className="text-xs text-muted-foreground mb-1">Japanese Yen</div>
                                   <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('JPY'), 0)}</div>
