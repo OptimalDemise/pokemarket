@@ -909,7 +909,7 @@ export default function Dashboard() {
               "bg-background/95 backdrop-blur z-10",
               isLiveUpdatesFullscreen ? "sticky top-0 border-b-0" : "lg:sticky lg:top-0 border-b-0"
             )}>
-              <div className="flex items-center justify-between pl-16 pr-4 py-3">
+              <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <div className={`h-2 w-2 rounded-full ${liveUpdates.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
@@ -943,7 +943,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className={cn("p-2 pl-16", isLiveUpdatesFullscreen && "p-6 pl-16")}>
+            <div className={cn("p-2", isLiveUpdatesFullscreen && "p-6")}>
               {liveUpdates.length > 0 ? (
                 <div className={cn(
                   "grid gap-2",
