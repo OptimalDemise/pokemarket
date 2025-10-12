@@ -426,7 +426,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
               <button
                 onClick={handleFavoriteClick}
                 onTouchEnd={handleFavoriteClick}
-                className="p-2 rounded-full hover:bg-secondary transition-all touch-manipulation -mr-10"
+                className="p-2 rounded-full hover:bg-secondary transition-all touch-manipulation mt-2"
                 aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
                 type="button"
               >
