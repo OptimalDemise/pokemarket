@@ -844,12 +844,21 @@ export default function Landing() {
                 creditsDialog.innerHTML = `
                   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onclick="this.remove()">
                     <div class="bg-background border rounded-lg p-6 max-w-md mx-4" onclick="event.stopPropagation()">
-                      <h3 class="text-lg font-semibold mb-4">Icon Credits</h3>
-                      <div class="space-y-3 text-sm text-muted-foreground">
-                        <p><strong>Icons:</strong> Lucide Icons</p>
-                        <p><strong>Premium quality icons:</strong> Created by denimao - Flaticon</p>
-                        <p><strong>Announcement icons:</strong> Created by Slidicon - Flaticon</p>
-                        <p><strong>System icons:</strong> Created by Freepik - Flaticon</p>
+                      <h3 class="text-lg font-semibold mb-4">Credits & Attributions</h3>
+                      <div class="space-y-4">
+                        <div class="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg">
+                          <img src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" alt="PokéMarket Logo" class="h-10 w-10" />
+                          <div>
+                            <p class="text-sm font-semibold">PokéMarket Logo</p>
+                            <p class="text-xs text-muted-foreground">© 2025 PokéMarket</p>
+                          </div>
+                        </div>
+                        <div class="space-y-3 text-sm text-muted-foreground">
+                          <p><strong>Icons:</strong> Lucide Icons</p>
+                          <p><strong>Premium quality icons:</strong> Created by denimao - Flaticon</p>
+                          <p><strong>Announcement icons:</strong> Created by Slidicon - Flaticon</p>
+                          <p><strong>System icons:</strong> Created by Freepik - Flaticon</p>
+                        </div>
                       </div>
                       <button onclick="this.closest('.fixed').remove()" class="mt-6 w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
                         Close
