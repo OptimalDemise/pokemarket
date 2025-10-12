@@ -888,7 +888,7 @@ export default function Dashboard() {
             )}
           >
             {/* Close button positioned at left edge, vertically centered - sticky */}
-            <div className="lg:sticky top-1/2 -translate-y-1/2 absolute left-0 z-20">
+            <div className="lg:sticky lg:top-1/2 lg:-translate-y-1/2 absolute left-0 top-4 z-20">
               <Button
                 variant="default"
                 size="icon"
