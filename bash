@@ -1,1 +1,1 @@
-npx convex run adminActions:updateUserPlan '{"email": "user@example.com", "plan": "Enterprise"}'
+npx convex run cleanupProducts:deleteAllProducts
