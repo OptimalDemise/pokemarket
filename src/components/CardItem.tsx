@@ -49,6 +49,13 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
   const [ratesLoading, setRatesLoading] = useState(false);
   const [ratesError, setRatesError] = useState<string | null>(null);
+  
+  // Get user's preferred currency (default to USD) - MUST BE BEFORE selectedCurrencies
+  const preferredCurrency = user?.preferredCurrency || "USD";
+  
+  // Check if user has Pro or Enterprise plan
+  const hasProAccess = user?.plan === "Pro" || user?.plan === "Enterprise";
+  
   const [selectedCurrencies, setSelectedCurrencies] = useState<Set<string>>(() => {
     // If preferred currency is not USD, include USD in the default selections
     const defaultCurrencies = new Set(['GBP', 'EUR', 'CNY']);
@@ -57,12 +64,6 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     }
     return defaultCurrencies;
   });
-  
-  // Get user's preferred currency (default to USD)
-  const preferredCurrency = user?.preferredCurrency || "USD";
-  
-  // Check if user has Pro or Enterprise plan
-  const hasProAccess = user?.plan === "Pro" || user?.plan === "Enterprise";
   
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
