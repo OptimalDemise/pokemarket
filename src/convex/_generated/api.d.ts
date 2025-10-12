@@ -28,6 +28,7 @@ import type * as products from "../products.js";
 import type * as seedData from "../seedData.js";
 import type * as updateLogs from "../updateLogs.js";
 import type * as updateProducts from "../updateProducts.js";
+import type * as updateProgress from "../updateProgress.js";
 import type * as userProfile from "../userProfile.js";
 import type * as users from "../users.js";
 
@@ -55,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   seedData: typeof seedData;
   updateLogs: typeof updateLogs;
   updateProducts: typeof updateProducts;
+  updateProgress: typeof updateProgress;
   userProfile: typeof userProfile;
   users: typeof users;
 }>;

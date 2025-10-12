@@ -119,6 +119,13 @@ const schema = defineSchema(
       category: v.optional(v.string()), // "Feature", "Bug Fix", "Improvement", etc.
       timestamp: v.number(),
     }),
+
+    // Update progress tracking for persistent pagination
+    updateProgress: defineTable({
+      type: v.string(), // "cardUpdate", etc.
+      cursor: v.union(v.string(), v.null()),
+      lastUpdated: v.number(),
+    }).index("by_type", ["type"]),
   },
   {
     schemaValidation: false,

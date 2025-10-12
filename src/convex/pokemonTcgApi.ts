@@ -239,8 +239,10 @@ export const updateAllCardsWithRealData = internalAction({
     console.log("Starting card update process...");
     console.log(`Target: Process cards in batches of ${BATCH_SIZE} with delays`);
     
-    // Process cards using pagination - fetch and update in chunks
-    let cursor: string | null = null;
+    // Get the saved cursor from the last run
+    let cursor: string | null = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
+    console.log(`Resuming from cursor: ${cursor || 'start'}`);
+    
     let hasMore = true;
     let batchNumber = 0;
     let totalProcessed = 0;
@@ -255,7 +257,9 @@ export const updateAllCardsWithRealData = internalAction({
       });
       
       if (!batch || batch.page.length === 0) {
-        console.log("No more cards to process");
+        console.log("No more cards to process - resetting cursor to start");
+        // Reset cursor to start from beginning next time
+        await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor: null });
         hasMore = false;
         break;
       }
@@ -303,8 +307,11 @@ export const updateAllCardsWithRealData = internalAction({
       
       console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${batch.page.length}. Total updated so far: ${fluctuationCount}`);
       
-      // Update cursor and check if done
+      // Save the cursor for next run
       cursor = batch.continueCursor;
+      await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor });
+      
+      // Check if done
       hasMore = !batch.isDone;
       
       // Add delay between batches if there are more to process
