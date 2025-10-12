@@ -32,7 +32,7 @@ const schema = defineSchema(
       role: v.optional(roleValidator), // role of the user. do not remove
       plan: v.optional(v.string()), // user's subscription plan: "Basic", "Pro", or "Enterprise"
       planExpiresAt: v.optional(v.number()), // timestamp when the plan expires (null/undefined for lifetime)
-      preferredCurrency: v.optional(v.string()), // user's preferred display currency: "USD", "GBP", "EUR", or "CNY" (Pro feature)
+      preferredCurrency: v.optional(v.string()), // user's preferred display currency: "USD", "GBP", "EUR", "CNY", or "JPY" (Pro feature)
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
     // Pokemon cards table - tracks individual cards

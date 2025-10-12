@@ -35,9 +35,9 @@ export const updateProfile = mutation({
 
     // Validate and update preferred currency if provided
     if (args.preferredCurrency !== undefined) {
-      const validCurrencies = ["USD", "GBP", "EUR", "CNY"];
+      const validCurrencies = ["USD", "GBP", "EUR", "CNY", "JPY"];
       if (!validCurrencies.includes(args.preferredCurrency)) {
-        throw new Error("Invalid currency. Must be USD, GBP, EUR, or CNY");
+        throw new Error("Invalid currency. Must be USD, GBP, EUR, CNY, or JPY");
       }
       
       // Check if user has Pro or Enterprise plan (USD is always allowed)

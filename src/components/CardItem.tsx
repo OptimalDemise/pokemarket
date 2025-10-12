@@ -36,6 +36,7 @@ interface ExchangeRates {
   GBP: number;
   EUR: number;
   CNY: number;
+  JPY: number;
   timestamp: number;
 }
 
@@ -58,7 +59,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   
   const [selectedCurrencies, setSelectedCurrencies] = useState<Set<string>>(() => {
     // If preferred currency is not USD, include USD in the default selections
-    const defaultCurrencies = new Set(['GBP', 'EUR', 'CNY']);
+    const defaultCurrencies = new Set(['GBP', 'EUR', 'CNY', 'JPY']);
     if (preferredCurrency !== "USD") {
       defaultCurrencies.add('USD');
     }
@@ -130,6 +131,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         GBP: data.rates.GBP,
         EUR: data.rates.EUR,
         CNY: data.rates.CNY,
+        JPY: data.rates.JPY,
         timestamp: Date.now()
       };
       
@@ -144,6 +146,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         GBP: 0.79,
         EUR: 0.92,
         CNY: 7.24,
+        JPY: 149.50,
         timestamp: Date.now()
       };
       setExchangeRates(fallbackRates);
@@ -181,6 +184,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
       case "GBP": return "£";
       case "EUR": return "€";
       case "CNY": return "¥";
+      case "JPY": return "¥";
       default: return "$";
     }
   };
@@ -578,6 +582,24 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                 <span className="text-sm font-medium">Chinese Yuan (¥)</span>
                               </label>
                             )}
+                            
+                            {preferredCurrency !== "JPY" && (
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <Checkbox
+                                  checked={selectedCurrencies.has('JPY')}
+                                  onCheckedChange={(checked) => {
+                                    const newSet = new Set(selectedCurrencies);
+                                    if (checked) {
+                                      newSet.add('JPY');
+                                    } else {
+                                      newSet.delete('JPY');
+                                    }
+                                    setSelectedCurrencies(newSet);
+                                  }}
+                                />
+                                <span className="text-sm font-medium">Japanese Yen (¥)</span>
+                              </label>
+                            )}
                           </div>
                           
                           {/* Currency Display */}
@@ -616,6 +638,14 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                                   <div className="text-xs text-muted-foreground mb-1">Chinese Yuan</div>
                                   <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('CNY'))}</div>
                                   <div className="text-xs text-muted-foreground mt-1">CNY</div>
+                                </div>
+                              )}
+                              
+                              {preferredCurrency !== "JPY" && selectedCurrencies.has('JPY') && (
+                                <div className="bg-secondary/30 rounded-lg p-3">
+                                  <div className="text-xs text-muted-foreground mb-1">Japanese Yen</div>
+                                  <div className="text-lg font-bold">¥{formatCurrency(getConvertedPrice('JPY'), 0)}</div>
+                                  <div className="text-xs text-muted-foreground mt-1">JPY</div>
                                 </div>
                               )}
                             </div>
