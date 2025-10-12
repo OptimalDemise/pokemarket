@@ -676,7 +676,10 @@ export default function Dashboard() {
 
                 {/* Pagination Controls for Cards */}
                 {totalCardPages > 1 && (
-                  <div className="fixed bottom-0 left-0 right-0 lg:right-80 bg-background/95 backdrop-blur border-t py-3 z-20">
+                  <div className={cn(
+                    "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t py-3 z-20",
+                    showLiveUpdates && "lg:right-80"
+                  )}>
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="outline"
