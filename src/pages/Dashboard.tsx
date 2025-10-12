@@ -367,7 +367,10 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Main Content Wrapper */}
-      <div className="flex-1 min-w-0 order-2 lg:order-1">
+      <div className={cn(
+        "flex-1 min-w-0 order-2 lg:order-1",
+        isLiveUpdatesFullscreen && "hidden"
+      )}>
         {/* Header */}
         <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
           <div className="max-w-7xl mx-auto px-6 py-4">
@@ -466,407 +469,407 @@ export default function Dashboard() {
         </header>
 
         {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Ad Zone 1: Top Banner - Hidden */}
-        <div className="mb-6 min-h-[90px] sm:min-h-[120px]" />
+        <main className="max-w-7xl mx-auto px-6 py-8">
+          {/* Ad Zone 1: Top Banner - Hidden */}
+          <div className="mb-6 min-h-[90px] sm:min-h-[120px]" />
 
-        {/* Rarity and Set Filters */}
-        <div className="flex flex-col gap-4 mb-6">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <span className="text-sm font-medium whitespace-nowrap">Rarity:</span>
-            <Popover open={rarityOpen} onOpenChange={setRarityOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={rarityOpen}
-                  className="w-full sm:w-[200px] justify-between"
-                >
-                  {selectedRarity === "all" ? "All Rarities" : selectedRarity}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search rarity..." />
-                  <CommandList>
-                    <CommandEmpty>No rarity found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem
-                        value="all"
-                        onSelect={() => {
-                          setSelectedRarity("all");
-                          setRarityOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedRarity === "all" ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        All Rarities
-                      </CommandItem>
-                      {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Holo Rare", "Ultra Rare", "Secret Rare", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
+          {/* Rarity and Set Filters */}
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <span className="text-sm font-medium whitespace-nowrap">Rarity:</span>
+              <Popover open={rarityOpen} onOpenChange={setRarityOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={rarityOpen}
+                    className="w-full sm:w-[200px] justify-between"
+                  >
+                    {selectedRarity === "all" ? "All Rarities" : selectedRarity}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search rarity..." />
+                    <CommandList>
+                      <CommandEmpty>No rarity found.</CommandEmpty>
+                      <CommandGroup>
                         <CommandItem
-                          key={rarity}
-                          value={rarity}
+                          value="all"
                           onSelect={() => {
-                            setSelectedRarity(rarity);
+                            setSelectedRarity("all");
                             setRarityOpen(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              selectedRarity === rarity ? "opacity-100" : "opacity-0"
+                              selectedRarity === "all" ? "opacity-100" : "opacity-0"
                             )}
                           />
-                          {rarity}
+                          All Rarities
                         </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            
-            <span className="text-sm font-medium whitespace-nowrap sm:ml-4">Set:</span>
-            <Popover open={setOpen} onOpenChange={setSetOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={setOpen}
-                  className="w-full sm:w-[250px] justify-between"
-                >
-                  {selectedSet === "all" ? "All Sets" : selectedSet}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[250px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search set..." />
-                  <CommandList>
-                    <CommandEmpty>No set found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem
-                        value="all"
-                        onSelect={() => {
-                          setSelectedSet("all");
-                          setSetOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedSet === "all" ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        All Sets
-                      </CommandItem>
-                      {availableSets.map((set) => (
+                        {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Holo Rare", "Ultra Rare", "Secret Rare", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
+                          <CommandItem
+                            key={rarity}
+                            value={rarity}
+                            onSelect={() => {
+                              setSelectedRarity(rarity);
+                              setRarityOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedRarity === rarity ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {rarity}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              
+              <span className="text-sm font-medium whitespace-nowrap sm:ml-4">Set:</span>
+              <Popover open={setOpen} onOpenChange={setSetOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={setOpen}
+                    className="w-full sm:w-[250px] justify-between"
+                  >
+                    {selectedSet === "all" ? "All Sets" : selectedSet}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[250px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search set..." />
+                    <CommandList>
+                      <CommandEmpty>No set found.</CommandEmpty>
+                      <CommandGroup>
                         <CommandItem
-                          key={set}
-                          value={set}
+                          value="all"
                           onSelect={() => {
-                            setSelectedSet(set);
+                            setSelectedSet("all");
                             setSetOpen(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              selectedSet === set ? "opacity-100" : "opacity-0"
+                              selectedSet === "all" ? "opacity-100" : "opacity-0"
                             )}
                           />
-                          {set}
+                          All Sets
                         </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-
-        {/* Price Range Filter */}
-        <div className="flex flex-col gap-4 mb-8">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Input
-                type="number"
-                placeholder="Min ($)"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className="w-full sm:w-32"
-                min="0"
-                step="0.01"
-              />
-              <span className="text-muted-foreground">-</span>
-              <Input
-                type="number"
-                placeholder="Max ($)"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className="w-full sm:w-32"
-                min="0"
-                step="0.01"
-              />
-              {(minPrice || maxPrice) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setMinPrice("");
-                    setMaxPrice("");
-                  }}
-                  className="cursor-pointer whitespace-nowrap"
-                >
-                  Clear
-                </Button>
-              )}
+                        {availableSets.map((set) => (
+                          <CommandItem
+                            key={set}
+                            value={set}
+                            onSelect={() => {
+                              setSelectedSet(set);
+                              setSetOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedSet === set ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {set}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
-        </div>
 
-        <Tabs defaultValue="cards" className="space-y-8">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="cards" className="cursor-pointer">
-              Cards ({filteredAndSortedCards.length})
-            </TabsTrigger>
-            <TabsTrigger value="movers" className="cursor-pointer">
-              Market Movers
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="cards" className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {paginatedCards.map((card, index) => (
-                  <>
-                    <CardItemWrapper key={card._id} card={card} />
-                    {/* Native Ad Card - Every 10th position - Empty space */}
-                    {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
-                      <div key={`ad-${card._id}`} />
-                    )}
-                  </>
-                ))}
-              </div>
-              {filteredAndSortedCards.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  {searchQuery || minPrice || maxPrice || selectedRarity !== "all" || selectedSet !== "all" ? "No cards match your filters" : "No cards tracked yet"}
-                </div>
-              )}
-              
-              {/* Ad Zone 3: Above Pagination - Hidden */}
-              {filteredAndSortedCards.length > 0 && (
-                <div className="mt-6 mb-4 min-h-[60px] sm:min-h-[90px]" />
-              )}
-
-              {/* Pagination Controls for Cards */}
-              {totalCardPages > 1 && (
-                <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t py-3 z-20">
-                  <div className="flex items-center justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentCardPage(p => Math.max(1, p - 1))}
-                      disabled={currentCardPage === 1}
-                      className="cursor-pointer"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
-                    </Button>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        Page
-                      </span>
-                      <Select 
-                        value={currentCardPage.toString()} 
-                        onValueChange={(value) => setCurrentCardPage(parseInt(value))}
-                      >
-                        <SelectTrigger className="w-[80px] cursor-pointer">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: totalCardPages }, (_, i) => i + 1).map((page) => (
-                            <SelectItem key={page} value={page.toString()} className="cursor-pointer">
-                              {page}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        of {totalCardPages}
-                      </span>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentCardPage(p => Math.min(totalCardPages, p + 1))}
-                      disabled={currentCardPage === totalCardPages}
-                      className="cursor-pointer"
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </TabsContent>
-
-          <TabsContent value="movers" className="space-y-6">
-            {/* Top Daily Movers */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="p-6 border rounded-lg bg-card"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-bold tracking-tight">Top Daily Movers</h2>
-                <span className="text-sm text-muted-foreground ml-auto mr-2">Updates daily at midnight UTC</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowTopDailyMovers(!showTopDailyMovers)}
-                  className="cursor-pointer h-8 w-8"
-                >
-                  {showTopDailyMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </Button>
-              </div>
-              <AnimatePresence>
-                {showTopDailyMovers && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    style={{ overflow: "hidden" }}
+          {/* Price Range Filter */}
+          <div className="flex flex-col gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <span className="text-sm font-medium whitespace-nowrap">Price Range:</span>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Input
+                  type="number"
+                  placeholder="Min ($)"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="w-full sm:w-32"
+                  min="0"
+                  step="0.01"
+                />
+                <span className="text-muted-foreground">-</span>
+                <Input
+                  type="number"
+                  placeholder="Max ($)"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-full sm:w-32"
+                  min="0"
+                  step="0.01"
+                />
+                {(minPrice || maxPrice) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setMinPrice("");
+                      setMaxPrice("");
+                    }}
+                    className="cursor-pointer whitespace-nowrap"
                   >
-                    {topDailyChanges && topDailyChanges.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                        {topDailyChanges.slice(0, 10).map((item: any) => (
-                          <div key={item._id} className="space-y-2">
-                            <CardItem card={item} size="compact" />
-                            <div className="px-2 py-1.5 bg-secondary/30 rounded text-xs space-y-1">
-                              <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Yesterday:</span>
-                                <span className="font-medium">${item.yesterdayPrice?.toFixed(2) || '0.00'}</span>
-                              </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Today:</span>
-                                <span className="font-medium">${item.todayPrice?.toFixed(2) || item.currentPrice?.toFixed(2) || '0.00'}</span>
-                              </div>
-                              <div className="flex justify-between items-center pt-1 border-t border-border/50">
-                                <span className="text-muted-foreground">Change:</span>
-                                <span className={`font-bold ${(item.dailyPercentChange || item.percentChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  {(item.dailyPercentChange || item.percentChange || 0) >= 0 ? '+' : ''}{(item.dailyPercentChange || item.percentChange || 0).toFixed(2)}%
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground text-sm">
-                        <p>No daily changes yet</p>
-                        <p className="mt-1 text-xs">Check back after midnight UTC</p>
-                      </div>
-                    )}
-                  </motion.div>
+                    Clear
+                  </Button>
                 )}
-              </AnimatePresence>
-            </motion.div>
+              </div>
+            </div>
+          </div>
 
-            {/* Big Movers - Past Hour */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="p-4 border rounded-lg bg-card"
-            >
-              {bigMovers && bigMovers.length > 0 ? (
-                <>
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                    <span className="text-xs text-muted-foreground ml-auto mr-2">Changes over 3%</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setShowBigMovers(!showBigMovers)}
-                      className="cursor-pointer h-8 w-8"
-                    >
-                      {showBigMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    </Button>
+          <Tabs defaultValue="cards" className="space-y-8">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="cards" className="cursor-pointer">
+                Cards ({filteredAndSortedCards.length})
+              </TabsTrigger>
+              <TabsTrigger value="movers" className="cursor-pointer">
+                Market Movers
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="cards" className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {paginatedCards.map((card, index) => (
+                    <>
+                      <CardItemWrapper key={card._id} card={card} />
+                      {/* Native Ad Card - Every 10th position - Empty space */}
+                      {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
+                        <div key={`ad-${card._id}`} />
+                      )}
+                    </>
+                  ))}
+                </div>
+                {filteredAndSortedCards.length === 0 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    {searchQuery || minPrice || maxPrice || selectedRarity !== "all" || selectedSet !== "all" ? "No cards match your filters" : "No cards tracked yet"}
                   </div>
-                  <AnimatePresence>
-                    {showBigMovers && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        style={{ overflow: "hidden" }}
+                )}
+                
+                {/* Ad Zone 3: Above Pagination - Hidden */}
+                {filteredAndSortedCards.length > 0 && (
+                  <div className="mt-6 mb-4 min-h-[60px] sm:min-h-[90px]" />
+                )}
+
+                {/* Pagination Controls for Cards */}
+                {totalCardPages > 1 && (
+                  <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t py-3 z-20">
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentCardPage(p => Math.max(1, p - 1))}
+                        disabled={currentCardPage === 1}
+                        className="cursor-pointer"
                       >
-                        <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
-                          {bigMovers.map((card) => (
-                            <div key={card._id} className="flex-shrink-0 w-32">
-                              <CardItem card={card} size="compact" />
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground whitespace-nowrap">
+                          Page
+                        </span>
+                        <Select 
+                          value={currentCardPage.toString()} 
+                          onValueChange={(value) => setCurrentCardPage(parseInt(value))}
+                        >
+                          <SelectTrigger className="w-[80px] cursor-pointer">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: totalCardPages }, (_, i) => i + 1).map((page) => (
+                              <SelectItem key={page} value={page.toString()} className="cursor-pointer">
+                                {page}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <span className="text-sm text-muted-foreground whitespace-nowrap">
+                          of {totalCardPages}
+                        </span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentCardPage(p => Math.min(totalCardPages, p + 1))}
+                        disabled={currentCardPage === totalCardPages}
+                        className="cursor-pointer"
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="movers" className="space-y-6">
+              {/* Top Daily Movers */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="p-6 border rounded-lg bg-card"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-bold tracking-tight">Top Daily Movers</h2>
+                  <span className="text-sm text-muted-foreground ml-auto mr-2">Updates daily at midnight UTC</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowTopDailyMovers(!showTopDailyMovers)}
+                    className="cursor-pointer h-8 w-8"
+                  >
+                    {showTopDailyMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <AnimatePresence>
+                  {showTopDailyMovers && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      {topDailyChanges && topDailyChanges.length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                          {topDailyChanges.slice(0, 10).map((item: any) => (
+                            <div key={item._id} className="space-y-2">
+                              <CardItem card={item} size="compact" />
+                              <div className="px-2 py-1.5 bg-secondary/30 rounded text-xs space-y-1">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-muted-foreground">Yesterday:</span>
+                                  <span className="font-medium">${item.yesterdayPrice?.toFixed(2) || '0.00'}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-muted-foreground">Today:</span>
+                                  <span className="font-medium">${item.todayPrice?.toFixed(2) || item.currentPrice?.toFixed(2) || '0.00'}</span>
+                                </div>
+                                <div className="flex justify-between items-center pt-1 border-t border-border/50">
+                                  <span className="text-muted-foreground">Change:</span>
+                                  <span className={`font-bold ${(item.dailyPercentChange || item.percentChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {(item.dailyPercentChange || item.percentChange || 0) >= 0 ? '+' : ''}{(item.dailyPercentChange || item.percentChange || 0).toFixed(2)}%
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           ))}
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
-                    <span className="text-xs text-muted-foreground ml-auto mr-2">Changes over 3%</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setShowBigMovers(!showBigMovers)}
-                      className="cursor-pointer h-8 w-8"
-                    >
-                      {showBigMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  <AnimatePresence>
-                    {showBigMovers && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        style={{ overflow: "hidden" }}
-                      >
+                      ) : (
                         <div className="text-center py-8 text-muted-foreground text-sm">
-                          <p>No significant movers in the past hour</p>
-                          <p className="mt-1 text-xs">Waiting for changes over 3%...</p>
+                          <p>No daily changes yet</p>
+                          <p className="mt-1 text-xs">Check back after midnight UTC</p>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </>
-              )}
-            </motion.div>
-          </TabsContent>
-        </Tabs>
-      </main>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+
+              {/* Big Movers - Past Hour */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="p-4 border rounded-lg bg-card"
+              >
+                {bigMovers && bigMovers.length > 0 ? (
+                  <>
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
+                      <span className="text-xs text-muted-foreground ml-auto mr-2">Changes over 3%</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowBigMovers(!showBigMovers)}
+                        className="cursor-pointer h-8 w-8"
+                      >
+                        {showBigMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    <AnimatePresence>
+                      {showBigMovers && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          style={{ overflow: "hidden" }}
+                        >
+                          <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2">
+                            {bigMovers.map((card) => (
+                              <div key={card._id} className="flex-shrink-0 w-32">
+                                <CardItem card={card} size="compact" />
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                      <h2 className="text-lg font-bold tracking-tight">Big Movers - Past Hour</h2>
+                      <span className="text-xs text-muted-foreground ml-auto mr-2">Changes over 3%</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowBigMovers(!showBigMovers)}
+                        className="cursor-pointer h-8 w-8"
+                      >
+                        {showBigMovers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    <AnimatePresence>
+                      {showBigMovers && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          style={{ overflow: "hidden" }}
+                        >
+                          <div className="text-center py-8 text-muted-foreground text-sm">
+                            <p>No significant movers in the past hour</p>
+                            <p className="mt-1 text-xs">Waiting for changes over 3%...</p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
+                )}
+              </motion.div>
+            </TabsContent>
+          </Tabs>
+        </main>
       </div>
 
       {/* Live Market Updates - Vertical Sidebar (Right Side) */}
@@ -906,63 +909,63 @@ export default function Dashboard() {
               "bg-background/95 backdrop-blur z-10",
               isLiveUpdatesFullscreen ? "sticky top-0 border-b-0" : "lg:sticky lg:top-0 border-b-0"
             )}>
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <div className={`h-2 w-2 rounded-full ${liveUpdates.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
-                <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
-              </div>
-              <span className="text-xs text-muted-foreground">
-                {mostRecentUpdate 
-                  ? `Updated ${Math.floor((Date.now() - mostRecentUpdate) / 1000)}s ago`
-                  : 'Last 5 minutes'}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant={showOnlyFavoritesInLiveUpdates ? "default" : "ghost"}
-                size="icon"
-                onClick={() => setShowOnlyFavoritesInLiveUpdates(!showOnlyFavoritesInLiveUpdates)}
-                className="cursor-pointer h-8 w-8"
-                title={showOnlyFavoritesInLiveUpdates ? "Show All Updates" : "Show Only Favorites"}
-              >
-                <Heart className={`h-4 w-4 ${showOnlyFavoritesInLiveUpdates ? 'fill-current' : ''}`} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsLiveUpdatesFullscreen(!isLiveUpdatesFullscreen)}
-                className="cursor-pointer h-8 w-8"
-                title={isLiveUpdatesFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-              >
-                {isLiveUpdatesFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className={cn("p-2", isLiveUpdatesFullscreen && "p-6")}>
-          {liveUpdates.length > 0 ? (
-            <div className={cn(
-              "grid gap-2",
-              isLiveUpdatesFullscreen 
-                ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" 
-                : "grid-cols-2"
-            )}>
-              {liveUpdates.map((card) => (
-                <div key={`live-update-${card._id}`}>
-                  <CardItem card={card} size={isLiveUpdatesFullscreen ? "default" : "compact"} />
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={`h-2 w-2 rounded-full ${liveUpdates.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
+                    <h2 className="text-sm font-bold tracking-tight">Live Updates</h2>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {mostRecentUpdate 
+                      ? `Updated ${Math.floor((Date.now() - mostRecentUpdate) / 1000)}s ago`
+                      : 'Last 5 minutes'}
+                  </span>
                 </div>
-              ))}
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant={showOnlyFavoritesInLiveUpdates ? "default" : "ghost"}
+                    size="icon"
+                    onClick={() => setShowOnlyFavoritesInLiveUpdates(!showOnlyFavoritesInLiveUpdates)}
+                    className="cursor-pointer h-8 w-8"
+                    title={showOnlyFavoritesInLiveUpdates ? "Show All Updates" : "Show Only Favorites"}
+                  >
+                    <Heart className={`h-4 w-4 ${showOnlyFavoritesInLiveUpdates ? 'fill-current' : ''}`} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsLiveUpdatesFullscreen(!isLiveUpdatesFullscreen)}
+                    className="cursor-pointer h-8 w-8"
+                    title={isLiveUpdatesFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                  >
+                    {isLiveUpdatesFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground text-xs">
-              <p>No recent updates</p>
-              <p className="mt-1">Waiting for market changes...</p>
-              <p className="mt-2 text-[10px]">
-                Last refresh: {lastUpdate.toLocaleTimeString()}
-              </p>
-            </div>
-          )}
+            <div className={cn("p-2", isLiveUpdatesFullscreen && "p-6")}>
+              {liveUpdates.length > 0 ? (
+                <div className={cn(
+                  "grid gap-2",
+                  isLiveUpdatesFullscreen 
+                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" 
+                    : "grid-cols-2"
+                )}>
+                  {liveUpdates.map((card) => (
+                    <div key={`live-update-${card._id}`}>
+                      <CardItem card={card} size={isLiveUpdatesFullscreen ? "default" : "compact"} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground text-xs">
+                  <p>No recent updates</p>
+                  <p className="mt-1">Waiting for market changes...</p>
+                  <p className="mt-2 text-[10px]">
+                    Last refresh: {lastUpdate.toLocaleTimeString()}
+                  </p>
+                </div>
+              )}
             </div>
           </motion.aside>
         )}
