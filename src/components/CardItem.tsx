@@ -172,9 +172,13 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     if (!exchangeRates || preferredCurrency === "USD") return usdPrice;
     
     const currencyKey = preferredCurrency as keyof Omit<ExchangeRates, 'timestamp'>;
-    if (exchangeRates[currencyKey]) {
-      return usdPrice * exchangeRates[currencyKey];
+    const rate = exchangeRates[currencyKey];
+    
+    if (rate && typeof rate === 'number' && rate > 0) {
+      return usdPrice * rate;
     }
+    
+    console.warn(`Invalid exchange rate for ${currencyKey}:`, rate);
     return usdPrice;
   };
 
@@ -273,6 +277,13 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         : card.averagePrice)
     : undefined;
   const currencySymbol = getCurrencySymbol();
+
+  // Debug logging to check exchange rates
+  if (preferredCurrency === "JPY" && exchangeRates) {
+    console.log("JPY Exchange Rate:", exchangeRates.JPY);
+    console.log("Card Current Price (USD):", card.currentPrice);
+    console.log("Display Price (JPY):", displayPrice);
+  }
 
   return (
     <>
