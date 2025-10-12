@@ -49,7 +49,14 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
   const [ratesLoading, setRatesLoading] = useState(false);
   const [ratesError, setRatesError] = useState<string | null>(null);
-  const [selectedCurrencies, setSelectedCurrencies] = useState<Set<string>>(new Set(['GBP', 'EUR', 'CNY']));
+  const [selectedCurrencies, setSelectedCurrencies] = useState<Set<string>>(() => {
+    // If preferred currency is not USD, include USD in the default selections
+    const defaultCurrencies = new Set(['GBP', 'EUR', 'CNY']);
+    if (preferredCurrency !== "USD") {
+      defaultCurrencies.add('USD');
+    }
+    return defaultCurrencies;
+  });
   
   // Get user's preferred currency (default to USD)
   const preferredCurrency = user?.preferredCurrency || "USD";
@@ -81,6 +88,20 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
       fetchExchangeRates();
     }
   }, [isOpen]);
+
+  // Update selected currencies when preferred currency changes
+  useEffect(() => {
+    setSelectedCurrencies((prev) => {
+      const newSet = new Set(prev);
+      if (preferredCurrency !== "USD") {
+        newSet.add('USD');
+      } else {
+        // If switching back to USD, remove it from selections
+        newSet.delete('USD');
+      }
+      return newSet;
+    });
+  }, [preferredCurrency]);
 
   const fetchExchangeRates = async () => {
     setRatesLoading(true);
