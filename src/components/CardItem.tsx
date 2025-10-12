@@ -263,9 +263,15 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     return percent.toFixed(2);
   };
 
-  // Calculate display prices
-  const displayPrice = getDisplayPrice(card.currentPrice);
-  const displayAveragePrice = card.averagePrice ? getDisplayPrice(card.averagePrice) : undefined;
+  // Calculate display prices - only convert if exchange rates are loaded
+  const displayPrice = (exchangeRates && preferredCurrency !== "USD") 
+    ? getDisplayPrice(card.currentPrice) 
+    : card.currentPrice;
+  const displayAveragePrice = card.averagePrice 
+    ? ((exchangeRates && preferredCurrency !== "USD") 
+        ? getDisplayPrice(card.averagePrice) 
+        : card.averagePrice)
+    : undefined;
   const currencySymbol = getCurrencySymbol();
 
   return (
