@@ -40,12 +40,13 @@ export const updateProfile = mutation({
         throw new Error("Invalid currency. Must be USD, GBP, EUR, or CNY");
       }
       
-      // Check if user has Pro or Enterprise plan
+      // Check if user has Pro or Enterprise plan (USD is always allowed)
       const user = await ctx.db.get(userId);
-      if (!user || (user.plan !== "Pro" && user.plan !== "Enterprise")) {
+      if (args.preferredCurrency !== "USD" && (!user || (user.plan !== "Pro" && user.plan !== "Enterprise"))) {
         throw new Error("Preferred currency is a Pro feature. Please upgrade your plan.");
       }
       
+      // Always save the preferred currency, including USD
       updateData.preferredCurrency = args.preferredCurrency;
     }
 

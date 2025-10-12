@@ -167,7 +167,7 @@ export default function AccountSettings() {
       
       await updateProfile({
         name: username || undefined,
-        preferredCurrency: preferredCurrency !== "USD" ? preferredCurrency : undefined,
+        preferredCurrency: preferredCurrency,
       });
 
       toast.success("Profile updated successfully!");

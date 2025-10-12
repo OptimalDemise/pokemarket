@@ -1,1 +1,4 @@
-for (let page = 1; page <= 25; page++) {
+if (args.preferredCurrency !== undefined) {
+  // ... validation code ...
+  updateData.preferredCurrency = args.preferredCurrency;
+}
