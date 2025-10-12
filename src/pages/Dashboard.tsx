@@ -904,7 +904,7 @@ export default function Dashboard() {
 
             <div className={cn(
               "bg-background/95 backdrop-blur z-10",
-              isLiveUpdatesFullscreen ? "sticky top-0" : "lg:sticky lg:top-0 border-b"
+              isLiveUpdatesFullscreen ? "sticky top-0 border-b-0" : "lg:sticky lg:top-0 border-b-0"
             )}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
@@ -940,7 +940,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <div className={cn("p-3", isLiveUpdatesFullscreen && "p-6")}>
+        <div className={cn("p-2", isLiveUpdatesFullscreen && "p-6")}>
           {liveUpdates.length > 0 ? (
             <div className={cn(
               "grid gap-2",
