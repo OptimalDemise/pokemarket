@@ -19,7 +19,6 @@ import type * as auth from "../auth.js";
 import type * as cards from "../cards.js";
 import type * as cleanupPriceHistory from "../cleanupPriceHistory.js";
 import type * as cleanupPriceHistoryAll from "../cleanupPriceHistoryAll.js";
-import type * as cleanupProducts from "../cleanupProducts.js";
 import type * as crons from "../crons.js";
 import type * as dailySnapshots from "../dailySnapshots.js";
 import type * as favorites from "../favorites.js";
@@ -47,7 +46,6 @@ declare const fullApi: ApiFromModules<{
   cards: typeof cards;
   cleanupPriceHistory: typeof cleanupPriceHistory;
   cleanupPriceHistoryAll: typeof cleanupPriceHistoryAll;
-  cleanupProducts: typeof cleanupProducts;
   crons: typeof crons;
   dailySnapshots: typeof dailySnapshots;
   favorites: typeof favorites;
