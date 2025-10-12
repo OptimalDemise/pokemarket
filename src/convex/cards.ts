@@ -48,6 +48,19 @@ export const _getCardsBatch = internalQuery({
   },
 });
 
+// New: Get a single card by ID (for batch processing)
+export const _getCardById = internalQuery({
+  args: { cardId: v.id("cards") },
+  handler: async (ctx, args) => {
+    try {
+      return await ctx.db.get(args.cardId);
+    } catch (error) {
+      console.error(`Error fetching card ${args.cardId}:`, error);
+      return null;
+    }
+  },
+});
+
 // Get big movers with hourly caching - optimized for high concurrency
 export const getBigMovers = query({
   args: { 

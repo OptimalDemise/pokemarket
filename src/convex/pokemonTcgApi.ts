@@ -234,34 +234,64 @@ export const updateAllCardsWithRealData = internalAction({
     const DELAY_BETWEEN_BATCHES_MS = 500; // Reduced from 2000ms to speed up processing
 
     let fluctuationCount = 0;
-    let cursor: string | null = null;
-    let hasMore = true;
-    let batchNumber = 0;
     const processedCardIds = new Set<string>();
     
     console.log("Starting card update process...");
-    console.log(`Target: Process all cards in database with ${BATCH_SIZE} cards per batch`);
+    console.log(`Target: Process cards in shuffled order with ${BATCH_SIZE} cards per batch`);
     
+    // Collect all card IDs first
+    let allCardIds: string[] = [];
+    let cursor: string | null = null;
+    let hasMore = true;
+    
+    console.log("Collecting all card IDs...");
     while (hasMore) {
-      batchNumber++;
-      
-      // Fetch a batch of cards using pagination
       const batch: { page: any[]; continueCursor: string | null; isDone: boolean } = await ctx.runQuery(internal.cards._getCardsBatch, {
         cursor,
-        batchSize: BATCH_SIZE,
+        batchSize: 250, // Larger batch for ID collection
       });
       
       if (!batch || batch.page.length === 0) {
-        console.log(`Batch ${batchNumber}: No more cards to process`);
         hasMore = false;
         break;
       }
       
-      console.log(`Batch ${batchNumber}: Fetched ${batch.page.length} cards (Sets: ${[...new Set(batch.page.map(c => c.setName))].join(', ')})`);
+      allCardIds.push(...batch.page.map(card => card._id));
+      cursor = batch.continueCursor;
+      hasMore = !batch.isDone;
+    }
+    
+    console.log(`Collected ${allCardIds.length} card IDs. Shuffling...`);
+    
+    // Shuffle the card IDs array
+    for (let i = allCardIds.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allCardIds[i], allCardIds[j]] = [allCardIds[j], allCardIds[i]];
+    }
+    
+    console.log("Processing cards in shuffled order...");
+    
+    // Process cards in batches
+    let batchNumber = 0;
+    for (let i = 0; i < allCardIds.length; i += BATCH_SIZE) {
+      batchNumber++;
+      const batchIds = allCardIds.slice(i, Math.min(i + BATCH_SIZE, allCardIds.length));
       
-      // Process each card in the batch with delays (no shuffling to ensure systematic progression)
-      for (let j = 0; j < batch.page.length; j++) {
-        const card = batch.page[j];
+      console.log(`Batch ${batchNumber}: Processing ${batchIds.length} cards (${i + 1}-${Math.min(i + BATCH_SIZE, allCardIds.length)} of ${allCardIds.length})`);
+      
+      // Fetch card details for this batch
+      const cards = await Promise.all(
+        batchIds.map(id => ctx.runQuery(internal.cards._getCardById, { cardId: id as any }))
+      );
+      
+      // Process each card in the batch with delays
+      for (let j = 0; j < cards.length; j++) {
+        const card = cards[j];
+        
+        if (!card) {
+          console.warn(`Card not found for ID: ${batchIds[j]}`);
+          continue;
+        }
         
         // Track which cards we've processed
         if (processedCardIds.has(card._id)) {
@@ -295,14 +325,10 @@ export const updateAllCardsWithRealData = internalAction({
         }
       }
       
-      // Update cursor for next batch
-      cursor = batch.continueCursor;
-      hasMore = !batch.isDone;
-      
-      console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${batch.page.length}. Total updated so far: ${fluctuationCount}. Has more: ${hasMore}, Cursor: ${cursor ? 'exists' : 'null'}`);
+      console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${batchIds.length}. Total updated so far: ${fluctuationCount}`);
       
       // Add delay between batches
-      if (hasMore) {
+      if (i + BATCH_SIZE < allCardIds.length) {
         await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS));
       }
     }
