@@ -54,6 +54,9 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
   // Get user's preferred currency (default to USD)
   const preferredCurrency = user?.preferredCurrency || "USD";
   
+  // Check if user has Pro or Enterprise plan
+  const hasProAccess = user?.plan === "Pro" || user?.plan === "Enterprise";
+  
   // Only fetch price history when dialog is opened
   const priceHistory = useQuery(
     api.cards.getCardPriceHistory,
@@ -445,22 +448,23 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
               </div>
             </div>
             
-            {/* Currency Converter Section */}
-            <div className="border rounded-lg overflow-hidden">
-              <button
-                onClick={() => setShowCurrencyConverter(!showCurrencyConverter)}
-                className="w-full flex items-center justify-between p-2 hover:bg-secondary/50 transition-colors"
-              >
-                <div className="flex items-center gap-1.5">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Currency Converter</span>
-                </div>
-                {showCurrencyConverter ? (
-                  <ChevronUp className="h-3.5 w-3.5" />
-                ) : (
-                  <ChevronDown className="h-3.5 w-3.5" />
-                )}
-              </button>
+            {/* Currency Converter Section - Pro Feature */}
+            {hasProAccess ? (
+              <div className="border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setShowCurrencyConverter(!showCurrencyConverter)}
+                  className="w-full flex items-center justify-between p-2 hover:bg-secondary/50 transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <DollarSign className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Currency Converter</span>
+                  </div>
+                  {showCurrencyConverter ? (
+                    <ChevronUp className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  )}
+                </button>
               
               <AnimatePresence>
                 {showCurrencyConverter && (
@@ -624,7 +628,31 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+              </div>
+            ) : (
+              <div className="border rounded-lg p-4 bg-secondary/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-muted-foreground">Currency Converter</span>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Convert prices to multiple currencies with real-time exchange rates.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      window.location.href = "/premium";
+                    }, 100);
+                  }}
+                  className="w-full"
+                >
+                  Upgrade to Pro
+                </Button>
+              </div>
+            )}
             
             {/* Price Chart */}
             <div className="space-y-3">
