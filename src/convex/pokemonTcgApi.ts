@@ -285,6 +285,7 @@ export const updateAllCardsWithRealData = internalAction({
           await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
         } catch (error) {
           console.error(`Error updating card ${card.name}:`, error);
+          // Continue processing even if one card fails
         }
       }
       
@@ -301,11 +302,12 @@ export const updateAllCardsWithRealData = internalAction({
     }
     
     console.log(`Card update complete. Total cards updated: ${fluctuationCount}`);
+    console.log(`New cards fetched: ${result.updated}, Existing cards updated: ${fluctuationCount}`);
     
     return { 
       success: result.success, 
       updated: result.updated + fluctuationCount,
-      total: result.total,
+      total: result.total + fluctuationCount,
       errors: result.errors
     };
   },
