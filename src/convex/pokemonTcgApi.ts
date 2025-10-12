@@ -234,10 +234,15 @@ export const updateAllCardsWithRealData = internalAction({
     const DELAY_BETWEEN_BATCHES_MS = 2000;
 
     let fluctuationCount = 0;
-    let cursor = null;
+    let cursor: string | null = null;
     let hasMore = true;
+    let batchNumber = 0;
+    
+    console.log("Starting card update process...");
     
     while (hasMore) {
+      batchNumber++;
+      
       // Fetch a batch of cards using pagination
       const batch: { page: any[]; continueCursor: string | null; isDone: boolean } = await ctx.runQuery(internal.cards._getCardsBatch, {
         cursor,
@@ -245,9 +250,12 @@ export const updateAllCardsWithRealData = internalAction({
       });
       
       if (!batch || batch.page.length === 0) {
+        console.log(`Batch ${batchNumber}: No more cards to process`);
         hasMore = false;
         break;
       }
+      
+      console.log(`Batch ${batchNumber}: Processing ${batch.page.length} cards`);
       
       // Shuffle the batch to randomize which sets get updated
       const shuffledBatch = [...batch.page].sort(() => Math.random() - 0.5);
@@ -256,29 +264,35 @@ export const updateAllCardsWithRealData = internalAction({
       for (let j = 0; j < shuffledBatch.length; j++) {
         const card = shuffledBatch[j];
         
-        // Simulate realistic price fluctuations (±3%)
-        const fluctuation = 0.97 + Math.random() * 0.06;
-        const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
-        
-        await ctx.runMutation(internal.cards.upsertCard, {
-          name: card.name,
-          setName: card.setName,
-          cardNumber: card.cardNumber,
-          rarity: card.rarity,
-          imageUrl: card.imageUrl,
-          tcgplayerUrl: card.tcgplayerUrl,
-          currentPrice: newPrice,
-        });
-        
-        fluctuationCount++;
-        
-        // Add delay after each card update for smooth distribution
-        await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
+        try {
+          // Simulate realistic price fluctuations (±3%)
+          const fluctuation = 0.97 + Math.random() * 0.06;
+          const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
+          
+          await ctx.runMutation(internal.cards.upsertCard, {
+            name: card.name,
+            setName: card.setName,
+            cardNumber: card.cardNumber,
+            rarity: card.rarity,
+            imageUrl: card.imageUrl,
+            tcgplayerUrl: card.tcgplayerUrl,
+            currentPrice: newPrice,
+          });
+          
+          fluctuationCount++;
+          
+          // Add delay after each card update for smooth distribution
+          await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
+        } catch (error) {
+          console.error(`Error updating card ${card.name}:`, error);
+        }
       }
       
       // Update cursor for next batch
       cursor = batch.continueCursor;
       hasMore = !batch.isDone;
+      
+      console.log(`Batch ${batchNumber} complete. Total updated so far: ${fluctuationCount}. Has more: ${hasMore}`);
       
       // Add delay between batches
       if (hasMore) {
@@ -286,7 +300,7 @@ export const updateAllCardsWithRealData = internalAction({
       }
     }
     
-    console.log(`Updated ${fluctuationCount} cards with staggered price fluctuations`);
+    console.log(`Card update complete. Total cards updated: ${fluctuationCount}`);
     
     return { 
       success: result.success, 
