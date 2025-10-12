@@ -149,8 +149,9 @@ export const fetchAllCardsAbovePrice = internalAction({
         console.log(`Processing ${data.data.length} cards from page ${page}...`);
         totalProcessed += data.data.length;
 
-        // Filter and process cards above the minimum price
-        for (const card of data.data) {
+        // Filter and process cards above the minimum price WITH DELAYS
+        for (let i = 0; i < data.data.length; i++) {
+          const card = data.data[i];
           try {
             let price = 0;
             if (card.tcgplayer?.prices) {
@@ -174,6 +175,9 @@ export const fetchAllCardsAbovePrice = internalAction({
                 currentPrice: price,
               });
               successCount++;
+              
+              // Add delay after each card insert to prevent bursts
+              await new Promise(resolve => setTimeout(resolve, 500));
             }
           } catch (error) {
             if (errors.length < 20) {
@@ -194,33 +198,9 @@ export const fetchAllCardsAbovePrice = internalAction({
 
       console.log(`Fetch complete. Total processed: ${totalProcessed}, Successfully added: ${successCount}`);
       
-      // After fetching new cards, update existing cards with realistic price fluctuations
-      const allCards = await ctx.runQuery(internal.cards._getAllCards);
-      let fluctuationCount = 0;
-      
-      for (const card of allCards) {
-        // Simulate realistic price fluctuations (±3%)
-        const fluctuation = 0.97 + Math.random() * 0.06;
-        const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
-        
-        await ctx.runMutation(internal.cards.upsertCard, {
-          name: card.name,
-          setName: card.setName,
-          cardNumber: card.cardNumber,
-          rarity: card.rarity,
-          imageUrl: card.imageUrl,
-          tcgplayerUrl: card.tcgplayerUrl,
-          currentPrice: newPrice,
-        });
-        
-        fluctuationCount++;
-      }
-      
-      console.log(`Updated ${fluctuationCount} cards with price fluctuations`);
-      
       return { 
         success: successCount > 0, 
-        updated: successCount + fluctuationCount,
+        updated: successCount,
         total: totalProcessed,
         errors: errors.length > 0 ? errors.slice(0, 10) : undefined
       };
@@ -235,16 +215,23 @@ export const fetchAllCardsAbovePrice = internalAction({
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
-    // Fetch all cards above $3 to get more results
-    const result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
-      minPrice: 3,
-    });
+    // Only fetch new cards occasionally (skip for regular updates)
+    // This prevents bursts of new card additions
+    const shouldFetchNew = Math.random() < 0.1; // 10% chance to fetch new cards
     
-      // Process cards one at a time with consistent delays to avoid bursts
-    // This ensures smooth, evenly distributed updates
-    const BATCH_SIZE = 5; // Process 5 cards at a time
-    const DELAY_BETWEEN_CARDS_MS = 1000; // 1 second between each card
-    const DELAY_BETWEEN_BATCHES_MS = 5000; // 5 seconds between batches
+    let result = { success: true, updated: 0, total: 0, errors: undefined as string[] | undefined };
+    
+    if (shouldFetchNew) {
+      console.log("Fetching new cards from API...");
+      result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
+        minPrice: 3,
+      });
+    }
+    
+    // Process existing cards with staggered updates
+    const BATCH_SIZE = 10;
+    const DELAY_BETWEEN_CARDS_MS = 500;
+    const DELAY_BETWEEN_BATCHES_MS = 2000;
 
     let fluctuationCount = 0;
     let cursor = null;
@@ -262,9 +249,12 @@ export const updateAllCardsWithRealData = internalAction({
         break;
       }
       
+      // Shuffle the batch to randomize which sets get updated
+      const shuffledBatch = [...batch.page].sort(() => Math.random() - 0.5);
+      
       // Process each card in the batch with delays
-      for (let j = 0; j < batch.page.length; j++) {
-        const card = batch.page[j];
+      for (let j = 0; j < shuffledBatch.length; j++) {
+        const card = shuffledBatch[j];
         
         // Simulate realistic price fluctuations (±3%)
         const fluctuation = 0.97 + Math.random() * 0.06;
