@@ -451,12 +451,12 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                   <button
                     onClick={handleFavoriteClick}
                     onTouchEnd={handleFavoriteClick}
-                    className="absolute bottom-2 right-2 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all touch-manipulation z-10"
+                    className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-1.5 sm:p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all touch-manipulation z-10"
                     aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
                     type="button"
                   >
                     <Heart
-                      className={`h-5 w-5 transition-all ${
+                      className={`h-4 w-4 sm:h-5 sm:w-5 transition-all ${
                         isFavorited 
                           ? "fill-red-500 text-red-500" 
                           : "text-muted-foreground hover:text-red-500"
