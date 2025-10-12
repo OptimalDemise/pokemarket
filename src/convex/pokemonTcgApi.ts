@@ -259,12 +259,9 @@ export const updateAllCardsWithRealData = internalAction({
       
       console.log(`Batch ${batchNumber}: Fetched ${batch.page.length} cards (Sets: ${[...new Set(batch.page.map(c => c.setName))].join(', ')})`);
       
-      // Shuffle the batch to randomize which sets get updated
-      const shuffledBatch = [...batch.page].sort(() => Math.random() - 0.5);
-      
-      // Process each card in the batch with delays
-      for (let j = 0; j < shuffledBatch.length; j++) {
-        const card = shuffledBatch[j];
+      // Process each card in the batch with delays (no shuffling to ensure systematic progression)
+      for (let j = 0; j < batch.page.length; j++) {
+        const card = batch.page[j];
         
         // Track which cards we've processed
         if (processedCardIds.has(card._id)) {
@@ -302,7 +299,7 @@ export const updateAllCardsWithRealData = internalAction({
       cursor = batch.continueCursor;
       hasMore = !batch.isDone;
       
-      console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${shuffledBatch.length}. Total updated so far: ${fluctuationCount}. Has more: ${hasMore}, Cursor: ${cursor ? 'exists' : 'null'}`);
+      console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${batch.page.length}. Total updated so far: ${fluctuationCount}. Has more: ${hasMore}, Cursor: ${cursor ? 'exists' : 'null'}`);
       
       // Add delay between batches
       if (hasMore) {
