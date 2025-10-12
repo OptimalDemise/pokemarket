@@ -123,7 +123,7 @@ export const updateBigMoversCache = internalMutation({
       const recentCards = await ctx.db
         .query("cards")
         .withIndex("by_last_updated", (q) => q.gt("lastUpdated", oneHourAgo))
-        .collect(); // Collect all to ensure we capture all significant movers
+        .collect(); // Collect all to ensure we capture all significant movers regardless of order
       
       // Filter for cards with >3% change
       const significantMovers = recentCards
