@@ -27,7 +27,7 @@ export default function Dashboard() {
   // Fetch data with manual refresh control
   const [refreshKey, setRefreshKey] = useState(0);
   const cards = useQuery(api.cards.getAllCards);
-  const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 10 });
+  const topDailyChanges = useQuery(api.dailySnapshots.getTopDailyChanges, { limit: 20 });
   const bigMovers = useQuery(api.cards.getBigMovers, { hoursAgo: 1, minPercentChange: 3, limit: 20 });
   
   const [lastUpdate, setLastUpdate] = useState(new Date());
@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [rarityOpen, setRarityOpen] = useState(false);
   const [setOpen, setSetOpen] = useState(false);
   const [showTopDailyMovers, setShowTopDailyMovers] = useState(true);
+  const [topDailyMoversPage, setTopDailyMoversPage] = useState(0); // 0 for first 10, 1 for next 10
   const [showBigMovers, setShowBigMovers] = useState(true);
   const [showLiveUpdates, setShowLiveUpdates] = useState(true);
   const [isLiveUpdatesFullscreen, setIsLiveUpdatesFullscreen] = useState(false);
@@ -757,8 +758,9 @@ export default function Dashboard() {
                       style={{ overflow: "hidden" }}
                     >
                       {topDailyChanges && topDailyChanges.length > 0 ? (
+                        <>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                          {topDailyChanges.slice(0, 10).map((item: any) => (
+                          {topDailyChanges.slice(topDailyMoversPage * 10, (topDailyMoversPage + 1) * 10).map((item: any) => (
                             <div key={item._id} className="space-y-2">
                               <CardItem card={item} size="compact" />
                               <div className="px-2 py-1.5 bg-secondary/30 rounded text-xs space-y-1">
@@ -780,6 +782,32 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
+                        {topDailyChanges.length > 10 && (
+                          <div className="flex items-center justify-center gap-2 mt-4">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setTopDailyMoversPage(0)}
+                              disabled={topDailyMoversPage === 0}
+                              className="cursor-pointer"
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <span className="text-sm text-muted-foreground">
+                              {topDailyMoversPage === 0 ? "1-10" : "11-20"} of {topDailyChanges.length}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setTopDailyMoversPage(1)}
+                              disabled={topDailyMoversPage === 1 || topDailyChanges.length <= 10}
+                              className="cursor-pointer"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                        </>
                       ) : (
                         <div className="text-center py-8 text-muted-foreground text-sm">
                           <p>No daily changes yet</p>
