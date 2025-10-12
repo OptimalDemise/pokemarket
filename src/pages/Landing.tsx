@@ -380,7 +380,7 @@ export default function Landing() {
       </section>
 
       {/* Why Us Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 bg-secondary/20">
+      <section className="max-w-7xl mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -389,31 +389,41 @@ export default function Landing() {
           className="space-y-12"
         >
           <div className="text-center space-y-4">
-            <h2 className="text-4xl font-bold tracking-tight">Why Choose PokéMarket?</h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: false }}
+              className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full text-sm font-medium text-primary mb-4"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>Why Choose Us</span>
+            </motion.div>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Built Different</h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              See how we compare to other card tracking platforms
+              See how PokéMarket stands out from the competition
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* PokéMarket Column */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: false }}
-              className="space-y-4 p-6 border-2 border-primary rounded-lg bg-background relative"
+              className="space-y-4 p-8 border-2 border-primary rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 relative shadow-lg hover:shadow-xl transition-shadow"
             >
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-6 py-2 rounded-full text-sm font-bold shadow-md">
                 PokéMarket
               </div>
-              <div className="pt-4 space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-xs">✓</span>
+              <div className="pt-6 space-y-5">
+                <div className="flex items-start gap-3 group">
+                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm group-hover:scale-110 transition-transform">
+                    <span className="text-white text-sm font-bold">✓</span>
                   </div>
                   <div>
-                    <p className="font-medium">Valuable Cards Only</p>
+                    <p className="font-semibold text-foreground">Valuable Cards Only</p>
                     <p className="text-sm text-muted-foreground">Focus on cards worth $3+</p>
                   </div>
                 </div>
@@ -462,12 +472,12 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: false }}
-              className="space-y-4 p-6 border rounded-lg bg-background/50"
+              className="space-y-4 p-8 border rounded-xl bg-secondary/30 backdrop-blur-sm"
             >
-              <div className="text-center font-bold text-muted-foreground pb-2">
+              <div className="text-center font-bold text-muted-foreground pb-3 text-lg">
                 Other Sites
               </div>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-start gap-3">
                   <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-red-500 text-xs">✗</span>
@@ -522,12 +532,12 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: false }}
-              className="space-y-4 p-6 border rounded-lg bg-background/50"
+              className="space-y-4 p-8 border rounded-xl bg-secondary/30 backdrop-blur-sm"
             >
-              <div className="text-center font-bold text-muted-foreground pb-2">
+              <div className="text-center font-bold text-muted-foreground pb-3 text-lg">
                 Marketplaces
               </div>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-start gap-3">
                   <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-amber-500 text-xs">~</span>
