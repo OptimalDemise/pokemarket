@@ -675,7 +675,7 @@ export default function Dashboard() {
 
                 {/* Pagination Controls for Cards */}
                 {totalCardPages > 1 && (
-                  <div className="fixed bottom-0 left-0 right-0 lg:right-64 bg-background/95 backdrop-blur border-t py-3 z-20">
+                  <div className="fixed bottom-0 left-0 right-0 lg:right-80 bg-background/95 backdrop-blur border-t py-3 z-20">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="outline"
@@ -884,7 +884,7 @@ export default function Dashboard() {
               "overflow-y-auto scroll-smooth flex-shrink-0 relative",
               isLiveUpdatesFullscreen 
                 ? "fixed inset-0 z-50 w-full h-full bg-background" 
-                : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-64 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
+                : "bg-card/50 border-t lg:border-t-0 lg:border-l w-full lg:w-80 lg:sticky lg:top-0 lg:h-screen order-1 lg:order-2 max-h-[300px] lg:max-h-none"
             )}
           >
             {/* Close button positioned at left edge, vertically centered - sticky */}
