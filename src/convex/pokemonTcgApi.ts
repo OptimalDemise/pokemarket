@@ -240,11 +240,11 @@ export const updateAllCardsWithRealData = internalAction({
       minPrice: 3,
     });
     
-      // Process cards in batches using pagination to avoid limits
-    // Optimized for smoother updates: smaller batches with longer delays
-    const BATCH_SIZE = 10;
-    const DELAY_BETWEEN_CARDS_MS = 800;
-    const DELAY_BETWEEN_BATCHES_MS = 15000;
+      // Process cards one at a time with consistent delays to avoid bursts
+    // This ensures smooth, evenly distributed updates
+    const BATCH_SIZE = 1;
+    const DELAY_BETWEEN_CARDS_MS = 6000; // 6 seconds between each card
+    const DELAY_BETWEEN_BATCHES_MS = 0; // No additional batch delay needed
     
     let fluctuationCount = 0;
     let cursor = null;
@@ -282,10 +282,8 @@ export const updateAllCardsWithRealData = internalAction({
         
         fluctuationCount++;
         
-        // Add delay between individual cards (except for the last card in the batch)
-        if (j < batch.page.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
-        }
+        // Add delay after each card update for smooth distribution
+        await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
       }
       
       // Update cursor for next batch
