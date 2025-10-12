@@ -505,12 +505,12 @@ export default function Landing() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-amber-500 text-xs">~</span>
+                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
                   </div>
                   <div>
-                    <p className="font-medium text-muted-foreground">Paid Features</p>
-                    <p className="text-sm text-muted-foreground">Paywalls for basic data</p>
+                    <p className="font-medium">Focused Experience</p>
+                    <p className="text-sm text-muted-foreground">Built for tracking, not selling</p>
                   </div>
                 </div>
               </div>
@@ -565,12 +565,12 @@ export default function Landing() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-amber-500 text-xs">~</span>
+                  <div className="h-5 w-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-red-500 text-xs">✗</span>
                   </div>
                   <div>
-                    <p className="font-medium text-muted-foreground">Seller Fees</p>
-                    <p className="text-sm text-muted-foreground">Costs to list and sell</p>
+                    <p className="font-medium text-muted-foreground">Tracking Tools</p>
+                    <p className="text-sm text-muted-foreground">Limited price history</p>
                   </div>
                 </div>
               </div>
