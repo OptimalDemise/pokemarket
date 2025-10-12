@@ -943,7 +943,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className={cn("p-2 pl-4", isLiveUpdatesFullscreen && "p-6 pl-4")}>
+            <div className={cn("p-2 pl-4 overflow-y-auto", isLiveUpdatesFullscreen && "p-6 pl-4")}>
               {liveUpdates.length > 0 ? (
                 <div className={cn(
                   "grid gap-2",
