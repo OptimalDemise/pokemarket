@@ -242,10 +242,10 @@ export const updateAllCardsWithRealData = internalAction({
     
       // Process cards one at a time with consistent delays to avoid bursts
     // This ensures smooth, evenly distributed updates
-    const BATCH_SIZE = 1;
-    const DELAY_BETWEEN_CARDS_MS = 6000; // 6 seconds between each card
-    const DELAY_BETWEEN_BATCHES_MS = 0; // No additional batch delay needed
-    
+    const BATCH_SIZE = 5; // Process 5 cards at a time
+    const DELAY_BETWEEN_CARDS_MS = 1000; // 1 second between each card
+    const DELAY_BETWEEN_BATCHES_MS = 5000; // 5 seconds between batches
+
     let fluctuationCount = 0;
     let cursor = null;
     let hasMore = true;
