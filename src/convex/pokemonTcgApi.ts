@@ -229,7 +229,7 @@ export const updateAllCardsWithRealData = internalAction({
     }
     
     // Process existing cards with staggered updates
-    const BATCH_SIZE = 50; // Increased from 10 to process more cards per batch
+    const BATCH_SIZE = 30; // Balanced batch size for reliable processing
     const DELAY_BETWEEN_CARDS_MS = 100; // Reduced from 500ms to speed up processing
     const DELAY_BETWEEN_BATCHES_MS = 500; // Reduced from 2000ms to speed up processing
 
