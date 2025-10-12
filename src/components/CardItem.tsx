@@ -418,9 +418,26 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
         
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              {card.name || 'Unknown Card'}
+            <DialogTitle className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                {card.name || 'Unknown Card'}
+              </div>
+              <button
+                onClick={handleFavoriteClick}
+                onTouchEnd={handleFavoriteClick}
+                className="p-2 rounded-full hover:bg-secondary transition-all touch-manipulation"
+                aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                type="button"
+              >
+                <Heart
+                  className={`h-5 w-5 transition-all ${
+                    isFavorited 
+                      ? "fill-red-500 text-red-500" 
+                      : "text-muted-foreground hover:text-red-500"
+                  }`}
+                />
+              </button>
             </DialogTitle>
           </DialogHeader>
           
