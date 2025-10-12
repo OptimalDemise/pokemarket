@@ -237,8 +237,10 @@ export const updateAllCardsWithRealData = internalAction({
     let cursor: string | null = null;
     let hasMore = true;
     let batchNumber = 0;
+    const processedCardIds = new Set<string>();
     
     console.log("Starting card update process...");
+    console.log(`Target: Process all cards in database with ${BATCH_SIZE} cards per batch`);
     
     while (hasMore) {
       batchNumber++;
@@ -255,7 +257,7 @@ export const updateAllCardsWithRealData = internalAction({
         break;
       }
       
-      console.log(`Batch ${batchNumber}: Processing ${batch.page.length} cards`);
+      console.log(`Batch ${batchNumber}: Fetched ${batch.page.length} cards (Sets: ${[...new Set(batch.page.map(c => c.setName))].join(', ')})`);
       
       // Shuffle the batch to randomize which sets get updated
       const shuffledBatch = [...batch.page].sort(() => Math.random() - 0.5);
@@ -263,6 +265,13 @@ export const updateAllCardsWithRealData = internalAction({
       // Process each card in the batch with delays
       for (let j = 0; j < shuffledBatch.length; j++) {
         const card = shuffledBatch[j];
+        
+        // Track which cards we've processed
+        if (processedCardIds.has(card._id)) {
+          console.warn(`Duplicate card detected: ${card.name} (${card.setName}) - skipping`);
+          continue;
+        }
+        processedCardIds.add(card._id);
         
         try {
           // Simulate realistic price fluctuations (±3%)
@@ -284,7 +293,7 @@ export const updateAllCardsWithRealData = internalAction({
           // Add delay after each card update for smooth distribution
           await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
         } catch (error) {
-          console.error(`Error updating card ${card.name}:`, error);
+          console.error(`Error updating card ${card.name} from ${card.setName}:`, error);
           // Continue processing even if one card fails
         }
       }
@@ -293,7 +302,7 @@ export const updateAllCardsWithRealData = internalAction({
       cursor = batch.continueCursor;
       hasMore = !batch.isDone;
       
-      console.log(`Batch ${batchNumber} complete. Total updated so far: ${fluctuationCount}. Has more: ${hasMore}`);
+      console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${shuffledBatch.length}. Total updated so far: ${fluctuationCount}. Has more: ${hasMore}, Cursor: ${cursor ? 'exists' : 'null'}`);
       
       // Add delay between batches
       if (hasMore) {
@@ -301,7 +310,8 @@ export const updateAllCardsWithRealData = internalAction({
       }
     }
     
-    console.log(`Card update complete. Total cards updated: ${fluctuationCount}`);
+    console.log(`Card update complete. Total batches processed: ${batchNumber}`);
+    console.log(`Total unique cards updated: ${fluctuationCount} (out of ${processedCardIds.size} processed)`);
     console.log(`New cards fetched: ${result.updated}, Existing cards updated: ${fluctuationCount}`);
     
     return { 
