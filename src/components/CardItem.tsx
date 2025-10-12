@@ -330,7 +330,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
 
               {isJustUpdated && (
                 <div className="absolute top-2 right-2 z-[5]">
-                  <span className="bg-primary text-primary-foreground text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow-lg whitespace-nowrap">
+                  <span className="bg-primary text-primary-foreground text-[6px] font-bold px-1 py-0.5 rounded-full shadow-lg whitespace-nowrap">
                     UPDATED
                   </span>
                 </div>
@@ -365,8 +365,8 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                     <h3 className={`font-bold tracking-tight ${isCompact ? 'text-[10px]' : 'text-sm'} truncate`}>{card.name || 'Unknown Card'}</h3>
                   </div>
                   <p className={`${isCompact ? 'text-[8px]' : 'text-xs'} text-muted-foreground truncate`}>{card.setName || 'Unknown Set'}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
+                  <div className="flex items-center justify-between gap-1">
+                    <div className="flex flex-col min-w-0 flex-1">
                       {card.isRecentSale && displayAveragePrice ? (
                         <>
                           <motion.span 
@@ -374,7 +374,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground line-through`}
+                            className={`${isCompact ? 'text-[10px]' : 'text-xs'} text-muted-foreground line-through truncate`}
                           >
                             Avg: {currencySymbol}{formatPrice(displayAveragePrice)}
                           </motion.span>
@@ -383,7 +383,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.3 }}
-                            className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold text-primary`}
+                            className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold text-primary truncate`}
                           >
                             Recent: {currencySymbol}{formatPrice(displayPrice)}
                           </motion.span>
@@ -394,7 +394,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.3 }}
-                          className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold`}
+                          className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold truncate`}
                         >
                           {currencySymbol}{formatPrice(displayPrice)}
                         </motion.span>
@@ -405,7 +405,7 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3 }}
-                      className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium ${card.percentChange === 0 ? "text-muted-foreground" : card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}
+                      className={`${isCompact ? 'text-[10px]' : 'text-xs'} font-medium flex-shrink-0 ${card.percentChange === 0 ? "text-muted-foreground" : card.percentChange >= 0 ? "text-green-600" : "text-red-600"}`}
                     >
                       {card.percentChange === 0 ? "—" : `${card.percentChange >= 0 ? "+" : ""}${formatPercentage(card.percentChange)}%`}
                     </motion.span>
