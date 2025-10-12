@@ -278,11 +278,27 @@ export const CardItem = memo(function CardItem({ card, size = "default" }: CardI
     : undefined;
   const currencySymbol = getCurrencySymbol();
 
-  // Debug logging to check exchange rates
+  // Additional debug for JPY conversion
   if (preferredCurrency === "JPY" && exchangeRates) {
-    console.log("JPY Exchange Rate:", exchangeRates.JPY);
-    console.log("Card Current Price (USD):", card.currentPrice);
-    console.log("Display Price (JPY):", displayPrice);
+    console.log("=== JPY Conversion Check ===");
+    console.log("Input USD Price:", card.currentPrice);
+    console.log("JPY Rate from exchangeRates:", exchangeRates.JPY);
+    console.log("Direct calculation:", card.currentPrice * exchangeRates.JPY);
+    console.log("getDisplayPrice result:", getDisplayPrice(card.currentPrice));
+    console.log("Final displayPrice:", displayPrice);
+  }
+
+  // Debug logging to check exchange rates and conversion
+  if (preferredCurrency === "JPY") {
+    console.log("=== JPY Debug Info ===");
+    console.log("Exchange Rates Loaded:", !!exchangeRates);
+    if (exchangeRates) {
+      console.log("JPY Exchange Rate:", exchangeRates.JPY);
+      console.log("Card Current Price (USD):", card.currentPrice);
+      console.log("Calculated JPY Price:", card.currentPrice * exchangeRates.JPY);
+      console.log("Display Price (JPY):", displayPrice);
+      console.log("Currency Symbol:", currencySymbol);
+    }
   }
 
   return (
