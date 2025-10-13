@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
 
 export default function TermsOfService() {
   const navigate = useNavigate();
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
