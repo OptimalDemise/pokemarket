@@ -471,8 +471,14 @@ export default function Dashboard() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-6 py-8">
-          {/* Ad Zone 1: Top Banner - Hidden */}
-          <div className="mb-6 min-h-[90px] sm:min-h-[120px]" />
+          {/* Ad Zone 1: Top Banner - Logo placeholder */}
+          <div className="mb-6 min-h-[90px] sm:min-h-[120px] flex items-center justify-center bg-secondary/20 rounded-lg border border-dashed border-muted-foreground/20">
+            <img 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
+              alt="PokéMarket" 
+              className="h-16 w-16 opacity-20"
+            />
+          </div>
 
           {/* Rarity and Set Filters */}
           <div className="flex flex-col gap-4 mb-6">
@@ -656,9 +662,15 @@ export default function Dashboard() {
                   {paginatedCards.map((card, index) => (
                     <>
                       <CardItemWrapper key={card._id} card={card} />
-                      {/* Native Ad Card - Every 10th position - Empty space */}
+                      {/* Native Ad Card - Every 10th position - Logo placeholder */}
                       {(index + 1) % 10 === 0 && index < paginatedCards.length - 1 && (
-                        <div key={`ad-${card._id}`} />
+                        <div key={`ad-${card._id}`} className="flex items-center justify-center bg-secondary/20 rounded-lg border border-dashed border-muted-foreground/20">
+                          <img 
+                            src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
+                            alt="PokéMarket" 
+                            className="h-16 w-16 opacity-20"
+                          />
+                        </div>
                       )}
                     </>
                   ))}
@@ -669,9 +681,15 @@ export default function Dashboard() {
                   </div>
                 )}
                 
-                {/* Ad Zone 3: Above Pagination - Hidden */}
+                {/* Ad Zone 3: Above Pagination - Logo placeholder */}
                 {filteredAndSortedCards.length > 0 && (
-                  <div className="mt-6 mb-4 min-h-[60px] sm:min-h-[90px]" />
+                  <div className="mt-6 mb-4 min-h-[60px] sm:min-h-[90px] flex items-center justify-center bg-secondary/20 rounded-lg border border-dashed border-muted-foreground/20">
+                    <img 
+                      src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
+                      alt="PokéMarket" 
+                      className="h-16 w-16 opacity-20"
+                    />
+                  </div>
                 )}
 
                 {/* Pagination Controls for Cards */}
