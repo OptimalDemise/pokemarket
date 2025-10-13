@@ -622,9 +622,9 @@ export default function Landing() {
               <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <Sparkles className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-bold tracking-tight">Valuable Cards Only</h3>
+              <h3 className="text-xl font-bold tracking-tight">Smart Card Filtering</h3>
               <p className="text-muted-foreground">
-                Track hollow rare, ultra rare, and secret rare cards. No commons, only the valuable ones.
+                Focus on cards worth $3+. Track hollow rare, ultra rare, and secret rare cards - only the valuable ones.
               </p>
             </motion.div>
 
@@ -690,16 +690,16 @@ export default function Landing() {
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="h-8 w-8 text-primary" />
-              <div className="text-5xl font-bold tracking-tight">Up to 1 min</div>
+              <div className="text-5xl font-bold tracking-tight">10 min</div>
             </div>
             <p className="text-muted-foreground">Update Frequency</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
               <Sparkles className="h-8 w-8 text-primary" />
-              <div className="text-5xl font-bold tracking-tight">100%</div>
+              <div className="text-5xl font-bold tracking-tight">Real-Time</div>
             </div>
-            <p className="text-muted-foreground">Valuable Cards</p>
+            <p className="text-muted-foreground">Live Market Data</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
