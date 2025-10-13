@@ -283,9 +283,15 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Ad Space 1: Subtle Banner - Hidden */}
+      {/* Ad Space 1: Subtle Banner */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="max-w-xl mx-auto min-h-[80px]" />
+        <div className="max-w-xl mx-auto min-h-[80px] flex items-center justify-center">
+          <img 
+            src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
+            alt="PokéMarket" 
+            className="h-16 w-16 opacity-20"
+          />
+        </div>
       </section>
 
       {/* Market Activity Section */}
@@ -655,14 +661,20 @@ export default function Landing() {
             </motion.div>
           </div>
 
-          {/* Ad Space 2: Native Ad below Features - Hidden */}
+          {/* Ad Space 2: Native Ad below Features */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: false }}
-            className="max-w-xl mx-auto min-h-[80px]"
-          />
+            className="max-w-xl mx-auto min-h-[80px] flex items-center justify-center"
+          >
+            <img 
+              src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
+              alt="PokéMarket" 
+              className="h-16 w-16 opacity-20"
+            />
+          </motion.div>
         </motion.div>
       </section>
 
@@ -803,9 +815,15 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Ad Space 3: Footer Banner - Hidden */}
+      {/* Ad Space 3: Footer Banner */}
       <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="max-w-xl mx-auto min-h-[80px]" />
+        <div className="max-w-xl mx-auto min-h-[80px] flex items-center justify-center">
+          <img 
+            src="https://harmless-tapir-303.convex.cloud/api/storage/3618c315-1be3-4a51-8bd2-7205d0c4fb5a" 
+            alt="PokéMarket" 
+            className="h-16 w-16 opacity-20"
+          />
+        </div>
       </section>
 
       {/* Footer */}
