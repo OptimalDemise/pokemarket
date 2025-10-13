@@ -517,7 +517,7 @@ export default function Dashboard() {
                           />
                           All Rarities
                         </CommandItem>
-                        {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Holo Rare", "Ultra Rare", "Secret Rare", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
+                        {["Rare Holo", "Rare Holo EX", "Rare Holo GX", "Rare Holo V", "Rare Holo VMAX", "Rare Holo VSTAR", "Rare Ultra", "Rare Rainbow", "Rare Secret", "Rare Shining", "Rare ACE", "Rare BREAK", "Rare Prime", "Rare Prism Star", "Amazing Rare", "Radiant Rare", "Hyper Rare", "Illustration Rare", "Special Illustration Rare", "Double Rare", "Shiny Rare", "Shiny Ultra Rare", "Trainer Gallery Rare Holo", "Promo"].map((rarity) => (
                           <CommandItem
                             key={rarity}
                             value={rarity}
