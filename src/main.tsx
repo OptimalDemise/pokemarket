@@ -18,6 +18,9 @@ import ContactUs from "./pages/ContactUs.tsx";
 import PremiumService from "./pages/PremiumService.tsx";
 import Favorites from "./pages/Favorites.tsx";
 import "./types/global.d.ts";
+import { MaintenanceScreen } from "@/components/MaintenanceScreen.tsx";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
@@ -44,6 +47,35 @@ function RouteSyncer() {
   return null;
 }
 
+function AppRoutes() {
+  const maintenanceStatus = useQuery(api.maintenance.isMaintenanceActive);
+  
+  // Show maintenance screen if active
+  if (maintenanceStatus?.isActive) {
+    return (
+      <MaintenanceScreen 
+        message={maintenanceStatus.message}
+        startTime={maintenanceStatus.startTime}
+      />
+    );
+  }
+  
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/market" element={<Dashboard />} />
+      <Route path="/auth" element={<AuthPage redirectAfterAuth="/market" />} />
+      <Route path="/account-settings" element={<AccountSettings />} />
+      <Route path="/premium" element={<PremiumService />} />
+      <Route path="/favorites" element={<Favorites />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/contact" element={<ContactUs />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <VlyToolbar />
@@ -51,18 +83,7 @@ createRoot(document.getElementById("root")!).render(
       <ConvexAuthProvider client={convex}>
         <BrowserRouter>
           <RouteSyncer />
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/market" element={<Dashboard />} />
-            <Route path="/auth" element={<AuthPage redirectAfterAuth="/market" />} />
-            <Route path="/account-settings" element={<AccountSettings />} />
-            <Route path="/premium" element={<PremiumService />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
         <Toaster />
       </ConvexAuthProvider>

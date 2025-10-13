@@ -3,6 +3,13 @@ import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 
+// Weekly maintenance - runs Sunday at 11:55 PM UTC (5 minutes before Monday)
+crons.weekly(
+  "weekly maintenance",
+  { hourUTC: 23, minuteUTC: 55, dayOfWeek: "sunday" },
+  internal.maintenanceJobs.runWeeklyMaintenance
+);
+
 // Create daily snapshots at midnight UTC - now using action for batching
 crons.daily(
   "create daily snapshots",

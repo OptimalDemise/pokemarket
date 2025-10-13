@@ -23,6 +23,8 @@ import type * as crons from "../crons.js";
 import type * as dailySnapshots from "../dailySnapshots.js";
 import type * as favorites from "../favorites.js";
 import type * as http from "../http.js";
+import type * as maintenance from "../maintenance.js";
+import type * as maintenanceJobs from "../maintenanceJobs.js";
 import type * as pokemonTcgApi from "../pokemonTcgApi.js";
 import type * as products from "../products.js";
 import type * as seedData from "../seedData.js";
@@ -51,6 +53,8 @@ declare const fullApi: ApiFromModules<{
   dailySnapshots: typeof dailySnapshots;
   favorites: typeof favorites;
   http: typeof http;
+  maintenance: typeof maintenance;
+  maintenanceJobs: typeof maintenanceJobs;
   pokemonTcgApi: typeof pokemonTcgApi;
   products: typeof products;
   seedData: typeof seedData;

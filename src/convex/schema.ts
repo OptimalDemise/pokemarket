@@ -126,6 +126,14 @@ const schema = defineSchema(
       cursor: v.union(v.string(), v.null()),
       lastUpdated: v.number(),
     }).index("by_type", ["type"]),
+
+    // Maintenance mode tracking
+    maintenanceMode: defineTable({
+      isActive: v.boolean(),
+      startTime: v.optional(v.number()),
+      endTime: v.optional(v.number()),
+      message: v.optional(v.string()),
+    }),
   },
   {
     schemaValidation: false,
