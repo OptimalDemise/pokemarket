@@ -29,6 +29,7 @@ export const runWeeklyMaintenance = internalAction({
       console.log("Weekly maintenance completed successfully");
     } catch (error) {
       console.error("Error during maintenance:", error);
+      // Continue to disable maintenance mode even if there's an error
     } finally {
       // Always disable maintenance mode, even if there was an error
       await ctx.runMutation(internal.maintenance.disableMaintenance, {});
