@@ -148,6 +148,11 @@ export default function PremiumService() {
       icon: Shield,
       title: "Portfolio Protection",
       description: "Track your collection's value and get alerts when significant market changes affect your portfolio."
+    },
+    {
+      icon: Star,
+      title: "Custom Watchlists",
+      description: "Access expert-curated watchlists and create unlimited custom lists to organize and track your favorite cards."
     }
   ];
 
@@ -319,13 +324,14 @@ export default function PremiumService() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {features.map((feature) => {
               const Icon = feature.icon;
               const gradients = [
                 { bg: 'bg-gradient-to-br from-green-500/20 to-emerald-500/20', icon: 'text-green-600 dark:text-green-400' },
                 { bg: 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20', icon: 'text-blue-600 dark:text-indigo-400' },
-                { bg: 'bg-gradient-to-br from-rose-500/20 to-pink-500/20', icon: 'text-rose-600 dark:text-pink-400' }
+                { bg: 'bg-gradient-to-br from-rose-500/20 to-pink-500/20', icon: 'text-rose-600 dark:text-pink-400' },
+                { bg: 'bg-gradient-to-br from-amber-500/20 to-yellow-500/20', icon: 'text-amber-600 dark:text-yellow-400' }
               ];
               const gradient = gradients[features.indexOf(feature)];
               return (
