@@ -32,7 +32,7 @@ export const cleanupRedundantPriceHistory = internalMutation({
       }
 
       // Always keep first and last entries
-      // For middle entries, only keep those at least 15 minutes apart
+      // For middle entries, only keep those at least 15 minutes apart from the last kept entry
       const entriesToKeep = [history[0]]; // Always keep first
       
       for (let i = 1; i < history.length - 1; i++) {
@@ -43,14 +43,14 @@ export const cleanupRedundantPriceHistory = internalMutation({
         if (timeDiff >= FIFTEEN_MINUTES) {
           entriesToKeep.push(entry);
         } else {
-          // Delete this redundant entry
+          // Delete this redundant entry (less than 15 minutes from last kept)
           await ctx.db.delete(entry._id);
           totalDeleted++;
         }
       }
       
-      // Always keep the last entry (most recent)
-      // No need to add it to entriesToKeep since we're done processing
+      // Always keep the last entry (most recent) - add it to track but don't need to check it
+      entriesToKeep.push(history[history.length - 1]);
     }
 
     return { 
