@@ -53,3 +53,58 @@ export const cleanupAllRedundantPriceHistory = internalAction({
     };
   },
 });
+
+// Test version that processes only 50 cards
+export const testCleanup50Cards = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    let totalDeleted = 0;
+    let totalCardsProcessed = 0;
+    let cursor: string | undefined = undefined;
+    const BATCH_SIZE = 10;
+    const MAX_CARDS = 50;
+
+    console.log("Starting test cleanup of 50 cards...");
+
+    while (totalCardsProcessed < MAX_CARDS) {
+      const result: {
+        cardsProcessed: number;
+        entriesDeleted: number;
+        isDone: boolean;
+        continueCursor?: string;
+      } = await ctx.runMutation(
+        internal.cleanupPriceHistory.cleanupRedundantPriceHistory,
+        {
+          batchSize: BATCH_SIZE,
+          cursor: cursor,
+        }
+      );
+
+      totalDeleted += result.entriesDeleted;
+      totalCardsProcessed += result.cardsProcessed;
+      cursor = result.continueCursor;
+
+      console.log(
+        `Processed ${result.cardsProcessed} cards, deleted ${result.entriesDeleted} entries. Total so far: ${totalCardsProcessed} cards, ${totalDeleted} deletions.`
+      );
+
+      // Stop if we've processed 50 cards or if there are no more cards
+      if (totalCardsProcessed >= MAX_CARDS || result.isDone) {
+        break;
+      }
+
+      // Add a small delay between batches
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    console.log(
+      `Test cleanup complete! Total cards processed: ${totalCardsProcessed}, Total entries deleted: ${totalDeleted}`
+    );
+
+    return {
+      success: true,
+      totalCardsProcessed,
+      totalDeleted,
+    };
+  },
+});
