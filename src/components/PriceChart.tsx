@@ -452,39 +452,65 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             </>
           ) : (
             <>
-          {/* Bar chart for weekly view */}
-          {weeklyData.map((week, index) => {
-            const totalBars = weeklyData.length;
-            
-            // Space each bar evenly across the chart area (from leftPadding to width)
-            const barWidth = Math.max(12, Math.min(40, (chartWidth - leftPadding) / totalBars * 0.8));
-            const gapWidth = ((chartWidth - leftPadding) - barWidth * totalBars) / (totalBars - 1 || 1);
-            const x = leftPadding + index * (barWidth + gapWidth);
-            
-            // Height calculation
-            const availableHeight = chartHeight - padding * 2;
-            const normalizedPrice = (week.price - minPrice) / Math.max(0.01, priceRange);
-            const barHeight = Math.max(3, normalizedPrice * availableHeight);
-            const y = chartHeight - padding - barHeight;
-            
-            const isHovered = hoveredPoint?.timestamp === week.timestamp;
-            
-            return (
-              <motion.rect
-                key={`bar-${week.timestamp}-${index}`}
-                x={x}
-                y={y}
-                width={barWidth}
-                height={barHeight}
-                fill={isHovered ? (isPositive ? "#15803d" : "#b91c1c") : (isPositive ? "#16a34a" : "#dc2626")}
-                opacity={isHovered ? 1 : 0.8}
-                rx={2}
-                initial={{ height: 0, y: chartHeight - padding }}
-                animate={{ height: barHeight, y }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-              />
-            );
-          })}
+          {/* Weekly Bar Chart */}
+          {viewMode === "weekly" && weeklyData.length > 0 && (
+            <>
+              {weeklyData.map((week, index) => {
+                const totalBars = weeklyData.length;
+                // Calculate bar width: leave some gap between bars
+                const chartAvailableWidth = chartWidth - leftPadding - padding;
+                const barWidth = Math.min(40, Math.max(12, chartAvailableWidth / totalBars * 0.6));
+                const gapWidth = (chartAvailableWidth - barWidth * totalBars) / (totalBars - 1 || 1);
+                
+                // X position for each bar
+                const x = leftPadding + index * (barWidth + gapWidth);
+                
+                // Bar height
+                const normalizedPrice = (week.price - minPrice) / Math.max(0.01, priceRange);
+                const barHeight = Math.max(3, normalizedPrice * (chartHeight - padding * 2));
+                const y = chartHeight - padding - barHeight;
+                
+                const isHovered = hoveredPoint?.timestamp === week.timestamp;
+                
+                return (
+                  <motion.rect
+                    key={`bar-${week.timestamp}`}
+                    x={x}
+                    y={y}
+                    width={barWidth}
+                    height={barHeight}
+                    fill={isHovered ? (isPositive ? "#15803d" : "#b91c1c") : (isPositive ? "#16a34a" : "#dc2626")}
+                    opacity={isHovered ? 1 : 0.8}
+                    rx={2}
+                    initial={{ height: 0, y: chartHeight - padding }}
+                    animate={{ height: barHeight, y }}
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                  />
+                );
+              })}
+              
+              {/* X-axis labels under each bar */}
+              {weeklyData.map((week, index) => {
+                const totalBars = weeklyData.length;
+                const chartAvailableWidth = chartWidth - leftPadding - padding;
+                const barWidth = Math.min(40, Math.max(12, chartAvailableWidth / totalBars * 0.6));
+                const gapWidth = (chartAvailableWidth - barWidth * totalBars) / (totalBars - 1 || 1);
+                const x = leftPadding + index * (barWidth + gapWidth) + barWidth / 2;
+                
+                return (
+                  <text
+                    key={`label-${week.timestamp}`}
+                    x={x}
+                    y={chartHeight + 18}
+                    textAnchor="middle"
+                    className="text-[10px] fill-muted-foreground"
+                  >
+                    {formatDate(week.timestamp)}
+                  </text>
+                );
+              })}
+            </>
+          )}
             </>
           )}
           
