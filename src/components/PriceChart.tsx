@@ -466,9 +466,10 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 const x = leftPadding + index * (barWidth + gapWidth);
                 
                 // Height calculation
+                const availableHeight = chartHeight - padding; // top limit
                 const normalizedPrice = (week.price - minPrice) / Math.max(0.01, priceRange);
-                const barHeight = Math.max(3, normalizedPrice * (chartHeight - padding * 2));
-                const y = chartHeight - barHeight; // Start from X-axis
+                const barHeight = Math.max(3, normalizedPrice * availableHeight);
+                const y = chartHeight - barHeight; // top of rect, starts at X-axis
                 
                 const isHovered = hoveredPoint?.timestamp === week.timestamp;
                 
