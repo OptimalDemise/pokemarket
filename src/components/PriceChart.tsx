@@ -454,32 +454,38 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             <>
               {/* Bar chart for weekly view */}
               {weeklyData.map((week, index) => {
-                // Calculate bar width with better spacing
-                const barWidth = Math.max(8, Math.min(20, (chartWidth - padding * 2) / Math.max(1, weeklyData.length) * 0.6));
-                const spacing = (chartWidth - padding * 2) / Math.max(1, weeklyData.length);
-                const x = leftPadding + padding + (index * spacing) + (spacing - barWidth) / 2;
+                // Calculate bar width - ensure minimum visibility and proper spacing
+                const totalBars = weeklyData.length;
+                const availableWidth = chartWidth - padding * 2;
+                
+                // Use 70% of available space for bars, 30% for gaps
+                const barWidth = Math.max(12, Math.min(40, (availableWidth * 0.7) / totalBars));
+                const gapWidth = (availableWidth * 0.3) / (totalBars + 1);
+                
+                // Position bars with even spacing
+                const x = leftPadding + padding + gapWidth + (index * (barWidth + gapWidth));
                 
                 // Calculate bar height with proper bounds checking
                 const availableHeight = chartHeight - padding * 2;
-                const normalizedPrice = (week.price - minPrice) / priceRange;
+                const normalizedPrice = (week.price - minPrice) / Math.max(0.01, priceRange);
                 const rawBarHeight = normalizedPrice * availableHeight;
-                const barHeight = Math.max(2, Math.min(availableHeight, rawBarHeight));
+                const barHeight = Math.max(3, Math.min(availableHeight, rawBarHeight));
                 
                 // Calculate y position ensuring bar stays above x-axis
-                const y = Math.max(padding, chartHeight - barHeight - padding);
+                const y = chartHeight - barHeight - padding;
                 
                 const isHovered = hoveredPoint === week;
                 
                 return (
                   <motion.rect
-                    key={index}
+                    key={`week-${week.timestamp}-${index}`}
                     x={x}
                     y={y}
                     width={barWidth}
                     height={barHeight}
                     fill={isHovered ? (isPositive ? "#15803d" : "#b91c1c") : (isPositive ? "#16a34a" : "#dc2626")}
                     opacity={isHovered ? 1 : 0.8}
-                    rx={1}
+                    rx={2}
                     initial={{ height: 0, y: chartHeight - padding }}
                     animate={{ height: barHeight, y: y }}
                     transition={{ duration: 0.5, delay: index * 0.05 }}
