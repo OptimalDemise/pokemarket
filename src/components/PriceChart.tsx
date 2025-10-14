@@ -457,29 +457,25 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 const totalBars = weeklyData.length;
                 const availableWidth = chartWidth - padding * 2;
                 
-                // Calculate bar width: use 70% of available space for bars
+                // Calculate bar width: use 70% of available space, distributed evenly
                 const totalBarSpace = availableWidth * 0.7;
                 const barWidth = Math.max(12, Math.min(40, totalBarSpace / totalBars));
                 
-                // Calculate consistent gap width
-                const totalGapSpace = availableWidth - (barWidth * totalBars);
-                const gapWidth = totalGapSpace / (totalBars - 1 || 1);
+                // Calculate spacing to distribute bars evenly across the chart
+                const totalUsedSpace = barWidth * totalBars;
+                const totalGapSpace = availableWidth - totalUsedSpace;
+                const gapWidth = totalBars > 1 ? totalGapSpace / (totalBars - 1) : 0;
                 
-                // Position bar to align with x-axis labels
-                const relativePosition = totalBars > 1 ? index / (totalBars - 1) : 0.5;
-                const centerX = leftPadding + padding + (relativePosition * availableWidth);
-                const x = centerX - (barWidth / 2);
+                // Position each bar with consistent spacing
+                const x = leftPadding + padding + (index * (barWidth + gapWidth));
                 
-                // Calculate bar height with safe bounds - FIXED
+                // Calculate bar height with proper scaling
                 const availableHeight = chartHeight - padding * 2;
-                // Ensure we never divide by zero or very small numbers
                 const safePriceRange = Math.max(0.01, priceRange);
                 const normalizedPrice = (week.price - minPrice) / safePriceRange;
-                // Ensure bar is always visible with minimum height of 3px
                 const barHeight = Math.max(3, normalizedPrice * availableHeight);
                 
-                // Y position: ensure bar never goes below x-axis - FIXED
-                // Start from the x-axis and go up by barHeight
+                // Y position from bottom up
                 const y = chartHeight - padding - barHeight;
                 
                 const isHovered = hoveredPoint === week;
