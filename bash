@@ -1,1 +1,1 @@
-npx convex run updateLogs:addUpdateLog '{"title": "Favorites System", "description": "Save your favorite cards for quick access! Click the heart icon on any card to add it to your personal watchlist. View all favorites on the dedicated Favorites page.", "category": "Feature"}'
+npx convex run updateLogs:addUpdateLogInternal '{"title": "Weekly Price Charts Added", "description": "You can now toggle between daily and weekly views on price charts. Weekly view shows aggregated data with min/max price ranges for better long-term trend analysis.", "category": "Feature"}'
