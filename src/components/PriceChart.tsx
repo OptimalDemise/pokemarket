@@ -514,8 +514,8 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             </>
           )}
           
-          {/* X-axis labels */}
-          {xAxisLabels.map((label, i) => (
+          {/* X-axis labels - only for daily view */}
+          {viewMode === "daily" && xAxisLabels.map((label, i) => (
             <text
               key={i}
               x={label.x}
