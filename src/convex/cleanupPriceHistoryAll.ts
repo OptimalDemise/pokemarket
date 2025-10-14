@@ -9,7 +9,7 @@ export const cleanupAllRedundantPriceHistory = internalAction({
     let totalCardsProcessed = 0;
     let cursor: string | undefined = undefined;
     let isDone = false;
-    const BATCH_SIZE = 10;
+    const BATCH_SIZE = 3; // Reduced from 10 to 3 to avoid read limits
 
     console.log("Starting full cleanup of redundant price history...");
 
@@ -61,7 +61,7 @@ export const testCleanup50Cards = internalAction({
     let totalDeleted = 0;
     let totalCardsProcessed = 0;
     let cursor: string | undefined = undefined;
-    const BATCH_SIZE = 10;
+    const BATCH_SIZE = 3; // Reduced from 10 to 3 to avoid read limits
     const MAX_CARDS = 50;
 
     console.log("Starting test cleanup of 50 cards...");
