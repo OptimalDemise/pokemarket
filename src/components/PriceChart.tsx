@@ -472,7 +472,8 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
       // Ensure bars are visible even when price range is very small
       // Use at least 20% of available height for visibility
       const barHeight = Math.max(availableHeight * 0.2, normalizedPrice * availableHeight);
-      const y = Math.max(padding, chartHeight - padding - barHeight);
+      // Y position must be calculated to place the bar correctly above the x-axis
+      const y = chartHeight - padding - barHeight;
                 
                 const isHovered = hoveredPoint?.timestamp === week.timestamp;
                 
