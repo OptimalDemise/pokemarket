@@ -74,5 +74,8 @@ export const deleteUpdateLog = mutation({
     }
 
     await ctx.db.delete(args.logId);
+
+
+
   },
 });
