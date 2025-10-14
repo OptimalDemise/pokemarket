@@ -1,3 +1,2 @@
-const existingCard = existingCards.find(
-  (c) => c.setName === args.setName && c.cardNumber === args.cardNumber
-);
+const fluctuation = 0.97 + Math.random() * 0.06;
+const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
