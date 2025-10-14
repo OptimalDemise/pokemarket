@@ -1,5 +1,2 @@
-{
-  title: "New Feature: Weekly Price Charts",
-  description: "Added weekly bar chart view for better long-term price analysis.",
-  category: "Feature"
-}
+const barHeight = Math.max(availableHeight * 0.2, normalizedPrice * availableHeight);
+const y = chartHeight - padding - barHeight;
