@@ -102,9 +102,13 @@ export const fetchCardData = internalAction({
   },
 });
 
-// Fetch all cards above a certain price threshold (LIMITED VERSION for incremental fetching)
+// Fetch all cards above a certain price threshold (INCREMENTAL VERSION with cursor)
 export const fetchAllCardsAbovePrice = internalAction({
-  args: { minPrice: v.number(), maxPages: v.optional(v.number()) },
+  args: { 
+    minPrice: v.number(), 
+    maxPages: v.optional(v.number()),
+    startPage: v.optional(v.number())
+  },
   handler: async (ctx, args) => {
     try {
       const headers: Record<string, string> = {
@@ -121,18 +125,21 @@ export const fetchAllCardsAbovePrice = internalAction({
       let successCount = 0;
       const errors: string[] = [];
       let totalProcessed = 0;
-      let page = 1;
+      
+      // Start from the provided page or page 1
+      let page = args.startPage || 1;
       let hasMorePages = true;
       
       // Limit pages per run to avoid timeouts (default 10 pages = ~2500 cards max)
       const MAX_PAGES = args.maxPages || 10;
+      const endPage = page + MAX_PAGES - 1;
 
       // Fetch pages until no more data is available or hit page limit
       // Order by release date descending to prioritize newer sets
-      while (hasMorePages && page <= MAX_PAGES) {
+      while (hasMorePages && page <= endPage) {
         const url = `${POKEMON_TCG_API_BASE}/cards?q=${encodeURIComponent(query)}&orderBy=-set.releaseDate&page=${page}&pageSize=250`;
         
-        console.log(`Fetching page ${page}/${MAX_PAGES}...`);
+        console.log(`Fetching page ${page}/${endPage}...`);
         const response = await fetch(url, { headers });
         
         if (!response.ok) {
@@ -194,12 +201,14 @@ export const fetchAllCardsAbovePrice = internalAction({
       }
 
       console.log(`Fetch complete. Total processed: ${totalProcessed}, Successfully added: ${successCount}`);
-      console.log(`Stopped at page ${page - 1}. ${hasMorePages && page > MAX_PAGES ? 'More pages available for next run.' : 'All pages processed.'}`);
+      console.log(`Stopped at page ${page - 1}. ${hasMorePages && page > endPage ? 'More pages available for next run.' : 'All pages processed.'}`);
       
       return { 
         success: successCount > 0, 
         updated: successCount,
         total: totalProcessed,
+        nextPage: hasMorePages && page <= endPage ? page : null,
+        isComplete: !hasMorePages || page > 100,
         errors: errors.length > 0 ? errors.slice(0, 10) : undefined
       };
     } catch (error) {
@@ -220,17 +229,37 @@ export const updateAllCardsWithRealData = internalAction({
     let result = { success: true, updated: 0, total: 0, errors: undefined as string[] | undefined };
     
     if (shouldFetchNew) {
-      console.log("Fetching new cards from API (incremental fetch mode - 10 pages per run)...");
-      result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
+      // Get the saved page cursor from last run
+      const savedCursor = await ctx.runQuery(internal.updateProgress.getNewCardFetchCursor);
+      const startPage = savedCursor ? parseInt(savedCursor) : 1;
+      
+      console.log(`Fetching new cards from API starting at page ${startPage} (incremental fetch mode - 10 pages per run)...`);
+      
+      const fetchResult = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
         minPrice: 3,
-        maxPages: 10, // Limit to 10 pages per run to avoid timeouts
+        maxPages: 10,
+        startPage: startPage,
       });
+      
+      result = fetchResult;
+      
+      // Save the next page to continue from
+      if (fetchResult.nextPage) {
+        await ctx.runMutation(internal.updateProgress.setNewCardFetchCursor, { 
+          cursor: fetchResult.nextPage.toString() 
+        });
+        console.log(`Saved progress: will continue from page ${fetchResult.nextPage} next run`);
+      } else if (fetchResult.isComplete) {
+        // Reset cursor when complete
+        await ctx.runMutation(internal.updateProgress.setNewCardFetchCursor, { cursor: null });
+        console.log(`Fetch complete! All pages processed. Cursor reset.`);
+      }
     }
     
     // Process existing cards with staggered updates
-    const BATCH_SIZE = 30; // Balanced batch size for reliable processing
-    const DELAY_BETWEEN_CARDS_MS = 300; // 0.3 second delay between individual cards
-    const DELAY_BETWEEN_BATCHES_MS = 800; // 0.8 second delay between batches
+    const BATCH_SIZE = 30;
+    const DELAY_BETWEEN_CARDS_MS = 300;
+    const DELAY_BETWEEN_BATCHES_MS = 800;
 
     let fluctuationCount = 0;
     const processedCardIds = new Set<string>();
@@ -257,7 +286,6 @@ export const updateAllCardsWithRealData = internalAction({
       
       if (!batch || batch.page.length === 0) {
         console.log("No more cards to process - resetting cursor to start");
-        // Reset cursor to start from beginning next time
         await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor: null });
         hasMore = false;
         break;
@@ -265,13 +293,11 @@ export const updateAllCardsWithRealData = internalAction({
       
       console.log(`Batch ${batchNumber}: Processing ${batch.page.length} cards (cursor: ${cursor ? 'continuing' : 'start'})`);
       
-      // Track sets in this batch for logging
       const setsInBatch = new Set(batch.page.map(card => card.setName));
       console.log(`Sets in this batch: ${Array.from(setsInBatch).join(', ')}`);
       
       // Process each card in the batch with delays
       for (const card of batch.page) {
-        // Track which cards we've processed
         if (processedCardIds.has(card._id)) {
           console.warn(`Duplicate card detected: ${card.name} (${card.setName}) - skipping`);
           continue;
@@ -279,7 +305,6 @@ export const updateAllCardsWithRealData = internalAction({
         processedCardIds.add(card._id);
         
         try {
-          // Simulate realistic price fluctuations (±3%)
           const fluctuation = 0.97 + Math.random() * 0.06;
           const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
           
@@ -296,24 +321,19 @@ export const updateAllCardsWithRealData = internalAction({
           fluctuationCount++;
           totalProcessed++;
           
-          // Add delay after each card update for smooth distribution
           await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
         } catch (error) {
           console.error(`Error updating card ${card.name} from ${card.setName}:`, error);
-          // Continue processing even if one card fails
         }
       }
       
       console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${batch.page.length}. Total updated so far: ${fluctuationCount}`);
       
-      // Save the cursor for next run
       cursor = batch.continueCursor;
       await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor });
       
-      // Check if done
       hasMore = !batch.isDone;
       
-      // Add delay between batches if there are more to process
       if (hasMore) {
         await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS));
       }
