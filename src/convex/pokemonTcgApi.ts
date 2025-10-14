@@ -217,7 +217,7 @@ export const updateAllCardsWithRealData = internalAction({
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
     // Only fetch new cards occasionally (skip for regular updates)
     // This prevents bursts of new card additions
-    const shouldFetchNew = Math.random() < 0.3; // 30% chance to fetch new cards
+    const shouldFetchNew = Math.random() < 0.5; // 50% chance to fetch new cards
     
     let result = { success: true, updated: 0, total: 0, errors: undefined as string[] | undefined };
     
