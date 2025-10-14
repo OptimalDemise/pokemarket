@@ -457,23 +457,29 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             <>
               {weeklyData.map((week, index) => {
                 const totalBars = weeklyData.length;
+                
                 // Calculate bar width: leave some gap between bars
+                // Use 60% of available space for bars, rest for gaps
                 const chartAvailableWidth = chartWidth - leftPadding - padding;
                 const barWidth = Math.min(40, Math.max(12, chartAvailableWidth / totalBars * 0.6));
                 const gapWidth = (chartAvailableWidth - barWidth * totalBars) / (totalBars - 1 || 1);
                 
-                // X position for each bar
+                // X position for each bar - sequential placement with consistent gaps
                 const x = leftPadding + index * (barWidth + gapWidth);
                 
-      // Bar height calculation with minimum visible height
-      const availableHeight = chartHeight - padding * 2;
-      const safePriceRange = Math.max(0.01, priceRange);
-      const normalizedPrice = (week.price - minPrice) / safePriceRange;
-      // Ensure bars are visible even when price range is very small
-      // Use at least 20% of available height for visibility
-      const barHeight = Math.max(availableHeight * 0.2, normalizedPrice * availableHeight);
-      // Y position must be calculated to place the bar correctly above the x-axis
-      const y = chartHeight - padding - barHeight;
+                // Bar height calculation with minimum visible height
+                // This ensures bars are visible even when price range is very small
+                const availableHeight = chartHeight - padding * 2;
+                const safePriceRange = Math.max(0.01, priceRange);
+                const normalizedPrice = (week.price - minPrice) / safePriceRange;
+                
+                // Ensure bars are visible even when price range is very small
+                // Use at least 20% of available height for visibility
+                const barHeight = Math.max(availableHeight * 0.2, normalizedPrice * availableHeight);
+                
+                // Y position must be calculated to place the bar correctly above the x-axis
+                // Start from the x-axis position (chartHeight - padding) and subtract bar height
+                const y = chartHeight - padding - barHeight;
                 
                 const isHovered = hoveredPoint?.timestamp === week.timestamp;
                 
