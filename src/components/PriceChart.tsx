@@ -483,7 +483,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 
                 return (
                   <motion.rect
-                    key={`bar-${week.timestamp}`}
+                    key={`bar-${week.timestamp}-${index}`}
                     x={x}
                     y={y}
                     width={barWidth}
