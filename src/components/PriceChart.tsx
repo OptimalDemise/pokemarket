@@ -117,7 +117,8 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
   const prices = displayData.map((d) => d.price);
   const maxPrice = prices.length > 0 ? Math.max(...prices) : currentPrice;
   const minPrice = prices.length > 0 ? Math.min(...prices) : currentPrice;
-  const priceRange = maxPrice - minPrice || 1;
+  // Ensure minimum price range to prevent division by zero and ensure visible bars
+  const priceRange = Math.max(0.01, maxPrice - minPrice);
 
   const width = 400;
   const height = 120;
@@ -453,11 +454,19 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             <>
               {/* Bar chart for weekly view */}
               {weeklyData.map((week, index) => {
+                // Calculate bar width with better spacing
                 const barWidth = Math.max(8, Math.min(20, (chartWidth - padding * 2) / Math.max(1, weeklyData.length) * 0.6));
                 const spacing = (chartWidth - padding * 2) / Math.max(1, weeklyData.length);
                 const x = leftPadding + padding + (index * spacing) + (spacing - barWidth) / 2;
-                const barHeight = Math.max(2, ((week.price - minPrice) / Math.max(0.01, priceRange)) * (chartHeight - padding * 2));
-                const y = chartHeight - barHeight - padding;
+                
+                // Calculate bar height with proper bounds checking
+                const availableHeight = chartHeight - padding * 2;
+                const normalizedPrice = (week.price - minPrice) / priceRange;
+                const rawBarHeight = normalizedPrice * availableHeight;
+                const barHeight = Math.max(2, Math.min(availableHeight, rawBarHeight));
+                
+                // Calculate y position ensuring bar stays above x-axis
+                const y = Math.max(padding, chartHeight - barHeight - padding);
                 
                 const isHovered = hoveredPoint === week;
                 
