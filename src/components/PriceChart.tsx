@@ -466,18 +466,21 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 const gapWidth = totalGapSpace / (totalBars - 1 || 1);
                 
                 // Position bar to align with x-axis labels
-                // Each bar should be centered at its corresponding position in the data range
                 const relativePosition = totalBars > 1 ? index / (totalBars - 1) : 0.5;
                 const centerX = leftPadding + padding + (relativePosition * availableWidth);
                 const x = centerX - (barWidth / 2);
                 
-                // Calculate bar height with safe bounds
+                // Calculate bar height with safe bounds - FIXED
                 const availableHeight = chartHeight - padding * 2;
-                const normalizedPrice = (week.price - minPrice) / Math.max(0.01, priceRange);
+                // Ensure we never divide by zero or very small numbers
+                const safePriceRange = Math.max(0.01, priceRange);
+                const normalizedPrice = (week.price - minPrice) / safePriceRange;
+                // Ensure bar is always visible with minimum height of 3px
                 const barHeight = Math.max(3, normalizedPrice * availableHeight);
                 
-                // Y position: ensure bar never goes below x-axis
-                const y = Math.max(padding, chartHeight - padding - barHeight);
+                // Y position: ensure bar never goes below x-axis - FIXED
+                // Start from the x-axis and go up by barHeight
+                const y = chartHeight - padding - barHeight;
                 
                 const isHovered = hoveredPoint === week;
                 
