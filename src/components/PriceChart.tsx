@@ -465,15 +465,10 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 // X position for each bar
                 const x = leftPadding + index * (barWidth + gapWidth);
                 
-      // Bar height calculation with minimum visible height
-      const availableHeight = chartHeight - padding * 2;
-      const safePriceRange = Math.max(0.01, priceRange);
-      const normalizedPrice = (week.price - minPrice) / safePriceRange;
-      // Ensure bars are visible even when price range is very small
-      // Use at least 20% of available height for visibility
-      const barHeight = Math.max(availableHeight * 0.2, normalizedPrice * availableHeight);
-      // Y position must be calculated to place the bar correctly above the x-axis
-      const y = chartHeight - padding - barHeight;
+                // Height calculation
+                const normalizedPrice = (week.price - minPrice) / Math.max(0.01, priceRange);
+                const barHeight = Math.max(3, normalizedPrice * (chartHeight - padding * 2));
+                const y = chartHeight - barHeight; // Start from X-axis
                 
                 const isHovered = hoveredPoint?.timestamp === week.timestamp;
                 
@@ -487,7 +482,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                     fill={isHovered ? (isPositive ? "#15803d" : "#b91c1c") : (isPositive ? "#16a34a" : "#dc2626")}
                     opacity={isHovered ? 1 : 0.8}
                     rx={2}
-                    initial={{ height: 0, y: chartHeight - padding }}
+                    initial={{ height: 0, y: chartHeight }}
                     animate={{ height: barHeight, y }}
                     transition={{ duration: 0.5, delay: index * 0.05 }}
                   />
