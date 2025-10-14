@@ -186,8 +186,7 @@ export const fetchAllCardsAbovePrice = internalAction({
               });
               successCount++;
               
-              // Add delay after each card insert to prevent bursts
-              await new Promise(resolve => setTimeout(resolve, 300));
+              // Removed delay to prevent timeouts - batch processing is fast enough
             }
           } catch (error) {
             if (errors.length < 20) {
