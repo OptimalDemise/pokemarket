@@ -1,1 +1,1 @@
-npx convex run pokemonTcgApi:updateAllCardsWithRealData
+npx convex run updateLogs:addUpdateLog '{"title": "Favorites System", "description": "Save your favorite cards for quick access! Click the heart icon on any card to add it to your personal watchlist. View all favorites on the dedicated Favorites page.", "category": "Feature"}'
