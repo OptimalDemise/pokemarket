@@ -455,24 +455,15 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
           {/* Bar chart for weekly view */}
           {weeklyData.map((week, index) => {
             const totalBars = weeklyData.length;
-            const availableWidth = chartWidth - padding * 2;
             
-            // Bar width and gap
-            const totalBarSpace = Math.min(availableWidth * 0.7, 40 * totalBars); // limit max width
-            const barWidth = Math.max(12, totalBarSpace / totalBars);
-            const totalUsedSpace = barWidth * totalBars;
-            const totalGapSpace = availableWidth - totalUsedSpace;
-            const gapWidth = totalBars > 1 ? totalGapSpace / (totalBars - 1) : 0;
+            // Space each bar evenly across the chart area (from leftPadding to width)
+            const barWidth = Math.max(12, Math.min(40, (chartWidth - leftPadding) / totalBars * 0.8));
+            const gapWidth = ((chartWidth - leftPadding) - barWidth * totalBars) / (totalBars - 1 || 1);
+            const x = leftPadding + index * (barWidth + gapWidth);
             
-            // ✅ Center the whole bar group inside chart
-            const totalBarsWidth = totalBars * barWidth + (totalBars - 1) * gapWidth;
-            const leftOffset = (availableWidth - totalBarsWidth) / 2;
-            const x = leftPadding + padding + leftOffset + index * (barWidth + gapWidth);
-            
-            // Height
+            // Height calculation
             const availableHeight = chartHeight - padding * 2;
-            const safePriceRange = Math.max(0.01, priceRange);
-            const normalizedPrice = (week.price - minPrice) / safePriceRange;
+            const normalizedPrice = (week.price - minPrice) / Math.max(0.01, priceRange);
             const barHeight = Math.max(3, normalizedPrice * availableHeight);
             const y = chartHeight - padding - barHeight;
             
