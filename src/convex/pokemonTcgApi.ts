@@ -131,7 +131,7 @@ export const fetchAllCardsAbovePrice = internalAction({
       let hasMorePages = true;
       
       // Limit pages per run to avoid timeouts (default 10 pages = ~2500 cards max)
-      const MAX_PAGES = args.maxPages || 10;
+      const MAX_PAGES = args.maxPages || 20;
       const endPage = page + MAX_PAGES - 1;
 
       // Fetch pages until no more data is available or hit page limit
@@ -187,7 +187,7 @@ export const fetchAllCardsAbovePrice = internalAction({
               successCount++;
               
               // Add delay after each card insert to prevent bursts
-              await new Promise(resolve => setTimeout(resolve, 500));
+              await new Promise(resolve => setTimeout(resolve, 300));
             }
           } catch (error) {
             if (errors.length < 20) {
@@ -233,11 +233,11 @@ export const updateAllCardsWithRealData = internalAction({
       const savedCursor = await ctx.runQuery(internal.updateProgress.getNewCardFetchCursor);
       const startPage = savedCursor ? parseInt(savedCursor) : 1;
       
-      console.log(`Fetching new cards from API starting at page ${startPage} (incremental fetch mode - 10 pages per run)...`);
+      console.log(`Fetching new cards from API starting at page ${startPage} (incremental fetch mode - 20 pages per run)...`);
       
       const fetchResult = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
         minPrice: 3,
-        maxPages: 10,
+        maxPages: 20,
         startPage: startPage,
       });
       
