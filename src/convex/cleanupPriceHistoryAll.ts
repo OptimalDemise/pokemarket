@@ -6,7 +6,7 @@ import { internal } from "./_generated/api";
 export const cleanupAllRedundantPriceHistory = internalAction({
   args: {},
   handler: async (ctx) => {
-    const MAX_BATCHES_PER_RUN = 50; // Process max 50 batches (150 cards) per cron execution
+    const MAX_BATCHES_PER_RUN = 500; // Process max 500 batches (1500 cards) per cron execution
     const BATCH_SIZE = 3;
     
     // Get the stored cursor from last run
