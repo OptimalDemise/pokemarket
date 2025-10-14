@@ -452,46 +452,60 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             </>
           ) : (
             <>
-              {/* Bar chart for weekly view */}
-              {weeklyData.map((week, index) => {
-                const totalBars = weeklyData.length;
-                const availableWidth = chartWidth - padding * 2;
-                
-                // Bar width and spacing
-                const totalBarSpace = availableWidth * 0.7;
-                const barWidth = Math.max(12, Math.min(40, totalBarSpace / totalBars));
-                const totalUsedSpace = barWidth * totalBars;
-                const totalGapSpace = availableWidth - totalUsedSpace;
-                const gapWidth = totalBars > 1 ? totalGapSpace / (totalBars - 1) : 0;
-                
-                // ✅ Fixed x position - sequential placement with consistent gaps
-                const x = leftPadding + padding + index * (barWidth + gapWidth);
-                
-                // Height calculations
-                const availableHeight = chartHeight - padding * 2;
-                const safePriceRange = Math.max(0.01, priceRange);
-                const normalizedPrice = (week.price - minPrice) / safePriceRange;
-                const barHeight = Math.max(3, normalizedPrice * availableHeight);
-                const y = Math.max(padding, chartHeight - padding - barHeight);
-                
-                const isHovered = hoveredPoint === week;
-                
-                return (
-                  <motion.rect
-                    key={`bar-${week.timestamp}-${index}`}
-                    x={x}
-                    y={y}
-                    width={barWidth}
-                    height={barHeight}
-                    fill={isHovered ? (isPositive ? "#15803d" : "#b91c1c") : (isPositive ? "#16a34a" : "#dc2626")}
-                    opacity={isHovered ? 1 : 0.8}
-                    rx={2}
-                    initial={{ height: 0, y: chartHeight - padding }}
-                    animate={{ height: barHeight, y: y }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                  />
-                );
-              })}
+          {/* Bar chart for weekly view */}
+          {weeklyData.map((week, index) => {
+            const totalBars = weeklyData.length;
+            
+            // Use actual drawable chart area (exclude left padding)
+            const availableWidth = chartWidth - padding * 2;
+            
+            // Bar width and gaps
+            const totalBarSpace = availableWidth * 0.7;
+            const barWidth = Math.max(12, Math.min(40, totalBarSpace / totalBars));
+            const totalUsedSpace = barWidth * totalBars;
+            const totalGapSpace = availableWidth - totalUsedSpace;
+            const gapWidth = totalBars > 1 ? totalGapSpace / (totalBars - 1) : 0;
+            
+            // ✅ FIXED X POSITION:
+            // Start bars *inside* chart area — align to leftPadding only once
+            const x = leftPadding + padding + index * (barWidth + gapWidth);
+            
+            // ✅ Make sure the final bar doesn't go past the right edge
+            if (x + barWidth > width) return null;
+            
+            // Height calculations
+            const availableHeight = chartHeight - padding * 2;
+            const safePriceRange = Math.max(0.01, priceRange);
+            const normalizedPrice = (week.price - minPrice) / safePriceRange;
+            const barHeight = Math.max(3, normalizedPrice * availableHeight);
+            const y = Math.max(padding, chartHeight - padding - barHeight);
+            
+            const isHovered = hoveredPoint === week;
+            
+            return (
+              <motion.rect
+                key={`bar-${week.timestamp}-${index}`}
+                x={x}
+                y={y}
+                width={barWidth}
+                height={barHeight}
+                fill={
+                  isHovered
+                    ? isPositive
+                      ? "#15803d"
+                      : "#b91c1c"
+                    : isPositive
+                    ? "#16a34a"
+                    : "#dc2626"
+                }
+                opacity={isHovered ? 1 : 0.8}
+                rx={2}
+                initial={{ height: 0, y: chartHeight - padding }}
+                animate={{ height: barHeight, y: y }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+              />
+            );
+          })}
             </>
           )}
           
