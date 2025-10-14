@@ -257,7 +257,7 @@ export const updateAllCardsWithRealData = internalAction({
     
     // Update existing cards in batches to refresh lastUpdated timestamps
     // This ensures cards appear in "Live Updates" without simulating price changes
-    const BATCH_SIZE = 30;
+    const BATCH_SIZE = 150; // Increased from 30 to update more cards per cycle
     const DELAY_BETWEEN_CARDS_MS = 300;
     const DELAY_BETWEEN_BATCHES_MS = 800;
     
