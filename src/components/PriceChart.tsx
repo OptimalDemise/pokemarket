@@ -466,8 +466,8 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 const totalGapSpace = availableWidth - totalUsedSpace;
                 const gapWidth = totalBars > 1 ? totalGapSpace / (totalBars - 1) : 0;
                 
-                // Position each bar with consistent spacing
-                const x = leftPadding + padding + (index * (barWidth + gapWidth));
+                // Position each bar with consistent spacing - align with x-axis labels
+                const x = leftPadding + padding + (index * (availableWidth / Math.max(1, totalBars - 1))) - (barWidth / 2);
                 
                 // Calculate bar height with proper scaling
                 const availableHeight = chartHeight - padding * 2;
@@ -475,8 +475,8 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
                 const normalizedPrice = (week.price - minPrice) / safePriceRange;
                 const barHeight = Math.max(3, normalizedPrice * availableHeight);
                 
-                // Y position from bottom up
-                const y = chartHeight - padding - barHeight;
+                // Y position from bottom up - ensure it never goes below x-axis
+                const y = Math.max(padding, chartHeight - padding - barHeight);
                 
                 const isHovered = hoveredPoint === week;
                 
