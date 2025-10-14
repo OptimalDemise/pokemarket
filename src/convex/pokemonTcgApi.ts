@@ -215,14 +215,14 @@ export const fetchAllCardsAbovePrice = internalAction({
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
-    // Only fetch new cards occasionally (skip for regular updates)
-    // This prevents bursts of new card additions
-    const shouldFetchNew = Math.random() < 0.5; // 50% chance to fetch new cards
+    // TEMPORARY: Always fetch new cards to capture missing valuable cards
+    // TODO: Revert to 50% after comprehensive fetch is complete
+    const shouldFetchNew = true; // Temporarily set to always fetch
     
     let result = { success: true, updated: 0, total: 0, errors: undefined as string[] | undefined };
     
     if (shouldFetchNew) {
-      console.log("Fetching new cards from API...");
+      console.log("Fetching new cards from API (comprehensive fetch mode)...");
       result = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
         minPrice: 3,
       });
