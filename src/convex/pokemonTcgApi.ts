@@ -255,11 +255,78 @@ export const updateAllCardsWithRealData = internalAction({
       }
     }
     
-    // REMOVED: Simulated price fluctuations for existing cards
-    // The system now only updates cards when fetching new data from the API
-    // Existing cards will maintain their last fetched price until re-fetched
+    // Update existing cards in batches to refresh lastUpdated timestamps
+    // This ensures cards appear in "Live Updates" without simulating price changes
+    const BATCH_SIZE = 30;
+    const DELAY_BETWEEN_CARDS_MS = 300;
+    const DELAY_BETWEEN_BATCHES_MS = 800;
     
-    console.log(`Update complete. New cards fetched: ${result.updated}`);
+    try {
+      // Get the saved cursor for existing card updates
+      const savedCursor = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
+      
+      console.log(`Updating existing cards from cursor: ${savedCursor || 'start'}`);
+      
+      // Fetch a batch of existing cards
+      const cardsBatch = await ctx.runQuery(internal.cards._getCardsBatch, {
+        cursor: savedCursor,
+        batchSize: BATCH_SIZE,
+      });
+      
+      let updatedCount = 0;
+      const errors: string[] = [];
+      
+      // Process each card in the batch
+      for (let i = 0; i < cardsBatch.page.length; i++) {
+        const card = cardsBatch.page[i];
+        
+        try {
+          // Simply refresh the card's lastUpdated timestamp without changing price
+          await ctx.runMutation(internal.cards.upsertCard, {
+            name: card.name,
+            setName: card.setName,
+            cardNumber: card.cardNumber,
+            rarity: card.rarity,
+            imageUrl: card.imageUrl,
+            tcgplayerUrl: card.tcgplayerUrl,
+            currentPrice: card.currentPrice, // Keep existing price
+          });
+          
+          updatedCount++;
+          
+          // Delay between individual card updates
+          if (i < cardsBatch.page.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
+          }
+        } catch (error) {
+          if (errors.length < 10) {
+            errors.push(`Failed to update ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+          console.error(`Error updating card ${card.name}:`, error);
+        }
+      }
+      
+      // Save progress cursor for next run
+      await ctx.runMutation(internal.updateProgress.setUpdateCursor, {
+        cursor: cardsBatch.isDone ? null : cardsBatch.continueCursor,
+      });
+      
+      console.log(`Batch complete. Updated ${updatedCount} existing cards. ${cardsBatch.isDone ? 'Reached end, will restart from beginning next time.' : 'More cards to process.'}`);
+      
+      // Delay between batches
+      await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS));
+      
+      result.updated += updatedCount;
+      if (errors.length > 0) {
+        result.errors = [...(result.errors || []), ...errors];
+      }
+    } catch (error) {
+      console.error("Error updating existing cards:", error);
+      const errorMsg = `Failed to update existing cards: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      result.errors = [...(result.errors || []), errorMsg];
+    }
+    
+    console.log(`Update complete. New cards fetched: ${result.updated - (result.updated > 30 ? 30 : 0)}, Existing cards refreshed: ${result.updated > 30 ? 30 : result.updated}`);
     
     return { 
       success: result.success, 
