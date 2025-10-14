@@ -1,4 +1,44 @@
-if (args.preferredCurrency !== undefined) {
-  // ... validation code ...
-  updateData.preferredCurrency = args.preferredCurrency;
-}
+{/* Bar chart for weekly view */}
+{weeklyData.map((week, index) => {
+  const totalBars = weeklyData.length;
+  const availableWidth = chartWidth - padding * 2;
+  
+  // Calculate bar width: use 70% of available space, distributed evenly
+  const totalBarSpace = availableWidth * 0.7;
+  const barWidth = Math.max(12, Math.min(40, totalBarSpace / totalBars));
+  
+  // Calculate spacing to distribute bars evenly across the chart
+  const totalUsedSpace = barWidth * totalBars;
+  const totalGapSpace = availableWidth - totalUsedSpace;
+  const gapWidth = totalBars > 1 ? totalGapSpace / (totalBars - 1) : 0;
+  
+  // Position each bar with consistent spacing - align with x-axis labels
+  const x = leftPadding + padding + (index * (availableWidth / Math.max(1, totalBars - 1))) - (barWidth / 2);
+  
+  // Calculate bar height with proper scaling
+  const availableHeight = chartHeight - padding * 2;
+  const safePriceRange = Math.max(0.01, priceRange);
+  const normalizedPrice = (week.price - minPrice) / safePriceRange;
+  const barHeight = Math.max(3, normalizedPrice * availableHeight);
+  
+  // Y position from bottom up - ensure it never goes below x-axis
+  const y = Math.max(padding, chartHeight - padding - barHeight);
+  
+  const isHovered = hoveredPoint === week;
+  
+  return (
+    <motion.rect
+      key={`bar-${week.timestamp}-${index}`}
+      x={x}
+      y={y}
+      width={barWidth}
+      height={barHeight}
+      fill={isHovered ? (isPositive ? "#15803d" : "#b91c1c") : (isPositive ? "#16a34a" : "#dc2626")}
+      opacity={isHovered ? 1 : 0.8}
+      rx={2}
+      initial={{ height: 0, y: chartHeight - padding }}
+      animate={{ height: barHeight, y: y }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
+    />
+  );
+})}
