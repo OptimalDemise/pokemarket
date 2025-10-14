@@ -476,7 +476,7 @@ export function PriceChart({ data, currentPrice, percentChange }: PriceChartProp
             const barHeight = Math.max(3, normalizedPrice * availableHeight);
             const y = chartHeight - padding - barHeight;
             
-            const isHovered = hoveredPoint === week;
+            const isHovered = hoveredPoint?.timestamp === week.timestamp;
             
             return (
               <motion.rect
