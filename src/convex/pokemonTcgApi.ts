@@ -221,7 +221,7 @@ export const fetchAllCardsAbovePrice = internalAction({
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
-    // TEMPORARY: Always fetch new cards to capture missing valuable cards (LIMITED TO 20 PAGES PER RUN)
+    // TEMPORARY: Always fetch new cards to capture missing valuable cards (LIMITED TO 5 PAGES PER RUN)
     // TODO: Revert to 50% after comprehensive fetch is complete
     const shouldFetchNew = true; // Temporarily set to always fetch
     
@@ -255,97 +255,16 @@ export const updateAllCardsWithRealData = internalAction({
       }
     }
     
-    // Process existing cards with staggered updates
-    const BATCH_SIZE = 30;
-    const DELAY_BETWEEN_CARDS_MS = 300;
-    const DELAY_BETWEEN_BATCHES_MS = 800;
-
-    let fluctuationCount = 0;
-    const processedCardIds = new Set<string>();
+    // REMOVED: Simulated price fluctuations for existing cards
+    // The system now only updates cards when fetching new data from the API
+    // Existing cards will maintain their last fetched price until re-fetched
     
-    console.log("Starting card update process...");
-    console.log(`Target: Process cards in batches of ${BATCH_SIZE} with delays`);
-    
-    // Get the saved cursor from the last run
-    let cursor: string | null = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
-    console.log(`Resuming from cursor: ${cursor || 'start'}`);
-    
-    let hasMore = true;
-    let batchNumber = 0;
-    let totalProcessed = 0;
-    
-    while (hasMore) {
-      batchNumber++;
-      
-      // Fetch a batch of cards
-      const batch: { page: any[]; continueCursor: string | null; isDone: boolean } = await ctx.runQuery(internal.cards._getCardsBatch, {
-        cursor,
-        batchSize: BATCH_SIZE,
-      });
-      
-      if (!batch || batch.page.length === 0) {
-        console.log("No more cards to process - resetting cursor to start");
-        await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor: null });
-        hasMore = false;
-        break;
-      }
-      
-      console.log(`Batch ${batchNumber}: Processing ${batch.page.length} cards (cursor: ${cursor ? 'continuing' : 'start'})`);
-      
-      const setsInBatch = new Set(batch.page.map(card => card.setName));
-      console.log(`Sets in this batch: ${Array.from(setsInBatch).join(', ')}`);
-      
-      // Process each card in the batch with delays
-      for (const card of batch.page) {
-        if (processedCardIds.has(card._id)) {
-          console.warn(`Duplicate card detected: ${card.name} (${card.setName}) - skipping`);
-          continue;
-        }
-        processedCardIds.add(card._id);
-        
-        try {
-          const fluctuation = 0.97 + Math.random() * 0.06;
-          const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
-          
-          await ctx.runMutation(internal.cards.upsertCard, {
-            name: card.name,
-            setName: card.setName,
-            cardNumber: card.cardNumber,
-            rarity: card.rarity,
-            imageUrl: card.imageUrl,
-            tcgplayerUrl: card.tcgplayerUrl,
-            currentPrice: newPrice,
-          });
-          
-          fluctuationCount++;
-          totalProcessed++;
-          
-          await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
-        } catch (error) {
-          console.error(`Error updating card ${card.name} from ${card.setName}:`, error);
-        }
-      }
-      
-      console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${batch.page.length}. Total updated so far: ${fluctuationCount}`);
-      
-      cursor = batch.continueCursor;
-      await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor });
-      
-      hasMore = !batch.isDone;
-      
-      if (hasMore) {
-        await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS));
-      }
-    }
-    
-    console.log(`Card update complete. Total batches processed: ${batchNumber}`);
-    console.log(`Total unique cards updated: ${fluctuationCount} (out of ${totalProcessed} processed)`);
-    console.log(`New cards fetched: ${result.updated}, Existing cards updated: ${fluctuationCount}`);
+    console.log(`Update complete. New cards fetched: ${result.updated}`);
     
     return { 
       success: result.success, 
-      updated: result.updated + fluctuationCount,
-      total: result.total + fluctuationCount,
+      updated: result.updated,
+      total: result.total,
       errors: result.errors
     };
   },
