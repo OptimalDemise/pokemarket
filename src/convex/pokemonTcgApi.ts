@@ -250,15 +250,25 @@ export const updateAllCardsWithRealData = internalAction({
     // Update existing cards with simulated price fluctuations (±1%)
     console.log("Updating existing cards with ±1% price fluctuations...");
     
-    const allCards = await ctx.runQuery(internal.cards._getAllCards);
+    // Get the saved cursor to resume from where we left off
+    const savedUpdateCursor = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
+    
+    // Fetch a batch of cards using pagination
+    const batchSize = 50; // Process 50 cards per run
+    const cardsBatch = await ctx.runQuery(internal.cards._getCardsBatch, {
+      cursor: savedUpdateCursor,
+      batchSize: batchSize,
+    });
+    
     let fluctuationCount = 0;
+    const errors: string[] = [];
     
     // Calculate delay between updates to spread over ~8 minutes (leaving 2 min buffer)
     const totalUpdateTime = 8 * 60 * 1000; // 8 minutes in ms
-    const delayPerCard = allCards.length > 0 ? totalUpdateTime / allCards.length : 0;
+    const delayPerCard = cardsBatch.page.length > 0 ? totalUpdateTime / cardsBatch.page.length : 0;
     
-    for (let i = 0; i < allCards.length; i++) {
-      const card = allCards[i];
+    for (let i = 0; i < cardsBatch.page.length; i++) {
+      const card = cardsBatch.page[i];
       
       try {
         // Apply ±1% price fluctuation (0.99 to 1.01)
@@ -278,12 +288,26 @@ export const updateAllCardsWithRealData = internalAction({
         fluctuationCount++;
         
         // Add delay between cards to spread updates gradually
-        if (delayPerCard > 0 && i < allCards.length - 1) {
+        if (delayPerCard > 0 && i < cardsBatch.page.length - 1) {
           await new Promise(resolve => setTimeout(resolve, delayPerCard));
         }
       } catch (error) {
         console.error(`Error updating card ${card.name}:`, error);
+        if (errors.length < 10) {
+          errors.push(`Failed to update ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
       }
+    }
+    
+    // Save the cursor for the next run
+    if (cardsBatch.isDone) {
+      // We've processed all cards, reset cursor to start from beginning next time
+      await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor: null });
+      console.log("Completed full cycle through all cards. Resetting cursor.");
+    } else {
+      // Save the continuation cursor to resume from this point next time
+      await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor: cardsBatch.continueCursor });
+      console.log(`Processed ${fluctuationCount} cards. Saved cursor for next run.`);
     }
     
     console.log(`Card update complete. Updated ${fluctuationCount} cards with ±1% fluctuations`);
@@ -292,7 +316,7 @@ export const updateAllCardsWithRealData = internalAction({
       success: true, 
       updated: fluctuationCount,
       total: fluctuationCount,
-      errors: undefined
+      errors: errors.length > 0 ? errors : undefined
     };
   },
 });
