@@ -256,16 +256,15 @@ export const updateAllCardsWithRealData = internalAction({
     }
     
     // Update existing cards in smaller batches more frequently (30 cards every 2 minutes)
-    // WITH DELAYS between cards to create smooth, gradual updates
+    // WITH staggered timestamps to create smooth, gradual updates
     const BATCH_SIZE = 30;
     const CRON_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
-    const DELAY_PER_CARD = 1000; // 1 second per card for smoother updates
     
     try {
       // Get the saved cursor for existing card updates
       const savedCursor = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
       
-      console.log(`Updating existing cards from cursor: ${savedCursor || 'start'} with ${DELAY_PER_CARD}ms delay between cards`);
+      console.log(`Updating existing cards from cursor: ${savedCursor || 'start'} with staggered timestamps`);
       
       // Fetch a batch of existing cards
       const cardsBatch = await ctx.runQuery(internal.cards._getCardsBatch, {
@@ -277,9 +276,10 @@ export const updateAllCardsWithRealData = internalAction({
       const errors: string[] = [];
       
       // Calculate staggered timestamps to spread updates over the 2-minute window
+      // Each card gets a timestamp spread across ~3.6 seconds apart (110s / 30 cards)
       const baseTimestamp = Date.now();
-      const timeSpread = CRON_INTERVAL_MS - 10000; // Leave 10 seconds buffer
-      const timeIncrement = Math.floor(timeSpread / BATCH_SIZE);
+      const timeSpread = CRON_INTERVAL_MS - 10000; // Leave 10 seconds buffer (110 seconds)
+      const timeIncrement = Math.floor(timeSpread / BATCH_SIZE); // ~3.6 seconds per card
       
       // Process each card in the batch with staggered timestamps
       for (let i = 0; i < cardsBatch.page.length; i++) {
@@ -316,7 +316,7 @@ export const updateAllCardsWithRealData = internalAction({
         cursor: cardsBatch.isDone ? null : cardsBatch.continueCursor,
       });
       
-      console.log(`Batch complete. Updated ${updatedCount} existing cards over ${(DELAY_PER_CARD * updatedCount) / 1000}s. ${cardsBatch.isDone ? 'Reached end, will restart from beginning next time.' : 'More cards to process.'}`);
+      console.log(`Batch complete. Updated ${updatedCount} existing cards with staggered timestamps. ${cardsBatch.isDone ? 'Reached end, will restart from beginning next time.' : 'More cards to process.'}`);
       
       result.updated += updatedCount;
       if (errors.length > 0) {
