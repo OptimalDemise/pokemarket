@@ -259,7 +259,7 @@ export const updateAllCardsWithRealData = internalAction({
     // WITH DELAYS between cards to create smooth, gradual updates
     const BATCH_SIZE = 30;
     const CRON_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
-    const DELAY_PER_CARD = Math.floor(CRON_INTERVAL_MS / BATCH_SIZE); // ~4 seconds per card
+    const DELAY_PER_CARD = 1000; // 1 second per card for smoother updates
     
     try {
       // Get the saved cursor for existing card updates
