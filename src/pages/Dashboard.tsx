@@ -63,15 +63,7 @@ export default function Dashboard() {
   const liveUpdates = useMemo(() => {
     if (!showLiveUpdates || !cards) return [];
     
-    let filteredCards = cards.filter(card => {
-      // Filter by time
-      if (card.lastUpdated <= threeMinutesAgo) return false;
-      
-      // Remove this filter to allow 0.00% changes to appear
-      // if (Math.abs(card.percentChange) < 0.01) return false;
-      
-      return true;
-    });
+    let filteredCards = cards.filter(card => card.lastUpdated > threeMinutesAgo);
     
     // Apply favorites filter if enabled
     if (showOnlyFavoritesInLiveUpdates) {

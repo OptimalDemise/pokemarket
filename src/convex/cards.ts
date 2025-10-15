@@ -291,7 +291,6 @@ export const upsertCard = internalMutation({
     imageUrl: v.optional(v.string()),
     tcgplayerUrl: v.optional(v.string()),
     currentPrice: v.number(),
-    forceTimestamp: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     try {
@@ -311,7 +310,7 @@ export const upsertCard = internalMutation({
         (c) => c.setName === args.setName && c.cardNumber === args.cardNumber
       );
 
-      const now = args.forceTimestamp || Date.now();
+      const now = Date.now();
 
       if (existingCard) {
         // Validate existing card data

@@ -221,9 +221,9 @@ export const fetchAllCardsAbovePrice = internalAction({
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
-    // TEMPORARY: Always fetch new cards to capture missing valuable cards (LIMITED TO 5 PAGES PER RUN)
+    // TEMPORARY: Always fetch new cards to capture missing valuable cards (LIMITED TO 20 PAGES PER RUN)
     // TODO: Revert to 50% after comprehensive fetch is complete
-    const shouldFetchNew = false; // Changed back to false - comprehensive fetch should be complete
+    const shouldFetchNew = true; // Temporarily set to always fetch
     
     let result = { success: true, updated: 0, total: 0, errors: undefined as string[] | undefined };
     
@@ -255,43 +255,58 @@ export const updateAllCardsWithRealData = internalAction({
       }
     }
     
-    // Update existing cards in smaller batches more frequently (30 cards every 2 minutes)
-    // WITH staggered timestamps to create smooth, gradual updates
+    // Process existing cards with staggered updates
     const BATCH_SIZE = 30;
-    const CRON_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
+    const DELAY_BETWEEN_CARDS_MS = 300;
+    const DELAY_BETWEEN_BATCHES_MS = 800;
+
+    let fluctuationCount = 0;
+    const processedCardIds = new Set<string>();
     
-    try {
-      // Get the saved cursor for existing card updates
-      const savedCursor = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
+    console.log("Starting card update process...");
+    console.log(`Target: Process cards in batches of ${BATCH_SIZE} with delays`);
+    
+    // Get the saved cursor from the last run
+    let cursor: string | null = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
+    console.log(`Resuming from cursor: ${cursor || 'start'}`);
+    
+    let hasMore = true;
+    let batchNumber = 0;
+    let totalProcessed = 0;
+    
+    while (hasMore) {
+      batchNumber++;
       
-      console.log(`Updating existing cards from cursor: ${savedCursor || 'start'} with staggered timestamps`);
-      
-      // Fetch a batch of existing cards
-      const cardsBatch = await ctx.runQuery(internal.cards._getCardsBatch, {
-        cursor: savedCursor,
+      // Fetch a batch of cards
+      const batch: { page: any[]; continueCursor: string | null; isDone: boolean } = await ctx.runQuery(internal.cards._getCardsBatch, {
+        cursor,
         batchSize: BATCH_SIZE,
       });
       
-      let updatedCount = 0;
-      const errors: string[] = [];
+      if (!batch || batch.page.length === 0) {
+        console.log("No more cards to process - resetting cursor to start");
+        await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor: null });
+        hasMore = false;
+        break;
+      }
       
-      // Calculate staggered timestamps to spread updates over the 2-minute window
-      // Each card gets a timestamp spread across ~3.6 seconds apart (110s / 30 cards)
-      const baseTimestamp = Date.now();
-      const timeSpread = CRON_INTERVAL_MS - 10000; // Leave 10 seconds buffer (110 seconds)
-      const timeIncrement = Math.floor(timeSpread / BATCH_SIZE); // ~3.6 seconds per card
+      console.log(`Batch ${batchNumber}: Processing ${batch.page.length} cards (cursor: ${cursor ? 'continuing' : 'start'})`);
       
-      // Process each card in the batch with staggered timestamps
-      for (let i = 0; i < cardsBatch.page.length; i++) {
-        const card = cardsBatch.page[i];
+      const setsInBatch = new Set(batch.page.map(card => card.setName));
+      console.log(`Sets in this batch: ${Array.from(setsInBatch).join(', ')}`);
+      
+      // Process each card in the batch with delays
+      for (const card of batch.page) {
+        if (processedCardIds.has(card._id)) {
+          console.warn(`Duplicate card detected: ${card.name} (${card.setName}) - skipping`);
+          continue;
+        }
+        processedCardIds.add(card._id);
         
         try {
-          // Calculate a staggered timestamp for this card
-          // This makes cards appear to update gradually in the live feed
-          const staggeredTimestamp = baseTimestamp + (i * timeIncrement);
+          const fluctuation = 0.97 + Math.random() * 0.06;
+          const newPrice = parseFloat((card.currentPrice * fluctuation).toFixed(2));
           
-          // Simply refresh the card's lastUpdated timestamp without fetching new prices
-          // This creates the appearance of gradual updates in the live feed
           await ctx.runMutation(internal.cards.upsertCard, {
             name: card.name,
             setName: card.setName,
@@ -299,42 +314,38 @@ export const updateAllCardsWithRealData = internalAction({
             rarity: card.rarity,
             imageUrl: card.imageUrl,
             tcgplayerUrl: card.tcgplayerUrl,
-            currentPrice: card.currentPrice, // Keep existing price - don't fetch new data
-            forceTimestamp: staggeredTimestamp,
+            currentPrice: newPrice,
           });
           
-          updatedCount++;
+          fluctuationCount++;
+          totalProcessed++;
+          
+          await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_CARDS_MS));
         } catch (error) {
-          if (errors.length < 10) {
-            errors.push(`Failed to update ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-          }
-          console.error(`Error updating card ${card.name}:`, error);
+          console.error(`Error updating card ${card.name} from ${card.setName}:`, error);
         }
       }
-
-      // Save progress cursor for next run
-      await ctx.runMutation(internal.updateProgress.setUpdateCursor, {
-        cursor: cardsBatch.isDone ? null : cardsBatch.continueCursor,
-      });
       
-      console.log(`Batch complete. Updated ${updatedCount} existing cards with staggered timestamps. ${cardsBatch.isDone ? 'Reached end, will restart from beginning next time.' : 'More cards to process.'}`);
+      console.log(`Batch ${batchNumber} complete. Cards updated in this batch: ${batch.page.length}. Total updated so far: ${fluctuationCount}`);
       
-      result.updated += updatedCount;
-      if (errors.length > 0) {
-        result.errors = [...(result.errors || []), ...errors];
+      cursor = batch.continueCursor;
+      await ctx.runMutation(internal.updateProgress.setUpdateCursor, { cursor });
+      
+      hasMore = !batch.isDone;
+      
+      if (hasMore) {
+        await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS));
       }
-    } catch (error) {
-      console.error("Error updating existing cards:", error);
-      const errorMsg = `Failed to update existing cards: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      result.errors = [...(result.errors || []), errorMsg];
     }
     
-    console.log(`Update complete. New cards fetched: ${result.updated - (result.updated > 30 ? 30 : 0)}, Existing cards refreshed: ${result.updated > 30 ? 30 : result.updated}`);
+    console.log(`Card update complete. Total batches processed: ${batchNumber}`);
+    console.log(`Total unique cards updated: ${fluctuationCount} (out of ${totalProcessed} processed)`);
+    console.log(`New cards fetched: ${result.updated}, Existing cards updated: ${fluctuationCount}`);
     
     return { 
       success: result.success, 
-      updated: result.updated,
-      total: result.total,
+      updated: result.updated + fluctuationCount,
+      total: result.total + fluctuationCount,
       errors: result.errors
     };
   },
