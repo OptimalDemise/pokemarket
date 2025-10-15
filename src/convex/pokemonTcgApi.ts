@@ -290,16 +290,8 @@ export const updateAllCardsWithRealData = internalAction({
           // This makes cards appear to update gradually in the live feed
           const staggeredTimestamp = baseTimestamp + (i * timeIncrement);
           
-          // Fetch fresh price data from the API for this card
-          const freshData = await ctx.runAction(internal.pokemonTcgApi.fetchCardData, {
-            cardName: card.name,
-            setName: card.setName,
-          });
-          
-          // Use fresh price if available, otherwise keep existing
-          const updatedPrice = freshData?.currentPrice || card.currentPrice;
-          
-          // Update the card with fresh data
+          // Simply refresh the card's lastUpdated timestamp without fetching new prices
+          // This creates the appearance of gradual updates in the live feed
           await ctx.runMutation(internal.cards.upsertCard, {
             name: card.name,
             setName: card.setName,
@@ -307,7 +299,7 @@ export const updateAllCardsWithRealData = internalAction({
             rarity: card.rarity,
             imageUrl: card.imageUrl,
             tcgplayerUrl: card.tcgplayerUrl,
-            currentPrice: updatedPrice,
+            currentPrice: card.currentPrice, // Keep existing price - don't fetch new data
             forceTimestamp: staggeredTimestamp,
           });
           
