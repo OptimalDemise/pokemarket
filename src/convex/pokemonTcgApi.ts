@@ -276,11 +276,20 @@ export const updateAllCardsWithRealData = internalAction({
       let updatedCount = 0;
       const errors: string[] = [];
       
-      // Process each card in the batch WITH DELAYS
+      // Calculate staggered timestamps to spread updates over the 2-minute window
+      const baseTimestamp = Date.now();
+      const timeSpread = CRON_INTERVAL_MS - 10000; // Leave 10 seconds buffer
+      const timeIncrement = Math.floor(timeSpread / BATCH_SIZE);
+      
+      // Process each card in the batch with staggered timestamps
       for (let i = 0; i < cardsBatch.page.length; i++) {
         const card = cardsBatch.page[i];
         
         try {
+          // Calculate a staggered timestamp for this card
+          // This makes cards appear to update gradually in the live feed
+          const staggeredTimestamp = baseTimestamp + (i * timeIncrement);
+          
           // Simply refresh the card's lastUpdated timestamp without changing price
           await ctx.runMutation(internal.cards.upsertCard, {
             name: card.name,
@@ -290,14 +299,10 @@ export const updateAllCardsWithRealData = internalAction({
             imageUrl: card.imageUrl,
             tcgplayerUrl: card.tcgplayerUrl,
             currentPrice: card.currentPrice, // Keep existing price
+            forceTimestamp: staggeredTimestamp, // Use staggered timestamp
           });
           
           updatedCount++;
-          
-          // Add delay between cards (except for the last one)
-          if (i < cardsBatch.page.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, DELAY_PER_CARD));
-          }
         } catch (error) {
           if (errors.length < 10) {
             errors.push(`Failed to update ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -305,7 +310,7 @@ export const updateAllCardsWithRealData = internalAction({
           console.error(`Error updating card ${card.name}:`, error);
         }
       }
-      
+
       // Save progress cursor for next run
       await ctx.runMutation(internal.updateProgress.setUpdateCursor, {
         cursor: cardsBatch.isDone ? null : cardsBatch.continueCursor,
