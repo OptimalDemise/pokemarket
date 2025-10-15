@@ -223,7 +223,7 @@ export const updateAllCardsWithRealData = internalAction({
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
     // TEMPORARY: Always fetch new cards to capture missing valuable cards (LIMITED TO 5 PAGES PER RUN)
     // TODO: Revert to 50% after comprehensive fetch is complete
-    const shouldFetchNew = true; // Temporarily set to always fetch
+    const shouldFetchNew = false; // Changed back to false - comprehensive fetch should be complete
     
     let result = { success: true, updated: 0, total: 0, errors: undefined as string[] | undefined };
     
