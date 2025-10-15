@@ -67,8 +67,8 @@ export default function Dashboard() {
       // Filter by time
       if (card.lastUpdated <= threeMinutesAgo) return false;
       
-      // Filter out cards with 0.00% change
-      if (Math.abs(card.percentChange) < 0.01) return false;
+      // Remove this filter to allow 0.00% changes to appear
+      // if (Math.abs(card.percentChange) < 0.01) return false;
       
       return true;
     });
