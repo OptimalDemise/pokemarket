@@ -256,14 +256,16 @@ export const updateAllCardsWithRealData = internalAction({
     }
     
     // Update existing cards in smaller batches more frequently (30 cards every 2 minutes)
-    // This creates a smooth, continuous stream of updates in the live feed
-    const BATCH_SIZE = 30; // Reduced from 150 to spread updates more evenly
+    // WITH DELAYS between cards to create smooth, gradual updates
+    const BATCH_SIZE = 30;
+    const CRON_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
+    const DELAY_PER_CARD = Math.floor(CRON_INTERVAL_MS / BATCH_SIZE); // ~4 seconds per card
     
     try {
       // Get the saved cursor for existing card updates
       const savedCursor = await ctx.runQuery(internal.updateProgress.getUpdateCursor);
       
-      console.log(`Updating existing cards from cursor: ${savedCursor || 'start'}`);
+      console.log(`Updating existing cards from cursor: ${savedCursor || 'start'} with ${DELAY_PER_CARD}ms delay between cards`);
       
       // Fetch a batch of existing cards
       const cardsBatch = await ctx.runQuery(internal.cards._getCardsBatch, {
@@ -274,7 +276,7 @@ export const updateAllCardsWithRealData = internalAction({
       let updatedCount = 0;
       const errors: string[] = [];
       
-      // Process each card in the batch
+      // Process each card in the batch WITH DELAYS
       for (let i = 0; i < cardsBatch.page.length; i++) {
         const card = cardsBatch.page[i];
         
@@ -291,6 +293,11 @@ export const updateAllCardsWithRealData = internalAction({
           });
           
           updatedCount++;
+          
+          // Add delay between cards (except for the last one)
+          if (i < cardsBatch.page.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, DELAY_PER_CARD));
+          }
         } catch (error) {
           if (errors.length < 10) {
             errors.push(`Failed to update ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -304,7 +311,7 @@ export const updateAllCardsWithRealData = internalAction({
         cursor: cardsBatch.isDone ? null : cardsBatch.continueCursor,
       });
       
-      console.log(`Batch complete. Updated ${updatedCount} existing cards. ${cardsBatch.isDone ? 'Reached end, will restart from beginning next time.' : 'More cards to process.'}`);
+      console.log(`Batch complete. Updated ${updatedCount} existing cards over ${(DELAY_PER_CARD * updatedCount) / 1000}s. ${cardsBatch.isDone ? 'Reached end, will restart from beginning next time.' : 'More cards to process.'}`);
       
       result.updated += updatedCount;
       if (errors.length > 0) {
