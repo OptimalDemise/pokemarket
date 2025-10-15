@@ -255,11 +255,9 @@ export const updateAllCardsWithRealData = internalAction({
       }
     }
     
-    // Update existing cards in batches to refresh lastUpdated timestamps
-    // This ensures cards appear in "Live Updates" without simulating price changes
-    const BATCH_SIZE = 150; // Process 150 cards per cycle, cursor tracks progress
-    const DELAY_BETWEEN_CARDS_MS = 300; // Small delay to prevent overwhelming the system
-    const DELAY_BETWEEN_BATCHES_MS = 800; // Delay between batches
+    // Update existing cards in smaller batches more frequently (30 cards every 2 minutes)
+    // This creates a smooth, continuous stream of updates in the live feed
+    const BATCH_SIZE = 30; // Reduced from 150 to spread updates more evenly
     
     try {
       // Get the saved cursor for existing card updates
@@ -293,8 +291,6 @@ export const updateAllCardsWithRealData = internalAction({
           });
           
           updatedCount++;
-          
-          // No delay needed - Convex handles high throughput efficiently
         } catch (error) {
           if (errors.length < 10) {
             errors.push(`Failed to update ${card.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -309,8 +305,6 @@ export const updateAllCardsWithRealData = internalAction({
       });
       
       console.log(`Batch complete. Updated ${updatedCount} existing cards. ${cardsBatch.isDone ? 'Reached end, will restart from beginning next time.' : 'More cards to process.'}`);
-      
-      // No delay needed between batches - let the cron job handle timing
       
       result.updated += updatedCount;
       if (errors.length > 0) {
