@@ -288,8 +288,16 @@ export const updateAllCardsWithRealData = internalAction({
         fluctuationCount++;
         
         // Add delay between cards to spread updates gradually
-        if (delayPerCard > 0 && i < cardsBatch.page.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, delayPerCard));
+        if (i < cardsBatch.page.length - 1) {
+          // Add base delay
+          if (delayPerCard > 0) {
+            await new Promise(resolve => setTimeout(resolve, delayPerCard));
+          }
+          
+          // Add extra 500ms pause after every 2-3 cards
+          if ((i + 1) % 2 === 0 || (i + 1) % 3 === 0) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
         }
       } catch (error) {
         console.error(`Error updating card ${card.name}:`, error);
