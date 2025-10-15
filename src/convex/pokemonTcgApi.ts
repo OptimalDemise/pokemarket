@@ -5,7 +5,7 @@ import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 
 const POKEMON_TCG_API_BASE = "https://api.pokemontcg.io/v2";
-const API_KEY = process.env.POKEMON_TCG_API_KEY || ""; // Optional but recommended for higher rate limits
+const API_KEY = process.env.POKEMON_TCG_API_KEY || "";
 
 interface PokemonCard {
   id: string;
@@ -217,21 +217,20 @@ export const fetchAllCardsAbovePrice = internalAction({
   },
 });
 
-// Update all cards with real data
+// Update all cards with real data - REWRITTEN for clean gradual updates
 export const updateAllCardsWithRealData = internalAction({
   args: {},
   handler: async (ctx): Promise<{ success: boolean; updated: number; total: number; errors?: string[] }> => {
+    console.log("Starting card update cycle...");
+    
     // Fetch new cards occasionally (50% chance)
     const shouldFetchNew = Math.random() < 0.5;
     
-    let result = { success: true, updated: 0, total: 0, errors: undefined as string[] | undefined };
-    
     if (shouldFetchNew) {
-      // Get the saved page cursor from last run
       const savedCursor = await ctx.runQuery(internal.updateProgress.getNewCardFetchCursor);
       const startPage = savedCursor ? parseInt(savedCursor) : 1;
       
-      console.log(`Fetching new cards from API starting at page ${startPage} (incremental fetch mode - 5 pages per run)...`);
+      console.log(`Fetching new cards from API starting at page ${startPage}...`);
       
       const fetchResult = await ctx.runAction(internal.pokemonTcgApi.fetchAllCardsAbovePrice, {
         minPrice: 3,
@@ -239,28 +238,28 @@ export const updateAllCardsWithRealData = internalAction({
         startPage: startPage,
       });
       
-      result = fetchResult;
-      
-      // Save the next page to continue from
       if (fetchResult.nextPage) {
         await ctx.runMutation(internal.updateProgress.setNewCardFetchCursor, { 
           cursor: fetchResult.nextPage.toString() 
         });
-        console.log(`Saved progress: will continue from page ${fetchResult.nextPage} next run`);
       } else if (fetchResult.isComplete) {
-        // Reset cursor when complete
         await ctx.runMutation(internal.updateProgress.setNewCardFetchCursor, { cursor: null });
-        console.log(`Fetch complete! All pages processed. Cursor reset.`);
       }
     }
     
     // Update existing cards with simulated price fluctuations (±1%)
-    console.log("Starting card update process with simulated price fluctuations...");
+    console.log("Updating existing cards with ±1% price fluctuations...");
     
     const allCards = await ctx.runQuery(internal.cards._getAllCards);
     let fluctuationCount = 0;
     
-    for (const card of allCards) {
+    // Calculate delay between updates to spread over ~8 minutes (leaving 2 min buffer)
+    const totalUpdateTime = 8 * 60 * 1000; // 8 minutes in ms
+    const delayPerCard = allCards.length > 0 ? totalUpdateTime / allCards.length : 0;
+    
+    for (let i = 0; i < allCards.length; i++) {
+      const card = allCards[i];
+      
       try {
         // Apply ±1% price fluctuation (0.99 to 1.01)
         const fluctuation = 0.99 + Math.random() * 0.02;
@@ -277,19 +276,23 @@ export const updateAllCardsWithRealData = internalAction({
         });
         
         fluctuationCount++;
+        
+        // Add delay between cards to spread updates gradually
+        if (delayPerCard > 0 && i < allCards.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, delayPerCard));
+        }
       } catch (error) {
         console.error(`Error updating card ${card.name}:`, error);
       }
     }
     
-    console.log(`Card update complete. Updated ${fluctuationCount} existing cards with ±1% fluctuations`);
-    console.log(`New cards fetched: ${result.updated}, Existing cards updated: ${fluctuationCount}`);
+    console.log(`Card update complete. Updated ${fluctuationCount} cards with ±1% fluctuations`);
     
     return { 
-      success: result.success, 
-      updated: result.updated + fluctuationCount,
-      total: result.total + fluctuationCount,
-      errors: result.errors
+      success: true, 
+      updated: fluctuationCount,
+      total: fluctuationCount,
+      errors: undefined
     };
   },
 });

@@ -323,13 +323,13 @@ export const upsertCard = internalMutation({
         const priceChangePercent = Math.abs((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
         const hasPriceChanged = priceChangePercent > 0.1;
         
-        // Check if it's been more than 30 minutes since last history entry (for chart data points)
+        // Check if it's been more than 30 minutes since last history entry
         const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
         const shouldRecordPeriodically = existingCard.lastUpdated < thirtyMinutesAgo;
 
-        // Always update lastUpdated for live updates display, but only record history every 30 min or on significant change
+        // Always update lastUpdated, but only record history on significant change or 30-min interval
         if (hasPriceChanged || shouldRecordPeriodically) {
-          // Calculate new percentage change with safety check
+          // Calculate new percentage change
           let percentChange = 0;
           if (existingCard.currentPrice !== 0) {
             percentChange = ((args.currentPrice - existingCard.currentPrice) / existingCard.currentPrice) * 100;
@@ -346,23 +346,21 @@ export const upsertCard = internalMutation({
           let averagePrice = existingCard.currentPrice;
           let isRecentSale = false;
           
-          // Calculate average from last 5 entries (excluding current)
+          // Calculate average from last 5 entries
           if (recentHistory.length >= 2) {
             const historicalPrices = recentHistory.slice(0, Math.min(5, recentHistory.length));
             const sum = historicalPrices.reduce((sum, h) => sum + h.price, 0);
             averagePrice = sum / historicalPrices.length;
             
-            // Check if current price deviates significantly from average (>10%)
-            // AND if the last update was within the last hour (3600000 ms)
+            // Check if current price deviates significantly AND within last hour
             const oneHourAgo = now - (60 * 60 * 1000);
             if (averagePrice !== 0) {
               const deviation = Math.abs((args.currentPrice - averagePrice) / averagePrice) * 100;
-              // Only mark as recent sale if deviation is significant AND it's been less than an hour
               isRecentSale = deviation > 10 && existingCard.lastUpdated > oneHourAgo;
             }
           }
           
-          // Calculate overall trend from the very first recorded price
+          // Calculate overall trend from first recorded price
           const firstHistoryEntry = await ctx.db
             .query("cardPriceHistory")
             .withIndex("by_card", (q) => q.eq("cardId", existingCard._id))
@@ -370,11 +368,10 @@ export const upsertCard = internalMutation({
             .first();
           
           if (firstHistoryEntry && firstHistoryEntry.price !== 0) {
-            const firstPrice = firstHistoryEntry.price;
-            overallPercentChange = ((args.currentPrice - firstPrice) / firstPrice) * 100;
+            overallPercentChange = ((args.currentPrice - firstHistoryEntry.price) / firstHistoryEntry.price) * 100;
           }
           
-          // Update existing card with calculated values
+          // Update card with calculated values
           await ctx.db.patch(existingCard._id, {
             currentPrice: args.currentPrice,
             lastUpdated: now,
@@ -384,19 +381,16 @@ export const upsertCard = internalMutation({
             isRecentSale,
           });
 
-          // Add price history entry ONLY for significant changes OR 30-minute intervals (for chart data)
+          // Add price history entry
           await ctx.db.insert("cardPriceHistory", {
             cardId: existingCard._id,
             price: args.currentPrice,
             timestamp: now,
           });
         } else {
-          // Price hasn't changed significantly and it's not time for 30-min update
-          // Still update lastUpdated for live updates display, but don't add history entry
-          // However, we still need to maintain the existing percentChange value
+          // Just update lastUpdated, preserve existing calculated values
           await ctx.db.patch(existingCard._id, {
             lastUpdated: now,
-            // Keep existing calculated values so they don't reset to 0
             percentChange: existingCard.percentChange || 0,
             overallPercentChange: existingCard.overallPercentChange || 0,
             averagePrice: existingCard.averagePrice || existingCard.currentPrice,
@@ -422,8 +416,7 @@ export const upsertCard = internalMutation({
           isRecentSale: false,
         });
 
-        // Seed with two initial price history entries for immediate graph visualization
-        // Add a historical entry (1 hour ago) with slight variation
+        // Seed with two initial price history entries
         const oneHourAgo = now - (60 * 60 * 1000);
         const historicalPrice = parseFloat((args.currentPrice * (0.98 + Math.random() * 0.04)).toFixed(2));
         
@@ -433,7 +426,6 @@ export const upsertCard = internalMutation({
           timestamp: oneHourAgo,
         });
 
-        // Add current price entry
         await ctx.db.insert("cardPriceHistory", {
           cardId,
           price: args.currentPrice,
